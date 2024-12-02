@@ -1,0 +1,844 @@
+Image,True Label,Predicted Label,Probability,Correct
+02518.jpg,Chevrolet Camaro Convertible 2012,Audi RS 4 Convertible 2008,0.6372436285018921,False
+01353.jpg,Chevrolet Camaro Convertible 2012,Chevrolet Corvette Ron Fellows Edition Z06 2007,0.49764928221702576,False
+07167.jpg,Chevrolet Camaro Convertible 2012,Lamborghini Reventon Coupe 2008,0.39457860589027405,False
+01726.jpg,Chevrolet Camaro Convertible 2012,Ford Mustang Convertible 2007,0.9082781076431274,False
+05350.jpg,Chevrolet Camaro Convertible 2012,Geo Metro Convertible 1993,0.646017849445343,False
+04386.jpg,Chevrolet Camaro Convertible 2012,BMW 1 Series Convertible 2012,0.5104240775108337,False
+05987.jpg,Chevrolet Camaro Convertible 2012,Ford GT Coupe 2006,0.7755253314971924,False
+06705.jpg,Toyota 4Runner SUV 2012,Chevrolet Malibu Hybrid Sedan 2010,0.7615947723388672,False
+02977.jpg,Aston Martin V8 Vantage Coupe 2012,Aston Martin V8 Vantage Convertible 2012,0.9923850297927856,False
+02659.jpg,Aston Martin V8 Vantage Coupe 2012,Aston Martin V8 Vantage Convertible 2012,0.9732673764228821,False
+02152.jpg,Aston Martin V8 Vantage Coupe 2012,Aston Martin Virage Convertible 2012,0.9787888526916504,False
+02101.jpg,Aston Martin V8 Vantage Coupe 2012,Aston Martin V8 Vantage Convertible 2012,0.9597442150115967,False
+01821.jpg,Aston Martin V8 Vantage Coupe 2012,Aston Martin Virage Coupe 2012,0.9999998807907104,False
+02815.jpg,Aston Martin V8 Vantage Coupe 2012,Aston Martin V8 Vantage Convertible 2012,0.926183819770813,False
+05762.jpg,Aston Martin V8 Vantage Coupe 2012,Acura Integra Type R 2001,0.42085304856300354,False
+03753.jpg,Aston Martin V8 Vantage Coupe 2012,BMW M3 Coupe 2012,0.8643836975097656,False
+01388.jpg,Aston Martin V8 Vantage Coupe 2012,Aston Martin V8 Vantage Convertible 2012,0.9808618426322937,False
+07250.jpg,Aston Martin V8 Vantage Coupe 2012,Spyker C8 Convertible 2009,0.27429383993148804,False
+04539.jpg,Aston Martin V8 Vantage Coupe 2012,Ferrari 458 Italia Coupe 2012,0.3862253725528717,False
+01840.jpg,Aston Martin V8 Vantage Coupe 2012,Aston Martin V8 Vantage Convertible 2012,0.6653732657432556,False
+07744.jpg,Aston Martin V8 Vantage Coupe 2012,Aston Martin V8 Vantage Convertible 2012,0.875232458114624,False
+07940.jpg,Aston Martin V8 Vantage Coupe 2012,Aston Martin Virage Coupe 2012,0.9999967813491821,False
+04362.jpg,Aston Martin V8 Vantage Coupe 2012,Aston Martin V8 Vantage Convertible 2012,0.9128955602645874,False
+05757.jpg,Aston Martin V8 Vantage Coupe 2012,Aston Martin Virage Coupe 2012,1.0,False
+00746.jpg,Bentley Continental GT Coupe 2012,Bentley Continental GT Coupe 2007,0.815635085105896,False
+02449.jpg,Bentley Continental GT Coupe 2012,Bentley Continental GT Coupe 2007,0.9997432827949524,False
+07403.jpg,Bentley Continental GT Coupe 2012,Bentley Continental GT Coupe 2007,0.9988555908203125,False
+01812.jpg,Bentley Continental GT Coupe 2012,Bentley Continental GT Coupe 2007,0.9964141845703125,False
+02849.jpg,Bentley Continental GT Coupe 2012,Bentley Continental GT Coupe 2007,0.999972939491272,False
+01407.jpg,Bentley Continental GT Coupe 2012,Bentley Continental GT Coupe 2007,0.9998769760131836,False
+06466.jpg,Bentley Continental GT Coupe 2012,Bentley Continental GT Coupe 2007,0.6368167400360107,False
+01131.jpg,Bentley Continental GT Coupe 2012,Bentley Continental GT Coupe 2007,0.9872087836265564,False
+01109.jpg,Bentley Continental GT Coupe 2012,Bentley Continental GT Coupe 2007,0.765998125076294,False
+05102.jpg,Bentley Continental GT Coupe 2012,Bentley Continental GT Coupe 2007,0.9463307857513428,False
+03420.jpg,Bentley Continental GT Coupe 2012,Bentley Continental GT Coupe 2007,0.571198582649231,False
+07597.jpg,Bentley Continental GT Coupe 2012,Bentley Continental GT Coupe 2007,0.7388221621513367,False
+06752.jpg,Bentley Continental GT Coupe 2012,Bentley Continental GT Coupe 2007,0.9341800212860107,False
+04136.jpg,Bentley Continental GT Coupe 2012,Bentley Continental GT Coupe 2007,0.613063395023346,False
+06202.jpg,Bentley Continental GT Coupe 2012,Bentley Continental GT Coupe 2007,0.7668843269348145,False
+05541.jpg,Bentley Continental GT Coupe 2012,Mercedes-Benz E-Class Sedan 2012,0.4367333948612213,False
+02117.jpg,Bentley Continental GT Coupe 2012,Bentley Continental Flying Spur Sedan 2007,0.9630146622657776,False
+02012.jpg,Bentley Continental GT Coupe 2012,Bentley Continental GT Coupe 2007,0.9999974966049194,False
+07433.jpg,BMW X6 SUV 2012,BMW X5 SUV 2007,0.7133516073226929,False
+00035.jpg,BMW X6 SUV 2012,BMW X5 SUV 2007,0.7662917375564575,False
+06943.jpg,BMW X6 SUV 2012,Ferrari 458 Italia Coupe 2012,0.4977756142616272,False
+05743.jpg,BMW X6 SUV 2012,Acura ZDX Hatchback 2012,0.34704023599624634,False
+03918.jpg,Mercedes-Benz 300-Class Convertible 1993,Geo Metro Convertible 1993,0.7837328910827637,False
+05391.jpg,Mercedes-Benz 300-Class Convertible 1993,Audi RS 4 Convertible 2008,0.49556076526641846,False
+00905.jpg,Mercedes-Benz 300-Class Convertible 1993,Chrysler Crossfire Convertible 2008,0.743881106376648,False
+02354.jpg,Mercedes-Benz 300-Class Convertible 1993,Rolls-Royce Phantom Drophead Coupe Convertible 2012,0.5771418809890747,False
+00292.jpg,Buick Verano Sedan 2012,Chevrolet Traverse SUV 2012,0.20182478427886963,False
+00434.jpg,BMW 3 Series Sedan 2012,BMW 3 Series Wagon 2012,0.7834988236427307,False
+04708.jpg,BMW 3 Series Sedan 2012,Audi TTS Coupe 2012,0.4235951900482178,False
+04093.jpg,BMW 3 Series Sedan 2012,Mitsubishi Lancer Sedan 2012,0.7449381947517395,False
+00276.jpg,BMW 3 Series Sedan 2012,Buick Regal GS 2012,0.30540931224823,False
+06180.jpg,Mercedes-Benz Sprinter Van 2012,Dodge Sprinter Cargo Van 2009,0.9889425039291382,False
+03380.jpg,Ferrari 458 Italia Convertible 2012,Ferrari 458 Italia Coupe 2012,0.5793545246124268,False
+01470.jpg,Ferrari 458 Italia Convertible 2012,Ferrari 458 Italia Coupe 2012,0.6222228407859802,False
+00528.jpg,Ferrari 458 Italia Convertible 2012,McLaren MP4-12C Coupe 2012,0.6189228296279907,False
+04688.jpg,Ferrari 458 Italia Convertible 2012,Ferrari California Convertible 2012,0.412575900554657,False
+03967.jpg,Land Rover Range Rover SUV 2012,Land Rover LR2 SUV 2012,0.3573490083217621,False
+05823.jpg,Audi A5 Coupe 2012,Audi S5 Coupe 2012,0.9910316467285156,False
+05313.jpg,Audi A5 Coupe 2012,Audi S5 Coupe 2012,0.8949727416038513,False
+03808.jpg,Audi A5 Coupe 2012,Audi S5 Coupe 2012,0.9996509552001953,False
+06781.jpg,Audi A5 Coupe 2012,Audi S5 Coupe 2012,0.9999626874923706,False
+00302.jpg,Audi A5 Coupe 2012,Audi S5 Coupe 2012,0.9940401315689087,False
+04435.jpg,Ford F-150 Regular Cab 2012,Dodge Ram Pickup 3500 Crew Cab 2010,0.9757195115089417,False
+06878.jpg,Audi RS 4 Convertible 2008,Audi A5 Coupe 2012,0.27812641859054565,False
+02992.jpg,Audi RS 4 Convertible 2008,Rolls-Royce Phantom Drophead Coupe Convertible 2012,0.6541127562522888,False
+02437.jpg,Audi RS 4 Convertible 2008,Audi S5 Convertible 2012,0.9791678190231323,False
+00708.jpg,Audi RS 4 Convertible 2008,Audi S5 Convertible 2012,0.9999819993972778,False
+01814.jpg,Audi RS 4 Convertible 2008,Audi S4 Sedan 2007,0.9146625399589539,False
+06074.jpg,Chevrolet Cobalt SS 2010,Bentley Continental GT Coupe 2007,0.4535088837146759,False
+02180.jpg,Chevrolet Cobalt SS 2010,Geo Metro Convertible 1993,0.7822418212890625,False
+04126.jpg,Chevrolet Cobalt SS 2010,Bentley Continental GT Coupe 2007,0.8964278697967529,False
+01359.jpg,Chevrolet Cobalt SS 2010,FIAT 500 Abarth 2012,0.6763085722923279,False
+03115.jpg,Audi 100 Wagon 1994,Audi 100 Sedan 1994,0.7066498398780823,False
+02301.jpg,Audi 100 Wagon 1994,Audi 100 Sedan 1994,0.9501925706863403,False
+04378.jpg,Audi 100 Wagon 1994,Audi 100 Sedan 1994,0.6244955062866211,False
+00070.jpg,Audi 100 Wagon 1994,Audi V8 Sedan 1994,0.9459854364395142,False
+00321.jpg,Audi 100 Wagon 1994,Audi S4 Sedan 2007,0.8843654990196228,False
+03735.jpg,Audi 100 Wagon 1994,Audi V8 Sedan 1994,0.8422926664352417,False
+04497.jpg,Audi 100 Wagon 1994,Dodge Magnum Wagon 2008,0.9670774936676025,False
+05708.jpg,Audi 100 Wagon 1994,Audi 100 Sedan 1994,0.9955198764801025,False
+06676.jpg,Audi 100 Wagon 1994,Volvo 240 Sedan 1993,0.6719473600387573,False
+05719.jpg,Audi 100 Wagon 1994,Audi S4 Sedan 2007,0.999072790145874,False
+05433.jpg,Audi 100 Wagon 1994,Honda Odyssey Minivan 2007,0.198838010430336,False
+07734.jpg,Audi 100 Wagon 1994,Daewoo Nubira Wagon 2002,0.9797936081886292,False
+01676.jpg,Audi 100 Wagon 1994,Audi S4 Sedan 2007,0.6006753444671631,False
+00826.jpg,Audi 100 Wagon 1994,GMC Savana Van 2012,0.9313852787017822,False
+07653.jpg,Audi 100 Wagon 1994,Daewoo Nubira Wagon 2002,0.9130862951278687,False
+07839.jpg,Audi 100 Wagon 1994,Mercedes-Benz 300-Class Convertible 1993,0.6022140979766846,False
+03106.jpg,Audi 100 Wagon 1994,Audi 100 Sedan 1994,0.9704048037528992,False
+01099.jpg,Audi 100 Wagon 1994,Audi V8 Sedan 1994,0.9531311988830566,False
+05959.jpg,Audi 100 Wagon 1994,Audi 100 Sedan 1994,0.6483668684959412,False
+05622.jpg,Audi 100 Wagon 1994,Volvo 240 Sedan 1993,0.4341406524181366,False
+08034.jpg,Audi R8 Coupe 2012,Mercedes-Benz E-Class Sedan 2012,0.6053265929222107,False
+03185.jpg,Audi R8 Coupe 2012,Bugatti Veyron 16.4 Coupe 2009,0.9707366228103638,False
+04577.jpg,Audi R8 Coupe 2012,Acura TL Type-S 2008,0.3517308235168457,False
+06222.jpg,Audi R8 Coupe 2012,Bugatti Veyron 16.4 Coupe 2009,0.9910987019538879,False
+05861.jpg,GMC Yukon Hybrid SUV 2012,Acura RL Sedan 2012,0.4014374911785126,False
+07711.jpg,GMC Yukon Hybrid SUV 2012,Chevrolet Tahoe Hybrid SUV 2012,0.8083101511001587,False
+02084.jpg,GMC Yukon Hybrid SUV 2012,GMC Terrain SUV 2012,0.9969056248664856,False
+06264.jpg,GMC Yukon Hybrid SUV 2012,Chevrolet Tahoe Hybrid SUV 2012,0.6437907218933105,False
+01442.jpg,GMC Yukon Hybrid SUV 2012,Chevrolet TrailBlazer SS 2009,0.401443213224411,False
+03364.jpg,GMC Yukon Hybrid SUV 2012,Chevrolet Tahoe Hybrid SUV 2012,0.7306939959526062,False
+06440.jpg,GMC Yukon Hybrid SUV 2012,Chevrolet Tahoe Hybrid SUV 2012,0.9636711478233337,False
+01838.jpg,BMW X5 SUV 2007,Suzuki SX4 Hatchback 2012,0.39890095591545105,False
+05512.jpg,BMW X5 SUV 2007,Volvo XC90 SUV 2007,0.7990663647651672,False
+06169.jpg,Hyundai Veracruz SUV 2012,BMW M3 Coupe 2012,0.5703339576721191,False
+05447.jpg,Hyundai Veracruz SUV 2012,Hyundai Tucson SUV 2012,0.9694480895996094,False
+04618.jpg,Hyundai Veracruz SUV 2012,GMC Savana Van 2012,0.2518588602542877,False
+01587.jpg,Honda Odyssey Minivan 2007,Honda Odyssey Minivan 2012,0.9990308284759521,False
+07818.jpg,Honda Odyssey Minivan 2007,Ford Freestar Minivan 2007,0.6292186379432678,False
+07635.jpg,Honda Odyssey Minivan 2007,Honda Odyssey Minivan 2012,0.999657154083252,False
+03779.jpg,Honda Odyssey Minivan 2007,Cadillac SRX SUV 2012,0.5501447916030884,False
+00570.jpg,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,Chevrolet Silverado 1500 Extended Cab 2012,0.6598618030548096,False
+07783.jpg,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,Chevrolet Silverado 1500 Extended Cab 2012,0.7190622687339783,False
+05222.jpg,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,Chevrolet Silverado 1500 Regular Cab 2012,0.6427612900733948,False
+02491.jpg,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,Chevrolet Silverado 1500 Extended Cab 2012,0.9679946899414062,False
+05918.jpg,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,Chevrolet Silverado 1500 Extended Cab 2012,0.9872400164604187,False
+01072.jpg,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,Chevrolet Silverado 1500 Regular Cab 2012,0.7658051252365112,False
+05274.jpg,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,Chevrolet Silverado 1500 Extended Cab 2012,0.7758921980857849,False
+02492.jpg,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,Chevrolet Silverado 1500 Regular Cab 2012,0.5211907625198364,False
+06513.jpg,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,Chevrolet Silverado 1500 Extended Cab 2012,0.6975461840629578,False
+07737.jpg,Chevrolet Express Van 2007,Chevrolet Express Cargo Van 2007,0.6742390394210815,False
+03993.jpg,Chevrolet Express Van 2007,GMC Savana Van 2012,0.9771026372909546,False
+01993.jpg,Chevrolet Express Van 2007,Chevrolet Express Cargo Van 2007,0.5848402976989746,False
+04131.jpg,Chevrolet Express Van 2007,GMC Savana Van 2012,0.9893577694892883,False
+04049.jpg,Chevrolet Express Van 2007,Chevrolet Express Cargo Van 2007,0.9872652292251587,False
+04008.jpg,Chevrolet Express Van 2007,Chevrolet Express Cargo Van 2007,0.9011679887771606,False
+04813.jpg,Chevrolet Express Van 2007,Chevrolet Express Cargo Van 2007,0.5565094947814941,False
+03745.jpg,Chevrolet Express Van 2007,Chevrolet Express Cargo Van 2007,0.9975895881652832,False
+06999.jpg,Chevrolet Express Van 2007,GMC Savana Van 2012,0.5816450119018555,False
+07335.jpg,Chevrolet Express Van 2007,GMC Savana Van 2012,0.9882132411003113,False
+07894.jpg,Chevrolet Express Van 2007,GMC Savana Van 2012,0.9983964562416077,False
+00552.jpg,Chevrolet Express Van 2007,GMC Savana Van 2012,0.9809961318969727,False
+02969.jpg,Chevrolet Express Van 2007,Chevrolet Express Cargo Van 2007,0.9999834299087524,False
+07325.jpg,Chevrolet Express Van 2007,GMC Savana Van 2012,0.9980505704879761,False
+02722.jpg,Chevrolet Express Van 2007,GMC Savana Van 2012,0.7504883408546448,False
+06572.jpg,Chevrolet Express Van 2007,Chevrolet Express Cargo Van 2007,0.841446042060852,False
+01678.jpg,Chevrolet Express Van 2007,Chevrolet Express Cargo Van 2007,0.9550412893295288,False
+06525.jpg,Chevrolet Express Van 2007,GMC Savana Van 2012,0.9846316576004028,False
+05707.jpg,Ford Expedition EL SUV 2009,Chevrolet Tahoe Hybrid SUV 2012,0.6766343116760254,False
+00136.jpg,Ford Expedition EL SUV 2009,Dodge Durango SUV 2007,0.7445337772369385,False
+07226.jpg,Audi TT Hatchback 2011,Audi TTS Coupe 2012,0.6894064545631409,False
+06415.jpg,Audi TT Hatchback 2011,Audi TTS Coupe 2012,0.9758964776992798,False
+05795.jpg,Audi TT Hatchback 2011,Audi TTS Coupe 2012,0.7919315099716187,False
+01785.jpg,Audi TT Hatchback 2011,Audi TTS Coupe 2012,0.5523586869239807,False
+06443.jpg,Audi TT Hatchback 2011,Audi TT RS Coupe 2012,0.9226112961769104,False
+05851.jpg,Audi TT Hatchback 2011,Audi TT RS Coupe 2012,0.9999676942825317,False
+05299.jpg,Audi TT Hatchback 2011,Audi TTS Coupe 2012,0.8972947001457214,False
+07826.jpg,Audi TT Hatchback 2011,Audi TTS Coupe 2012,0.9994807839393616,False
+07505.jpg,Audi TT Hatchback 2011,Audi TTS Coupe 2012,0.9982288479804993,False
+07759.jpg,Audi TT Hatchback 2011,Honda Accord Coupe 2012,0.5087037086486816,False
+02258.jpg,Audi TT Hatchback 2011,Audi TT RS Coupe 2012,0.9999896287918091,False
+05844.jpg,Audi TT Hatchback 2011,Audi TTS Coupe 2012,0.6998207569122314,False
+03179.jpg,Audi TT Hatchback 2011,Audi TTS Coupe 2012,0.7121484875679016,False
+06112.jpg,Audi TT Hatchback 2011,Audi TTS Coupe 2012,0.6339915990829468,False
+07095.jpg,Audi TT Hatchback 2011,Audi TT RS Coupe 2012,0.9999865293502808,False
+02334.jpg,Audi TT Hatchback 2011,Audi TTS Coupe 2012,0.5344105958938599,False
+04614.jpg,Audi TT Hatchback 2011,Audi TTS Coupe 2012,0.7857136130332947,False
+01806.jpg,Lamborghini Diablo Coupe 2001,Cadillac CTS-V Sedan 2012,0.2081320434808731,False
+03239.jpg,Lamborghini Diablo Coupe 2001,Lamborghini Reventon Coupe 2008,0.9767755270004272,False
+02094.jpg,Lamborghini Diablo Coupe 2001,AM General Hummer SUV 2000,0.5082123875617981,False
+01092.jpg,Honda Accord Sedan 2012,Ford Fiesta Sedan 2012,0.3792855441570282,False
+05211.jpg,Honda Accord Sedan 2012,Maybach Landaulet Convertible 2012,0.19496607780456543,False
+00034.jpg,Bentley Continental Flying Spur Sedan 2007,Bentley Continental GT Coupe 2007,0.7890952229499817,False
+08031.jpg,Bentley Continental Flying Spur Sedan 2007,Bentley Continental GT Coupe 2007,0.9105405807495117,False
+05158.jpg,Bentley Continental Flying Spur Sedan 2007,BMW 6 Series Convertible 2007,0.5743467211723328,False
+06383.jpg,Bentley Continental Flying Spur Sedan 2007,Bentley Continental GT Coupe 2007,0.9977706670761108,False
+05766.jpg,Bentley Continental Flying Spur Sedan 2007,Bentley Continental GT Coupe 2012,0.8093358874320984,False
+06521.jpg,Bentley Continental Flying Spur Sedan 2007,Bentley Continental GT Coupe 2007,0.8224335312843323,False
+03445.jpg,Bentley Continental Flying Spur Sedan 2007,Bentley Mulsanne Sedan 2011,0.2057269811630249,False
+00508.jpg,Bentley Continental Flying Spur Sedan 2007,Bentley Continental GT Coupe 2007,0.7984378933906555,False
+06076.jpg,Bentley Continental Flying Spur Sedan 2007,Bentley Continental GT Coupe 2007,0.9620756506919861,False
+00526.jpg,Chevrolet Monte Carlo Coupe 2007,Dodge Charger SRT-8 2009,0.5158828496932983,False
+02917.jpg,Chevrolet Monte Carlo Coupe 2007,Chevrolet Malibu Hybrid Sedan 2010,0.7907794117927551,False
+03220.jpg,Chevrolet Monte Carlo Coupe 2007,Spyker C8 Coupe 2009,0.2954726815223694,False
+07385.jpg,Chevrolet Monte Carlo Coupe 2007,Chevrolet Impala Sedan 2007,0.5117953419685364,False
+04103.jpg,Ferrari California Convertible 2012,Chevrolet Camaro Convertible 2012,0.4287486970424652,False
+01817.jpg,Ferrari California Convertible 2012,Ferrari 458 Italia Coupe 2012,0.7798249125480652,False
+03626.jpg,Hyundai Tucson SUV 2012,Hyundai Veracruz SUV 2012,0.9747098088264465,False
+04529.jpg,Chevrolet Corvette Ron Fellows Edition Z06 2007,Chevrolet Corvette ZR1 2012,0.6154068112373352,False
+03335.jpg,Chevrolet Corvette Ron Fellows Edition Z06 2007,Chevrolet Corvette Convertible 2012,0.9901482462882996,False
+03463.jpg,Chevrolet Corvette Ron Fellows Edition Z06 2007,Chevrolet Corvette Convertible 2012,0.7124571800231934,False
+07522.jpg,Chevrolet Corvette Ron Fellows Edition Z06 2007,Ford GT Coupe 2006,0.5836896896362305,False
+01387.jpg,Audi S4 Sedan 2012,Audi S6 Sedan 2011,0.47198083996772766,False
+01123.jpg,Audi S4 Sedan 2012,Audi TTS Coupe 2012,0.6830385327339172,False
+02915.jpg,Audi S4 Sedan 2012,Audi S5 Coupe 2012,0.17579565942287445,False
+06302.jpg,Audi S4 Sedan 2012,Audi TT Hatchback 2011,0.5084812045097351,False
+03425.jpg,Audi S4 Sedan 2012,Mitsubishi Lancer Sedan 2012,0.9909836053848267,False
+03681.jpg,Audi S4 Sedan 2012,Audi S5 Coupe 2012,0.7038068175315857,False
+04460.jpg,Audi S4 Sedan 2012,Audi S6 Sedan 2011,0.3830442726612091,False
+06638.jpg,Audi S4 Sedan 2012,Audi S4 Sedan 2007,0.7402299642562866,False
+01602.jpg,Audi S4 Sedan 2012,Audi A5 Coupe 2012,0.874967098236084,False
+00928.jpg,Audi S4 Sedan 2012,Mitsubishi Lancer Sedan 2012,0.7782731056213379,False
+04659.jpg,Audi S4 Sedan 2012,Audi S6 Sedan 2011,0.4444037973880768,False
+05133.jpg,Audi S4 Sedan 2012,Mercedes-Benz E-Class Sedan 2012,0.5382151007652283,False
+02164.jpg,Audi S4 Sedan 2012,Audi S4 Sedan 2007,0.615257978439331,False
+07168.jpg,Audi S4 Sedan 2012,Audi S5 Coupe 2012,0.46549689769744873,False
+00720.jpg,Honda Accord Coupe 2012,Honda Accord Sedan 2012,0.46555545926094055,False
+02698.jpg,Honda Accord Coupe 2012,Honda Accord Sedan 2012,0.9999994039535522,False
+05760.jpg,Honda Accord Coupe 2012,Honda Accord Sedan 2012,0.9999998807907104,False
+04254.jpg,Honda Accord Coupe 2012,Honda Accord Sedan 2012,0.8081856369972229,False
+07246.jpg,Rolls-Royce Phantom Drophead Coupe Convertible 2012,Rolls-Royce Ghost Sedan 2012,0.5750947594642639,False
+05722.jpg,Rolls-Royce Phantom Drophead Coupe Convertible 2012,Bugatti Veyron 16.4 Convertible 2009,0.8571655750274658,False
+00203.jpg,Rolls-Royce Phantom Drophead Coupe Convertible 2012,Acura Integra Type R 2001,0.8024464249610901,False
+00487.jpg,Rolls-Royce Phantom Drophead Coupe Convertible 2012,Maybach Landaulet Convertible 2012,0.930279016494751,False
+04291.jpg,Suzuki Kizashi Sedan 2012,Suzuki SX4 Sedan 2012,0.490293949842453,False
+02826.jpg,Suzuki Kizashi Sedan 2012,Rolls-Royce Ghost Sedan 2012,0.5506539344787598,False
+03989.jpg,Suzuki Kizashi Sedan 2012,Audi S4 Sedan 2007,0.2746242880821228,False
+07821.jpg,Suzuki Kizashi Sedan 2012,Rolls-Royce Ghost Sedan 2012,0.6350811123847961,False
+00208.jpg,Suzuki Kizashi Sedan 2012,Bentley Continental GT Coupe 2007,0.3521670699119568,False
+07390.jpg,Chevrolet Traverse SUV 2012,Nissan Leaf Hatchback 2012,0.38347291946411133,False
+06593.jpg,Chevrolet Traverse SUV 2012,Mercedes-Benz Sprinter Van 2012,0.28467270731925964,False
+07231.jpg,Dodge Ram Pickup 3500 Crew Cab 2010,Dodge Ram Pickup 3500 Quad Cab 2009,0.8923165202140808,False
+06375.jpg,Dodge Ram Pickup 3500 Crew Cab 2010,Dodge Ram Pickup 3500 Quad Cab 2009,0.999768078327179,False
+05330.jpg,Dodge Ram Pickup 3500 Crew Cab 2010,Dodge Ram Pickup 3500 Quad Cab 2009,0.8132312297821045,False
+03997.jpg,Dodge Ram Pickup 3500 Crew Cab 2010,Dodge Ram Pickup 3500 Quad Cab 2009,0.9777328968048096,False
+00501.jpg,Dodge Ram Pickup 3500 Crew Cab 2010,Dodge Ram Pickup 3500 Quad Cab 2009,0.6055068969726562,False
+06643.jpg,Chevrolet Malibu Hybrid Sedan 2010,Suzuki Kizashi Sedan 2012,0.29207250475883484,False
+05266.jpg,Chevrolet Malibu Hybrid Sedan 2010,Suzuki Aerio Sedan 2007,0.5133315920829773,False
+05508.jpg,Chevrolet Malibu Hybrid Sedan 2010,Chevrolet Impala Sedan 2007,0.9307956695556641,False
+01951.jpg,Spyker C8 Convertible 2009,smart fortwo Convertible 2012,0.5438112020492554,False
+07920.jpg,Spyker C8 Convertible 2009,smart fortwo Convertible 2012,0.9515877962112427,False
+02796.jpg,Spyker C8 Convertible 2009,Spyker C8 Coupe 2009,0.9999960660934448,False
+02370.jpg,Rolls-Royce Phantom Sedan 2012,Rolls-Royce Phantom Drophead Coupe Convertible 2012,0.6895845532417297,False
+07377.jpg,Rolls-Royce Phantom Sedan 2012,Rolls-Royce Ghost Sedan 2012,0.949322521686554,False
+03037.jpg,Rolls-Royce Phantom Sedan 2012,Rolls-Royce Ghost Sedan 2012,0.9997767806053162,False
+06149.jpg,Rolls-Royce Phantom Sedan 2012,Rolls-Royce Ghost Sedan 2012,0.7430934309959412,False
+06133.jpg,Rolls-Royce Phantom Sedan 2012,Rolls-Royce Ghost Sedan 2012,0.7473779916763306,False
+06881.jpg,Rolls-Royce Phantom Sedan 2012,Rolls-Royce Ghost Sedan 2012,0.9986683130264282,False
+02295.jpg,Rolls-Royce Phantom Sedan 2012,Rolls-Royce Ghost Sedan 2012,0.6186277866363525,False
+03679.jpg,Aston Martin V8 Vantage Convertible 2012,Audi R8 Coupe 2012,0.16138304769992828,False
+02306.jpg,Aston Martin V8 Vantage Convertible 2012,Aston Martin V8 Vantage Coupe 2012,0.9671091437339783,False
+00353.jpg,Aston Martin V8 Vantage Convertible 2012,Bugatti Veyron 16.4 Convertible 2009,0.6408308148384094,False
+01716.jpg,Aston Martin V8 Vantage Convertible 2012,Ford GT Coupe 2006,0.6027377247810364,False
+07125.jpg,Aston Martin V8 Vantage Convertible 2012,Ford GT Coupe 2006,0.5826579928398132,False
+02245.jpg,Aston Martin V8 Vantage Convertible 2012,Chevrolet Corvette Convertible 2012,0.5391470789909363,False
+05479.jpg,Aston Martin V8 Vantage Convertible 2012,Aston Martin Virage Convertible 2012,0.8105663657188416,False
+07307.jpg,Aston Martin V8 Vantage Convertible 2012,Jaguar XK XKR 2012,0.8069780468940735,False
+04730.jpg,Aston Martin V8 Vantage Convertible 2012,BMW 6 Series Convertible 2007,0.8215082287788391,False
+02412.jpg,Aston Martin V8 Vantage Convertible 2012,Aston Martin Virage Convertible 2012,0.6133781671524048,False
+07747.jpg,Aston Martin V8 Vantage Convertible 2012,BMW Z4 Convertible 2012,0.20736144483089447,False
+05831.jpg,Dodge Caliber Wagon 2012,Dodge Caliber Wagon 2007,0.9999983310699463,False
+05063.jpg,Dodge Caliber Wagon 2012,Dodge Caliber Wagon 2007,0.9900179505348206,False
+07611.jpg,Dodge Caliber Wagon 2012,Dodge Caliber Wagon 2007,0.9999217987060547,False
+00994.jpg,Dodge Caliber Wagon 2012,Dodge Caliber Wagon 2007,0.9607633948326111,False
+02818.jpg,Dodge Caliber Wagon 2012,Dodge Caliber Wagon 2007,0.9975950121879578,False
+02414.jpg,Dodge Caliber Wagon 2012,Dodge Caliber Wagon 2007,0.9999891519546509,False
+04908.jpg,Dodge Caliber Wagon 2012,Dodge Caliber Wagon 2007,0.4714730978012085,False
+00698.jpg,Dodge Caliber Wagon 2012,Dodge Caliber Wagon 2007,0.9999146461486816,False
+02880.jpg,Dodge Caliber Wagon 2012,Dodge Caliber Wagon 2007,0.9998749494552612,False
+07365.jpg,Dodge Caliber Wagon 2012,Dodge Caliber Wagon 2007,0.9999996423721313,False
+03137.jpg,Dodge Caliber Wagon 2012,Dodge Caliber Wagon 2007,0.9997705817222595,False
+04720.jpg,Hyundai Veloster Hatchback 2012,Bentley Continental GT Coupe 2007,0.7621980905532837,False
+02533.jpg,Hyundai Veloster Hatchback 2012,Ferrari California Convertible 2012,0.530672550201416,False
+00922.jpg,Hyundai Veloster Hatchback 2012,Bentley Continental GT Coupe 2007,0.35654884576797485,False
+01580.jpg,Hyundai Veloster Hatchback 2012,Tesla Model S Sedan 2012,0.4377853274345398,False
+00916.jpg,GMC Savana Van 2012,Chevrolet Express Van 2007,0.274612694978714,False
+01329.jpg,GMC Savana Van 2012,Chevrolet Express Cargo Van 2007,0.7296826243400574,False
+08007.jpg,GMC Savana Van 2012,Chevrolet Express Cargo Van 2007,0.9999524354934692,False
+02163.jpg,GMC Savana Van 2012,Chevrolet Express Van 2007,0.9077666401863098,False
+07996.jpg,GMC Savana Van 2012,Chevrolet Express Cargo Van 2007,0.9999768733978271,False
+06007.jpg,GMC Savana Van 2012,Chevrolet Express Cargo Van 2007,0.9903126955032349,False
+07470.jpg,GMC Savana Van 2012,Chevrolet Express Van 2007,0.9819015860557556,False
+03963.jpg,GMC Savana Van 2012,Chevrolet Express Cargo Van 2007,0.9799008965492249,False
+02030.jpg,Mercedes-Benz C-Class Sedan 2012,Mercedes-Benz E-Class Sedan 2012,0.9570873975753784,False
+00836.jpg,Mercedes-Benz C-Class Sedan 2012,Mercedes-Benz E-Class Sedan 2012,0.9660871624946594,False
+03121.jpg,Mercedes-Benz C-Class Sedan 2012,Mercedes-Benz E-Class Sedan 2012,0.898995578289032,False
+03235.jpg,Mercedes-Benz C-Class Sedan 2012,Bentley Arnage Sedan 2009,0.4230094850063324,False
+05450.jpg,Mercedes-Benz C-Class Sedan 2012,Mercedes-Benz E-Class Sedan 2012,0.9731122255325317,False
+07457.jpg,Chevrolet Silverado 1500 Regular Cab 2012,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,0.9743946194648743,False
+06895.jpg,Chevrolet Silverado 1500 Regular Cab 2012,Chevrolet Silverado 2500HD Regular Cab 2012,0.8995015025138855,False
+05059.jpg,Chevrolet Silverado 1500 Regular Cab 2012,Chevrolet Silverado 2500HD Regular Cab 2012,0.9979783892631531,False
+07302.jpg,Chevrolet Silverado 1500 Regular Cab 2012,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,0.6929062008857727,False
+00121.jpg,Chevrolet Silverado 1500 Regular Cab 2012,Chevrolet Silverado 2500HD Regular Cab 2012,0.9425114989280701,False
+01183.jpg,Chevrolet Silverado 1500 Regular Cab 2012,Chevrolet Silverado 2500HD Regular Cab 2012,0.956654965877533,False
+03334.jpg,Chevrolet Silverado 1500 Regular Cab 2012,Chevrolet Silverado 2500HD Regular Cab 2012,0.8913072943687439,False
+07627.jpg,Chevrolet Silverado 1500 Regular Cab 2012,Chevrolet Silverado 2500HD Regular Cab 2012,0.999909520149231,False
+02942.jpg,Chevrolet Silverado 1500 Regular Cab 2012,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,0.9999474287033081,False
+07702.jpg,Chevrolet Silverado 1500 Regular Cab 2012,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,0.9972172975540161,False
+04617.jpg,Chevrolet Silverado 1500 Regular Cab 2012,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,0.5702420473098755,False
+03541.jpg,Chevrolet Silverado 1500 Regular Cab 2012,Chevrolet Silverado 2500HD Regular Cab 2012,0.8839114904403687,False
+00057.jpg,Chevrolet Silverado 1500 Regular Cab 2012,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,0.792885422706604,False
+01616.jpg,Chevrolet Silverado 1500 Regular Cab 2012,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,0.5731448531150818,False
+04312.jpg,Dodge Sprinter Cargo Van 2009,Chevrolet Express Van 2007,0.5924491882324219,False
+02228.jpg,Dodge Sprinter Cargo Van 2009,Mercedes-Benz Sprinter Van 2012,0.9999996423721313,False
+01862.jpg,Dodge Sprinter Cargo Van 2009,Mercedes-Benz Sprinter Van 2012,0.825571596622467,False
+04003.jpg,Dodge Sprinter Cargo Van 2009,Mercedes-Benz Sprinter Van 2012,0.7637091875076294,False
+00713.jpg,Dodge Sprinter Cargo Van 2009,Mercedes-Benz Sprinter Van 2012,0.9901593327522278,False
+04649.jpg,Dodge Sprinter Cargo Van 2009,Mercedes-Benz Sprinter Van 2012,0.5405386686325073,False
+00218.jpg,Dodge Sprinter Cargo Van 2009,Mercedes-Benz Sprinter Van 2012,0.9960810542106628,False
+00178.jpg,Dodge Sprinter Cargo Van 2009,Mercedes-Benz Sprinter Van 2012,0.8293557167053223,False
+03145.jpg,Dodge Sprinter Cargo Van 2009,Mercedes-Benz Sprinter Van 2012,0.999806821346283,False
+00592.jpg,Dodge Sprinter Cargo Van 2009,Mercedes-Benz Sprinter Van 2012,0.9973498582839966,False
+03806.jpg,Dodge Sprinter Cargo Van 2009,Mercedes-Benz Sprinter Van 2012,0.9973322153091431,False
+02554.jpg,Dodge Sprinter Cargo Van 2009,Mercedes-Benz Sprinter Van 2012,0.9222204089164734,False
+05601.jpg,Dodge Sprinter Cargo Van 2009,Mercedes-Benz Sprinter Van 2012,0.9930580854415894,False
+03599.jpg,Dodge Sprinter Cargo Van 2009,Mercedes-Benz Sprinter Van 2012,0.9992458820343018,False
+06669.jpg,Chevrolet Avalanche Crew Cab 2012,Chevrolet Malibu Sedan 2007,0.9563925266265869,False
+01915.jpg,Chevrolet Avalanche Crew Cab 2012,Chevrolet Tahoe Hybrid SUV 2012,0.9857962131500244,False
+00207.jpg,Chevrolet Avalanche Crew Cab 2012,Chevrolet Tahoe Hybrid SUV 2012,0.7606301307678223,False
+00749.jpg,Chevrolet Avalanche Crew Cab 2012,Chevrolet Tahoe Hybrid SUV 2012,0.9987819790840149,False
+06754.jpg,Chevrolet Avalanche Crew Cab 2012,Chevrolet Tahoe Hybrid SUV 2012,0.978476345539093,False
+06400.jpg,Chevrolet Avalanche Crew Cab 2012,Chevrolet Tahoe Hybrid SUV 2012,0.4182034432888031,False
+01750.jpg,Dodge Challenger SRT8 2011,Bentley Arnage Sedan 2009,0.7510132789611816,False
+06823.jpg,MINI Cooper Roadster Convertible 2012,FIAT 500 Convertible 2012,0.12878483533859253,False
+04394.jpg,Bentley Mulsanne Sedan 2011,Bentley Continental Flying Spur Sedan 2007,0.9504358768463135,False
+03300.jpg,Bentley Mulsanne Sedan 2011,Bentley Continental Flying Spur Sedan 2007,0.46498894691467285,False
+06589.jpg,Bentley Mulsanne Sedan 2011,Bentley Arnage Sedan 2009,0.7747772932052612,False
+04463.jpg,Bentley Mulsanne Sedan 2011,Bentley Continental Flying Spur Sedan 2007,0.715838611125946,False
+06526.jpg,Bentley Mulsanne Sedan 2011,Mercedes-Benz S-Class Sedan 2012,0.3066992163658142,False
+04775.jpg,Bentley Mulsanne Sedan 2011,Bentley Continental Flying Spur Sedan 2007,0.9813761711120605,False
+04482.jpg,Infiniti G Coupe IPL 2012,Audi V8 Sedan 1994,0.4213266670703888,False
+00330.jpg,Infiniti G Coupe IPL 2012,Bentley Continental GT Coupe 2007,0.7351264357566833,False
+03030.jpg,Infiniti G Coupe IPL 2012,Mercedes-Benz S-Class Sedan 2012,0.785487711429596,False
+05250.jpg,Dodge Durango SUV 2007,Chrysler Aspen SUV 2009,0.9999836683273315,False
+00914.jpg,Dodge Durango SUV 2007,Chrysler Aspen SUV 2009,0.9624248147010803,False
+02216.jpg,Dodge Durango SUV 2007,Chrysler Aspen SUV 2009,0.5068769454956055,False
+02812.jpg,Dodge Durango SUV 2007,Dodge Dakota Club Cab 2007,0.6998299956321716,False
+04292.jpg,Dodge Durango SUV 2007,Scion xD Hatchback 2012,0.16794680058956146,False
+06126.jpg,Daewoo Nubira Wagon 2002,Audi 100 Wagon 1994,0.5871216654777527,False
+01562.jpg,Daewoo Nubira Wagon 2002,Chevrolet Malibu Sedan 2007,0.5726097226142883,False
+08011.jpg,Daewoo Nubira Wagon 2002,Audi A5 Coupe 2012,0.2700789272785187,False
+05817.jpg,Chevrolet Silverado 1500 Classic Extended Cab 2007,Chevrolet Silverado 1500 Extended Cab 2012,0.9990211725234985,False
+07424.jpg,Chevrolet Silverado 1500 Classic Extended Cab 2007,Chevrolet Silverado 2500HD Regular Cab 2012,0.5904934406280518,False
+06390.jpg,Chevrolet Silverado 1500 Classic Extended Cab 2007,Ford Ranger SuperCab 2011,0.5443310737609863,False
+06579.jpg,Chevrolet Silverado 1500 Classic Extended Cab 2007,Dodge Dakota Club Cab 2007,0.6401441097259521,False
+01709.jpg,Acura ZDX Hatchback 2012,Acura TL Sedan 2012,0.9997078776359558,False
+05991.jpg,Acura ZDX Hatchback 2012,Mercedes-Benz E-Class Sedan 2012,0.7467373609542847,False
+07066.jpg,Acura ZDX Hatchback 2012,Rolls-Royce Ghost Sedan 2012,0.4237634241580963,False
+02899.jpg,Acura ZDX Hatchback 2012,Toyota Camry Sedan 2012,0.7530584931373596,False
+07856.jpg,Acura ZDX Hatchback 2012,Chevrolet Traverse SUV 2012,0.5173328518867493,False
+02537.jpg,Aston Martin Virage Coupe 2012,FIAT 500 Convertible 2012,0.32551008462905884,False
+01042.jpg,Aston Martin Virage Coupe 2012,Aston Martin Virage Convertible 2012,0.9912700653076172,False
+05990.jpg,Aston Martin Virage Coupe 2012,Aston Martin Virage Convertible 2012,0.9782308340072632,False
+02056.jpg,Aston Martin Virage Coupe 2012,Aston Martin Virage Convertible 2012,0.992570698261261,False
+06020.jpg,Infiniti QX56 SUV 2011,Suzuki SX4 Hatchback 2012,0.910699188709259,False
+02434.jpg,Infiniti QX56 SUV 2011,Ford F-150 Regular Cab 2007,0.5283674001693726,False
+04004.jpg,Infiniti QX56 SUV 2011,Toyota Sequoia SUV 2012,0.2954059839248657,False
+05635.jpg,Infiniti QX56 SUV 2011,Infiniti G Coupe IPL 2012,0.370449960231781,False
+01308.jpg,Volkswagen Beetle Hatchback 2012,FIAT 500 Convertible 2012,0.7622144818305969,False
+04213.jpg,Geo Metro Convertible 1993,Mercedes-Benz 300-Class Convertible 1993,0.9963250756263733,False
+06750.jpg,Audi TTS Coupe 2012,Audi TT Hatchback 2011,0.9846736192703247,False
+00201.jpg,Audi TTS Coupe 2012,Audi S5 Coupe 2012,0.23842182755470276,False
+05293.jpg,Audi TTS Coupe 2012,Audi S4 Sedan 2012,0.8436779379844666,False
+05315.jpg,Audi TTS Coupe 2012,Audi TT Hatchback 2011,0.9853401780128479,False
+06905.jpg,Audi TTS Coupe 2012,Audi TT Hatchback 2011,0.38213208317756653,False
+05640.jpg,Audi TTS Coupe 2012,Audi TT Hatchback 2011,0.9855183362960815,False
+03664.jpg,Audi TTS Coupe 2012,Audi TT Hatchback 2011,0.7260726094245911,False
+07544.jpg,Audi TTS Coupe 2012,Audi TT Hatchback 2011,0.7026976346969604,False
+01768.jpg,Audi TTS Coupe 2012,Infiniti G Coupe IPL 2012,0.3439267873764038,False
+05267.jpg,Audi TTS Coupe 2012,Audi TT Hatchback 2011,0.5752484202384949,False
+00294.jpg,Audi TTS Coupe 2012,Audi TT Hatchback 2011,0.9977259039878845,False
+00155.jpg,Audi TTS Coupe 2012,Audi TT Hatchback 2011,0.9941763877868652,False
+03698.jpg,Audi TTS Coupe 2012,Audi TT RS Coupe 2012,0.9694124460220337,False
+02895.jpg,Audi TTS Coupe 2012,Audi TT Hatchback 2011,0.873129665851593,False
+05888.jpg,AM General Hummer SUV 2000,Lamborghini Diablo Coupe 2001,0.788761556148529,False
+05275.jpg,AM General Hummer SUV 2000,HUMMER H2 SUT Crew Cab 2009,0.8396717309951782,False
+03094.jpg,AM General Hummer SUV 2000,HUMMER H2 SUT Crew Cab 2009,0.9987321496009827,False
+00457.jpg,AM General Hummer SUV 2000,HUMMER H2 SUT Crew Cab 2009,0.6434847116470337,False
+06092.jpg,Ford Freestar Minivan 2007,Chevrolet Silverado 2500HD Regular Cab 2012,0.24769607186317444,False
+00219.jpg,Ford Freestar Minivan 2007,Chevrolet Tahoe Hybrid SUV 2012,0.5105051398277283,False
+03645.jpg,Bentley Continental GT Coupe 2007,Bentley Continental Flying Spur Sedan 2007,0.5418723225593567,False
+03221.jpg,Bentley Continental GT Coupe 2007,Bentley Continental Flying Spur Sedan 2007,0.9343677759170532,False
+03813.jpg,Bentley Continental GT Coupe 2007,Bentley Continental Flying Spur Sedan 2007,0.9840750694274902,False
+02195.jpg,Bentley Continental GT Coupe 2007,Bentley Continental Flying Spur Sedan 2007,0.7068691253662109,False
+01723.jpg,Bentley Continental GT Coupe 2007,Bentley Continental Flying Spur Sedan 2007,0.9990805387496948,False
+02490.jpg,Bentley Continental GT Coupe 2007,Bentley Continental GT Coupe 2012,0.9933522939682007,False
+00125.jpg,Bentley Continental GT Coupe 2007,Suzuki Kizashi Sedan 2012,0.7540391087532043,False
+00211.jpg,Bentley Continental GT Coupe 2007,Bentley Continental GT Coupe 2012,0.9999572038650513,False
+04645.jpg,Bentley Continental GT Coupe 2007,Bentley Continental Flying Spur Sedan 2007,0.8626869320869446,False
+04500.jpg,Bentley Continental GT Coupe 2007,Bentley Continental Supersports Conv. Convertible 2012,0.9992294311523438,False
+02544.jpg,Mercedes-Benz S-Class Sedan 2012,Hyundai Genesis Sedan 2012,0.9975071549415588,False
+02873.jpg,Mercedes-Benz S-Class Sedan 2012,Mercedes-Benz E-Class Sedan 2012,0.888762891292572,False
+06194.jpg,Mercedes-Benz S-Class Sedan 2012,Hyundai Genesis Sedan 2012,0.4828858971595764,False
+02548.jpg,Mercedes-Benz S-Class Sedan 2012,Cadillac SRX SUV 2012,0.575009822845459,False
+07799.jpg,Eagle Talon Hatchback 1998,Hyundai Sonata Sedan 2012,0.40663930773735046,False
+03261.jpg,Eagle Talon Hatchback 1998,Chevrolet Corvette ZR1 2012,0.4912782311439514,False
+01650.jpg,Eagle Talon Hatchback 1998,Nissan 240SX Coupe 1998,0.7909190058708191,False
+03957.jpg,Chrysler Sebring Convertible 2010,Rolls-Royce Phantom Drophead Coupe Convertible 2012,0.5817931890487671,False
+01643.jpg,Chrysler Sebring Convertible 2010,Mercedes-Benz E-Class Sedan 2012,0.5052598714828491,False
+03153.jpg,Chrysler Sebring Convertible 2010,Chrysler PT Cruiser Convertible 2008,0.8925130367279053,False
+03785.jpg,Jeep Patriot SUV 2012,Jeep Compass SUV 2012,0.9998807907104492,False
+07872.jpg,Jeep Patriot SUV 2012,Jeep Liberty SUV 2012,0.9999842643737793,False
+04759.jpg,GMC Canyon Extended Cab 2012,Chevrolet Silverado 1500 Extended Cab 2012,0.9407572150230408,False
+07164.jpg,GMC Canyon Extended Cab 2012,Ford F-150 Regular Cab 2007,0.9264166355133057,False
+02636.jpg,GMC Canyon Extended Cab 2012,Ford F-150 Regular Cab 2007,0.3893451690673828,False
+06068.jpg,GMC Canyon Extended Cab 2012,Chevrolet Silverado 1500 Classic Extended Cab 2007,0.20765917003154755,False
+03633.jpg,Lincoln Town Car Sedan 2011,Suzuki Aerio Sedan 2007,0.5282161235809326,False
+06789.jpg,Lincoln Town Car Sedan 2011,Hyundai Genesis Sedan 2012,0.3720622658729553,False
+07057.jpg,Lincoln Town Car Sedan 2011,GMC Acadia SUV 2012,0.5012222528457642,False
+05602.jpg,Dodge Charger Sedan 2012,Buick Verano Sedan 2012,0.25724172592163086,False
+00094.jpg,Dodge Charger Sedan 2012,BMW 3 Series Sedan 2012,0.566857099533081,False
+05074.jpg,Dodge Charger Sedan 2012,Dodge Charger SRT-8 2009,0.6442568302154541,False
+07415.jpg,Dodge Charger Sedan 2012,Dodge Magnum Wagon 2008,0.5105932354927063,False
+02745.jpg,Mitsubishi Lancer Sedan 2012,Dodge Charger Sedan 2012,0.4202597737312317,False
+07655.jpg,Mitsubishi Lancer Sedan 2012,Dodge Charger SRT-8 2009,0.9632533192634583,False
+03345.jpg,Mitsubishi Lancer Sedan 2012,GMC Savana Van 2012,0.5393257737159729,False
+07455.jpg,Mitsubishi Lancer Sedan 2012,FIAT 500 Abarth 2012,0.3509165346622467,False
+02116.jpg,Mitsubishi Lancer Sedan 2012,Suzuki Kizashi Sedan 2012,0.43877723813056946,False
+03215.jpg,Dodge Magnum Wagon 2008,Chrysler 300 SRT-8 2010,0.4771489202976227,False
+03807.jpg,Dodge Magnum Wagon 2008,Ford GT Coupe 2006,0.4904858469963074,False
+05992.jpg,Volvo 240 Sedan 1993,Audi V8 Sedan 1994,0.77358078956604,False
+06220.jpg,Volvo 240 Sedan 1993,Audi V8 Sedan 1994,0.5410696268081665,False
+00954.jpg,Volvo 240 Sedan 1993,Volkswagen Golf Hatchback 1991,0.9198837876319885,False
+02211.jpg,Ford F-450 Super Duty Crew Cab 2012,Ford E-Series Wagon Van 2012,0.39483192563056946,False
+01130.jpg,Dodge Dakota Crew Cab 2010,Dodge Dakota Club Cab 2007,0.7345297932624817,False
+05237.jpg,Dodge Dakota Crew Cab 2010,Dodge Ram Pickup 3500 Quad Cab 2009,0.8746281862258911,False
+07183.jpg,Dodge Dakota Crew Cab 2010,Dodge Dakota Club Cab 2007,0.7014046907424927,False
+04600.jpg,Dodge Dakota Crew Cab 2010,Dodge Dakota Club Cab 2007,0.8263970613479614,False
+01916.jpg,Dodge Dakota Crew Cab 2010,Dodge Dakota Club Cab 2007,0.9915056824684143,False
+07182.jpg,Dodge Dakota Crew Cab 2010,Dodge Dakota Club Cab 2007,0.9993638396263123,False
+01247.jpg,Dodge Dakota Crew Cab 2010,Dodge Ram Pickup 3500 Quad Cab 2009,0.9007243514060974,False
+06604.jpg,Dodge Caliber Wagon 2007,Dodge Caliber Wagon 2012,0.9967729449272156,False
+04475.jpg,Dodge Caliber Wagon 2007,Dodge Caliber Wagon 2012,0.9797144532203674,False
+07419.jpg,Dodge Caliber Wagon 2007,Dodge Caliber Wagon 2012,0.5310015082359314,False
+06763.jpg,Dodge Caliber Wagon 2007,Dodge Caliber Wagon 2012,0.880196213722229,False
+05480.jpg,Dodge Caliber Wagon 2007,Dodge Caliber Wagon 2012,0.9975445866584778,False
+07688.jpg,Dodge Caliber Wagon 2007,Dodge Caliber Wagon 2012,0.9971137046813965,False
+03769.jpg,Dodge Caliber Wagon 2007,Dodge Caliber Wagon 2012,0.5360981822013855,False
+01471.jpg,Dodge Caliber Wagon 2007,Dodge Caliber Wagon 2012,0.9997418522834778,False
+04160.jpg,Dodge Caliber Wagon 2007,Dodge Caliber Wagon 2012,1.0,False
+04196.jpg,Dodge Caliber Wagon 2007,Dodge Caliber Wagon 2012,0.9309951663017273,False
+06587.jpg,Dodge Caliber Wagon 2007,Dodge Caliber Wagon 2012,0.7589185237884521,False
+05544.jpg,Chevrolet Corvette ZR1 2012,Chevrolet Corvette Convertible 2012,0.9964172840118408,False
+03862.jpg,Chevrolet Corvette ZR1 2012,Chevrolet Corvette Convertible 2012,0.8307843208312988,False
+06660.jpg,Chevrolet Corvette ZR1 2012,Bugatti Veyron 16.4 Convertible 2009,0.4418022036552429,False
+05747.jpg,Chevrolet Corvette ZR1 2012,Chevrolet Corvette Convertible 2012,0.9993335604667664,False
+01104.jpg,Chevrolet Corvette ZR1 2012,Mercedes-Benz SL-Class Coupe 2009,0.5653624534606934,False
+00808.jpg,Chevrolet Corvette ZR1 2012,Chevrolet Corvette Convertible 2012,0.9425675272941589,False
+04327.jpg,Chevrolet Corvette ZR1 2012,Chevrolet Corvette Convertible 2012,0.6720894575119019,False
+02893.jpg,Chevrolet Corvette ZR1 2012,Chevrolet Corvette Convertible 2012,0.34044167399406433,False
+07144.jpg,Chevrolet Corvette ZR1 2012,Chevrolet Corvette Convertible 2012,0.8081983923912048,False
+00705.jpg,Hyundai Sonata Hybrid Sedan 2012,Hyundai Veloster Hatchback 2012,0.8825596570968628,False
+01507.jpg,Hyundai Sonata Hybrid Sedan 2012,Hyundai Sonata Sedan 2012,0.9709174036979675,False
+07570.jpg,Bugatti Veyron 16.4 Coupe 2009,Aston Martin Virage Coupe 2012,0.48295101523399353,False
+02025.jpg,Bugatti Veyron 16.4 Coupe 2009,Bugatti Veyron 16.4 Convertible 2009,0.8056515455245972,False
+07886.jpg,Bugatti Veyron 16.4 Coupe 2009,Bugatti Veyron 16.4 Convertible 2009,0.9999992847442627,False
+00448.jpg,Bugatti Veyron 16.4 Coupe 2009,Bentley Continental GT Coupe 2007,0.5106844305992126,False
+06597.jpg,Bugatti Veyron 16.4 Coupe 2009,Bugatti Veyron 16.4 Convertible 2009,0.9999997615814209,False
+02933.jpg,Bugatti Veyron 16.4 Coupe 2009,Bugatti Veyron 16.4 Convertible 2009,0.8472127318382263,False
+06325.jpg,Ford Ranger SuperCab 2011,HUMMER H3T Crew Cab 2010,0.5375680923461914,False
+02251.jpg,Nissan NV Passenger Van 2012,Mercedes-Benz Sprinter Van 2012,0.9997454285621643,False
+07946.jpg,Nissan NV Passenger Van 2012,Ford E-Series Wagon Van 2012,0.9617279767990112,False
+02758.jpg,Nissan NV Passenger Van 2012,HUMMER H3T Crew Cab 2010,0.43188631534576416,False
+07898.jpg,Nissan NV Passenger Van 2012,Ford F-150 Regular Cab 2012,0.7927383184432983,False
+02738.jpg,Chevrolet Express Cargo Van 2007,GMC Savana Van 2012,0.9768427610397339,False
+05725.jpg,Chevrolet Express Cargo Van 2007,Chevrolet Express Van 2007,0.9999973773956299,False
+00837.jpg,Chevrolet Express Cargo Van 2007,GMC Savana Van 2012,0.9956361651420593,False
+00754.jpg,Chevrolet Express Cargo Van 2007,Chevrolet Express Van 2007,0.4627457559108734,False
+02285.jpg,Chevrolet Express Cargo Van 2007,GMC Savana Van 2012,0.9348406195640564,False
+00536.jpg,Chevrolet Express Cargo Van 2007,GMC Savana Van 2012,0.9951738715171814,False
+04734.jpg,Chevrolet Express Cargo Van 2007,Chevrolet Express Van 2007,0.6919359564781189,False
+07699.jpg,Chevrolet Express Cargo Van 2007,Chevrolet Express Van 2007,0.9999629259109497,False
+00677.jpg,Chevrolet Express Cargo Van 2007,Chevrolet Express Van 2007,0.965473473072052,False
+03614.jpg,Chevrolet Express Cargo Van 2007,Chevrolet Express Van 2007,0.7644004225730896,False
+06675.jpg,Chevrolet Express Cargo Van 2007,GMC Savana Van 2012,0.9976974129676819,False
+05543.jpg,BMW M5 Sedan 2010,Infiniti G Coupe IPL 2012,0.7663334012031555,False
+04259.jpg,BMW M5 Sedan 2010,Mercedes-Benz C-Class Sedan 2012,0.3220785856246948,False
+06530.jpg,BMW M6 Convertible 2010,BMW 6 Series Convertible 2007,0.8106173276901245,False
+04626.jpg,BMW M6 Convertible 2010,BMW M3 Coupe 2012,0.9318310022354126,False
+04310.jpg,BMW M6 Convertible 2010,BMW 6 Series Convertible 2007,0.596282958984375,False
+03301.jpg,BMW M6 Convertible 2010,BMW M5 Sedan 2010,0.6364831328392029,False
+00107.jpg,BMW M6 Convertible 2010,Fisker Karma Sedan 2012,0.5459417104721069,False
+07108.jpg,Acura Integra Type R 2001,Nissan 240SX Coupe 1998,0.7713816165924072,False
+05667.jpg,Acura Integra Type R 2001,Nissan 240SX Coupe 1998,0.6132901906967163,False
+05383.jpg,Acura Integra Type R 2001,Nissan 240SX Coupe 1998,0.6730996370315552,False
+02458.jpg,Acura Integra Type R 2001,Nissan 240SX Coupe 1998,0.6675231456756592,False
+04391.jpg,Chevrolet Impala Sedan 2007,Chevrolet Malibu Hybrid Sedan 2010,0.9134862422943115,False
+04850.jpg,Chevrolet Impala Sedan 2007,Chevrolet Traverse SUV 2012,0.4895152151584625,False
+07993.jpg,Chevrolet Impala Sedan 2007,Bentley Continental GT Coupe 2007,0.9116008877754211,False
+00882.jpg,Chevrolet Impala Sedan 2007,Eagle Talon Hatchback 1998,0.7397628426551819,False
+00421.jpg,Chevrolet Impala Sedan 2007,Chevrolet Traverse SUV 2012,0.5377991199493408,False
+01556.jpg,Audi S5 Coupe 2012,Audi A5 Coupe 2012,0.969779372215271,False
+01979.jpg,Audi S5 Coupe 2012,Audi A5 Coupe 2012,0.9945808053016663,False
+03684.jpg,Audi S5 Coupe 2012,Audi A5 Coupe 2012,0.9992879033088684,False
+00186.jpg,Audi S5 Coupe 2012,Audi A5 Coupe 2012,0.9954928159713745,False
+01717.jpg,Audi S5 Coupe 2012,Audi A5 Coupe 2012,0.9976930022239685,False
+02130.jpg,Audi S5 Coupe 2012,Audi R8 Coupe 2012,0.6744526028633118,False
+02652.jpg,Audi S5 Coupe 2012,Audi A5 Coupe 2012,0.9787437319755554,False
+07094.jpg,Audi S5 Coupe 2012,Audi S5 Convertible 2012,0.9526126384735107,False
+00393.jpg,Audi S5 Coupe 2012,Audi A5 Coupe 2012,0.9999836683273315,False
+03330.jpg,Audi S5 Coupe 2012,Audi S4 Sedan 2012,0.36464497447013855,False
+06327.jpg,Audi S5 Coupe 2012,Audi S4 Sedan 2012,0.7195857763290405,False
+03647.jpg,Audi S5 Coupe 2012,Audi S5 Convertible 2012,0.6323305368423462,False
+06135.jpg,Audi S5 Coupe 2012,Audi A5 Coupe 2012,0.9998874664306641,False
+02465.jpg,Audi S5 Coupe 2012,Audi A5 Coupe 2012,0.9852500557899475,False
+03600.jpg,Audi S5 Coupe 2012,Audi A5 Coupe 2012,0.9946774244308472,False
+04134.jpg,Audi S5 Coupe 2012,Audi A5 Coupe 2012,0.9999934434890747,False
+00966.jpg,Honda Odyssey Minivan 2012,Honda Odyssey Minivan 2007,0.7475284934043884,False
+06097.jpg,Honda Odyssey Minivan 2012,Acura RL Sedan 2012,0.4477190375328064,False
+00640.jpg,Dodge Dakota Club Cab 2007,Chevrolet Silverado 1500 Extended Cab 2012,0.7318128347396851,False
+05727.jpg,Dodge Dakota Club Cab 2007,Ford F-150 Regular Cab 2007,0.3755562901496887,False
+06099.jpg,BMW Z4 Convertible 2012,Ferrari 458 Italia Coupe 2012,0.945167064666748,False
+02808.jpg,BMW Z4 Convertible 2012,Ferrari 458 Italia Coupe 2012,0.7070338726043701,False
+01730.jpg,BMW Z4 Convertible 2012,Fisker Karma Sedan 2012,0.8482601046562195,False
+05103.jpg,BMW 3 Series Wagon 2012,BMW M5 Sedan 2010,0.5307148694992065,False
+03135.jpg,BMW 3 Series Wagon 2012,BMW ActiveHybrid 5 Sedan 2012,0.4874595105648041,False
+03588.jpg,BMW 3 Series Wagon 2012,BMW ActiveHybrid 5 Sedan 2012,0.8807666897773743,False
+05598.jpg,BMW 3 Series Wagon 2012,BMW 3 Series Sedan 2012,0.5097207427024841,False
+06417.jpg,BMW 3 Series Wagon 2012,Nissan 240SX Coupe 1998,0.7504163384437561,False
+04142.jpg,BMW 3 Series Wagon 2012,BMW 3 Series Sedan 2012,0.09292031824588776,False
+01990.jpg,Buick Rainier SUV 2007,Ford E-Series Wagon Van 2012,0.36683890223503113,False
+05488.jpg,Buick Rainier SUV 2007,Ford F-150 Regular Cab 2007,0.849963903427124,False
+07033.jpg,Buick Rainier SUV 2007,Chrysler Aspen SUV 2009,0.5243984460830688,False
+02615.jpg,Mercedes-Benz SL-Class Coupe 2009,Chevrolet Impala Sedan 2007,0.25986021757125854,False
+02033.jpg,Mercedes-Benz SL-Class Coupe 2009,Mercedes-Benz E-Class Sedan 2012,0.8582490086555481,False
+03248.jpg,Mercedes-Benz SL-Class Coupe 2009,Chevrolet Corvette Ron Fellows Edition Z06 2007,0.7251726984977722,False
+06935.jpg,Jaguar XK XKR 2012,Ford GT Coupe 2006,0.7039183974266052,False
+04356.jpg,Jaguar XK XKR 2012,Mercedes-Benz E-Class Sedan 2012,0.39435189962387085,False
+06617.jpg,Jaguar XK XKR 2012,BMW 6 Series Convertible 2007,0.35016918182373047,False
+02626.jpg,Jaguar XK XKR 2012,BMW 3 Series Wagon 2012,0.5322621464729309,False
+02105.jpg,Jaguar XK XKR 2012,Acura ZDX Hatchback 2012,0.29841169714927673,False
+03820.jpg,Jaguar XK XKR 2012,Eagle Talon Hatchback 1998,0.8584617972373962,False
+07875.jpg,Mercedes-Benz E-Class Sedan 2012,Mercedes-Benz C-Class Sedan 2012,0.5130785703659058,False
+05017.jpg,Mercedes-Benz E-Class Sedan 2012,Hyundai Azera Sedan 2012,0.6245341897010803,False
+07959.jpg,Ferrari FF Coupe 2012,Acura ZDX Hatchback 2012,0.8658033013343811,False
+06147.jpg,Ferrari FF Coupe 2012,FIAT 500 Abarth 2012,0.2875666618347168,False
+04997.jpg,Ferrari FF Coupe 2012,Geo Metro Convertible 1993,0.18790408968925476,False
+05203.jpg,Ferrari FF Coupe 2012,Hyundai Veloster Hatchback 2012,0.5613458156585693,False
+05978.jpg,Ferrari FF Coupe 2012,Ford GT Coupe 2006,0.9246873259544373,False
+05089.jpg,Ferrari FF Coupe 2012,Chevrolet Corvette ZR1 2012,0.36910325288772583,False
+01000.jpg,Toyota Camry Sedan 2012,Mitsubishi Lancer Sedan 2012,0.941430389881134,False
+05617.jpg,Toyota Camry Sedan 2012,Chevrolet Sonic Sedan 2012,0.3545311391353607,False
+05960.jpg,Buick Enclave SUV 2012,Mercedes-Benz Sprinter Van 2012,0.718074381351471,False
+04300.jpg,Buick Enclave SUV 2012,BMW X5 SUV 2007,0.48788246512413025,False
+03909.jpg,Mazda Tribute SUV 2011,Ford F-150 Regular Cab 2007,0.4249024987220764,False
+00142.jpg,Mazda Tribute SUV 2011,Chevrolet Tahoe Hybrid SUV 2012,0.9943248629570007,False
+05486.jpg,BMW 6 Series Convertible 2007,BMW 1 Series Convertible 2012,0.5910632610321045,False
+06005.jpg,BMW 6 Series Convertible 2007,BMW M6 Convertible 2010,0.9999892711639404,False
+03780.jpg,BMW 6 Series Convertible 2007,BMW M6 Convertible 2010,0.7136560082435608,False
+06785.jpg,BMW 6 Series Convertible 2007,BMW 3 Series Wagon 2012,0.7448411583900452,False
+04640.jpg,BMW 6 Series Convertible 2007,BMW M6 Convertible 2010,0.9992371797561646,False
+03009.jpg,BMW 6 Series Convertible 2007,BMW M6 Convertible 2010,0.9996931552886963,False
+01270.jpg,BMW 6 Series Convertible 2007,BMW M6 Convertible 2010,0.6047853231430054,False
+07622.jpg,BMW 6 Series Convertible 2007,BMW M6 Convertible 2010,0.6899527311325073,False
+04836.jpg,BMW 6 Series Convertible 2007,BMW M6 Convertible 2010,0.9998102784156799,False
+04364.jpg,BMW 6 Series Convertible 2007,Hyundai Sonata Sedan 2012,0.6353966593742371,False
+02557.jpg,BMW 6 Series Convertible 2007,BMW M6 Convertible 2010,0.9941651225090027,False
+00692.jpg,BMW 6 Series Convertible 2007,Chrysler Sebring Convertible 2010,0.7609336376190186,False
+00135.jpg,BMW 6 Series Convertible 2007,Rolls-Royce Ghost Sedan 2012,0.39075249433517456,False
+05803.jpg,BMW 6 Series Convertible 2007,BMW M6 Convertible 2010,0.8990008234977722,False
+04485.jpg,BMW 6 Series Convertible 2007,BMW M6 Convertible 2010,0.6052973866462708,False
+03673.jpg,Audi S6 Sedan 2011,Bentley Continental GT Coupe 2007,0.6003533601760864,False
+04819.jpg,Audi S6 Sedan 2011,Mercedes-Benz E-Class Sedan 2012,0.9843053221702576,False
+06810.jpg,Audi S6 Sedan 2011,Hyundai Elantra Touring Hatchback 2012,0.4732702374458313,False
+02941.jpg,Audi S6 Sedan 2011,Audi S5 Coupe 2012,0.9023054242134094,False
+04669.jpg,Audi S6 Sedan 2011,Audi S5 Coupe 2012,0.40752413868904114,False
+03892.jpg,Ford F-150 Regular Cab 2007,HUMMER H2 SUT Crew Cab 2009,0.8781187534332275,False
+04732.jpg,Toyota Corolla Sedan 2012,Chrysler Sebring Convertible 2010,0.9846358299255371,False
+01522.jpg,Toyota Corolla Sedan 2012,Acura RL Sedan 2012,0.3627392053604126,False
+04480.jpg,Toyota Corolla Sedan 2012,Suzuki Aerio Sedan 2007,0.29456207156181335,False
+01489.jpg,Toyota Corolla Sedan 2012,Honda Accord Sedan 2012,0.5230938792228699,False
+00033.jpg,Toyota Corolla Sedan 2012,Toyota Camry Sedan 2012,0.9999995231628418,False
+04532.jpg,Toyota Corolla Sedan 2012,Toyota Camry Sedan 2012,0.7316000461578369,False
+00067.jpg,Toyota Corolla Sedan 2012,Chevrolet Malibu Sedan 2007,0.6853294372558594,False
+07432.jpg,Nissan Juke Hatchback 2012,Chrysler PT Cruiser Convertible 2008,0.638421356678009,False
+05475.jpg,Bugatti Veyron 16.4 Convertible 2009,Bugatti Veyron 16.4 Coupe 2009,0.7150229811668396,False
+03560.jpg,Bugatti Veyron 16.4 Convertible 2009,Bentley Continental Supersports Conv. Convertible 2012,0.5547373294830322,False
+02864.jpg,Bugatti Veyron 16.4 Convertible 2009,Bugatti Veyron 16.4 Coupe 2009,0.9968522191047668,False
+07855.jpg,Bugatti Veyron 16.4 Convertible 2009,Bugatti Veyron 16.4 Coupe 2009,0.9994175434112549,False
+04095.jpg,Bugatti Veyron 16.4 Convertible 2009,Bugatti Veyron 16.4 Coupe 2009,0.9632197022438049,False
+04279.jpg,Chevrolet Silverado 2500HD Regular Cab 2012,Chevrolet Silverado 1500 Regular Cab 2012,0.8709915280342102,False
+05917.jpg,Chevrolet Silverado 2500HD Regular Cab 2012,Chevrolet Silverado 1500 Regular Cab 2012,0.7323037981987,False
+00802.jpg,Chevrolet Silverado 2500HD Regular Cab 2012,GMC Canyon Extended Cab 2012,0.5705463886260986,False
+05882.jpg,Chevrolet Silverado 2500HD Regular Cab 2012,Chevrolet Silverado 1500 Regular Cab 2012,0.6995856165885925,False
+06982.jpg,Chevrolet Silverado 2500HD Regular Cab 2012,Chevrolet Silverado 1500 Regular Cab 2012,0.7562129497528076,False
+01235.jpg,Chevrolet Silverado 2500HD Regular Cab 2012,Chevrolet Silverado 1500 Regular Cab 2012,0.6345176100730896,False
+03372.jpg,Chevrolet Silverado 2500HD Regular Cab 2012,Chevrolet Silverado 1500 Classic Extended Cab 2007,0.9999972581863403,False
+07367.jpg,Chevrolet Silverado 2500HD Regular Cab 2012,Chevrolet Silverado 1500 Regular Cab 2012,0.7026596069335938,False
+00132.jpg,Chevrolet Silverado 2500HD Regular Cab 2012,Chevrolet Silverado 1500 Classic Extended Cab 2007,0.9999943971633911,False
+07340.jpg,Chevrolet Silverado 2500HD Regular Cab 2012,Chevrolet Silverado 1500 Regular Cab 2012,0.6687743663787842,False
+05950.jpg,Audi S4 Sedan 2007,Audi S6 Sedan 2011,0.7055454850196838,False
+06979.jpg,Audi S4 Sedan 2007,Rolls-Royce Ghost Sedan 2012,0.31488659977912903,False
+03164.jpg,Audi S4 Sedan 2007,Eagle Talon Hatchback 1998,0.3141578733921051,False
+01114.jpg,Audi S4 Sedan 2007,Audi S6 Sedan 2011,0.8361399173736572,False
+04733.jpg,Audi TT RS Coupe 2012,Audi TT Hatchback 2011,0.532516360282898,False
+07407.jpg,Audi TT RS Coupe 2012,Audi TT Hatchback 2011,0.3624117374420166,False
+06588.jpg,Audi TT RS Coupe 2012,Audi R8 Coupe 2012,0.29354292154312134,False
+00265.jpg,Audi TT RS Coupe 2012,AM General Hummer SUV 2000,0.3130507469177246,False
+01281.jpg,BMW M3 Coupe 2012,BMW 1 Series Convertible 2012,0.7894087433815002,False
+05552.jpg,BMW M3 Coupe 2012,Chevrolet Malibu Sedan 2007,0.34344473481178284,False
+04166.jpg,Jeep Grand Cherokee SUV 2012,Jeep Compass SUV 2012,0.9453930854797363,False
+01499.jpg,Jeep Grand Cherokee SUV 2012,Jeep Compass SUV 2012,0.5201374292373657,False
+05790.jpg,Jeep Grand Cherokee SUV 2012,Jeep Compass SUV 2012,0.9996008276939392,False
+00562.jpg,Jeep Grand Cherokee SUV 2012,Jeep Compass SUV 2012,0.33655020594596863,False
+00657.jpg,Jeep Grand Cherokee SUV 2012,Jeep Compass SUV 2012,0.9999895095825195,False
+03822.jpg,Ferrari 458 Italia Coupe 2012,Ferrari 458 Italia Convertible 2012,0.9992573857307434,False
+07102.jpg,Ferrari 458 Italia Coupe 2012,Lamborghini Diablo Coupe 2001,0.5667803287506104,False
+02751.jpg,Ferrari 458 Italia Coupe 2012,Ferrari 458 Italia Convertible 2012,0.9920130372047424,False
+05941.jpg,Ferrari 458 Italia Coupe 2012,Ferrari 458 Italia Convertible 2012,0.5024539828300476,False
+01287.jpg,Ferrari 458 Italia Coupe 2012,Ferrari 458 Italia Convertible 2012,0.9997871518135071,False
+01286.jpg,Ferrari 458 Italia Coupe 2012,Ferrari 458 Italia Convertible 2012,0.9999998807907104,False
+04866.jpg,Ferrari 458 Italia Coupe 2012,Ferrari 458 Italia Convertible 2012,0.5710042715072632,False
+00196.jpg,Ferrari 458 Italia Coupe 2012,Ferrari FF Coupe 2012,0.38708099722862244,False
+04565.jpg,Chevrolet HHR SS 2010,Chevrolet Silverado 1500 Extended Cab 2012,0.5495377779006958,False
+06227.jpg,HUMMER H3T Crew Cab 2010,Toyota 4Runner SUV 2012,0.25250834226608276,False
+03768.jpg,HUMMER H3T Crew Cab 2010,GMC Terrain SUV 2012,0.9951855540275574,False
+02727.jpg,Hyundai Azera Sedan 2012,Hyundai Genesis Sedan 2012,0.9861828088760376,False
+05126.jpg,Hyundai Azera Sedan 2012,Hyundai Sonata Sedan 2012,0.8815957307815552,False
+02474.jpg,Hyundai Azera Sedan 2012,Hyundai Genesis Sedan 2012,0.9941290616989136,False
+06115.jpg,Hyundai Azera Sedan 2012,Hyundai Genesis Sedan 2012,0.970333993434906,False
+02931.jpg,Hyundai Azera Sedan 2012,Bentley Continental GT Coupe 2007,0.6586138010025024,False
+03172.jpg,Hyundai Azera Sedan 2012,Jaguar XK XKR 2012,0.295768678188324,False
+06953.jpg,Hyundai Azera Sedan 2012,Acura RL Sedan 2012,0.4386901259422302,False
+00413.jpg,Chevrolet Silverado 1500 Extended Cab 2012,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,0.9957976341247559,False
+05880.jpg,Chevrolet Silverado 1500 Extended Cab 2012,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,0.877692461013794,False
+02343.jpg,Chevrolet Silverado 1500 Extended Cab 2012,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,0.8913087844848633,False
+00498.jpg,Chevrolet Silverado 1500 Extended Cab 2012,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,0.990462601184845,False
+07697.jpg,Suzuki SX4 Hatchback 2012,Suzuki SX4 Sedan 2012,0.9847272634506226,False
+04794.jpg,Suzuki SX4 Hatchback 2012,Suzuki SX4 Sedan 2012,0.7734417915344238,False
+00648.jpg,Suzuki SX4 Hatchback 2012,Hyundai Elantra Touring Hatchback 2012,0.5663979649543762,False
+00161.jpg,Lamborghini Gallardo LP 570-4 Superleggera 2012,McLaren MP4-12C Coupe 2012,0.5805171728134155,False
+02170.jpg,Lamborghini Gallardo LP 570-4 Superleggera 2012,Lamborghini Aventador Coupe 2012,0.996672511100769,False
+02877.jpg,Lamborghini Gallardo LP 570-4 Superleggera 2012,Lamborghini Diablo Coupe 2001,0.8539957404136658,False
+05009.jpg,Lamborghini Gallardo LP 570-4 Superleggera 2012,McLaren MP4-12C Coupe 2012,0.911700963973999,False
+01192.jpg,Lamborghini Gallardo LP 570-4 Superleggera 2012,Lamborghini Aventador Coupe 2012,0.9969294667243958,False
+00938.jpg,Lamborghini Gallardo LP 570-4 Superleggera 2012,McLaren MP4-12C Coupe 2012,0.8858452439308167,False
+01004.jpg,Lamborghini Gallardo LP 570-4 Superleggera 2012,Lamborghini Aventador Coupe 2012,0.9726640582084656,False
+04357.jpg,BMW 1 Series Convertible 2012,Audi S5 Convertible 2012,0.9542368054389954,False
+05219.jpg,BMW 1 Series Convertible 2012,BMW 1 Series Coupe 2012,0.6891563534736633,False
+02650.jpg,Bentley Arnage Sedan 2009,Bentley Mulsanne Sedan 2011,0.9207322001457214,False
+04071.jpg,Bentley Arnage Sedan 2009,Bentley Mulsanne Sedan 2011,0.9979954957962036,False
+04445.jpg,Bentley Arnage Sedan 2009,Rolls-Royce Phantom Sedan 2012,0.3461245596408844,False
+07213.jpg,Lamborghini Aventador Coupe 2012,Lamborghini Reventon Coupe 2008,0.9832890629768372,False
+05389.jpg,Lamborghini Aventador Coupe 2012,McLaren MP4-12C Coupe 2012,0.28048402070999146,False
+04389.jpg,Lamborghini Aventador Coupe 2012,Lamborghini Reventon Coupe 2008,0.7720283269882202,False
+00760.jpg,Lamborghini Aventador Coupe 2012,HUMMER H2 SUT Crew Cab 2009,0.6146681904792786,False
+03046.jpg,Lamborghini Aventador Coupe 2012,BMW Z4 Convertible 2012,0.36096805334091187,False
+04027.jpg,Land Rover LR2 SUV 2012,Land Rover Range Rover SUV 2012,0.9940673112869263,False
+01738.jpg,Land Rover LR2 SUV 2012,Volvo 240 Sedan 1993,0.3196244537830353,False
+07988.jpg,Land Rover LR2 SUV 2012,Land Rover Range Rover SUV 2012,0.9285822510719299,False
+02787.jpg,Plymouth Neon Coupe 1999,Acura Integra Type R 2001,0.9880874156951904,False
+03654.jpg,Plymouth Neon Coupe 1999,Chevrolet Malibu Sedan 2007,0.8540016412734985,False
+04029.jpg,Audi V8 Sedan 1994,Audi 100 Sedan 1994,0.9752932190895081,False
+04858.jpg,Audi V8 Sedan 1994,Audi 100 Sedan 1994,0.9888884425163269,False
+04006.jpg,Audi V8 Sedan 1994,Audi 100 Sedan 1994,1.0,False
+07043.jpg,Audi V8 Sedan 1994,Audi 100 Sedan 1994,0.9962161183357239,False
+07902.jpg,Audi V8 Sedan 1994,Audi 100 Sedan 1994,0.9999096393585205,False
+06912.jpg,Audi V8 Sedan 1994,Audi 100 Sedan 1994,0.9623878002166748,False
+04316.jpg,Audi V8 Sedan 1994,Audi 100 Sedan 1994,0.9999973773956299,False
+04657.jpg,Audi V8 Sedan 1994,Audi 100 Sedan 1994,0.9997310042381287,False
+07943.jpg,Audi V8 Sedan 1994,Audi 100 Sedan 1994,0.9753002524375916,False
+06911.jpg,Audi V8 Sedan 1994,Volvo XC90 SUV 2007,0.8560936450958252,False
+07681.jpg,Audi V8 Sedan 1994,Audi 100 Sedan 1994,1.0,False
+05214.jpg,Audi V8 Sedan 1994,Audi 100 Wagon 1994,0.9719019532203674,False
+03189.jpg,Audi V8 Sedan 1994,AM General Hummer SUV 2000,0.3884768784046173,False
+03331.jpg,Audi V8 Sedan 1994,Audi 100 Sedan 1994,0.9880203604698181,False
+07831.jpg,Spyker C8 Coupe 2009,Spyker C8 Convertible 2009,0.7316256761550903,False
+06299.jpg,Spyker C8 Coupe 2009,Spyker C8 Convertible 2009,0.7714373469352722,False
+04712.jpg,Spyker C8 Coupe 2009,Mercedes-Benz C-Class Sedan 2012,0.3899669647216797,False
+04762.jpg,Spyker C8 Coupe 2009,Spyker C8 Convertible 2009,1.0,False
+05655.jpg,Spyker C8 Coupe 2009,Spyker C8 Convertible 2009,0.8322535157203674,False
+03378.jpg,Spyker C8 Coupe 2009,Aston Martin Virage Coupe 2012,0.9607251286506653,False
+04371.jpg,Spyker C8 Coupe 2009,Aston Martin Virage Coupe 2012,0.5443207025527954,False
+04158.jpg,Spyker C8 Coupe 2009,Spyker C8 Convertible 2009,0.6116771697998047,False
+05776.jpg,Spyker C8 Coupe 2009,Spyker C8 Convertible 2009,0.5048285126686096,False
+00165.jpg,Spyker C8 Coupe 2009,Spyker C8 Convertible 2009,0.9284716844558716,False
+02273.jpg,Lamborghini Reventon Coupe 2008,Aston Martin V8 Vantage Convertible 2012,0.24786411225795746,False
+03067.jpg,Hyundai Santa Fe SUV 2012,Hyundai Elantra Touring Hatchback 2012,0.8201067447662354,False
+06487.jpg,Hyundai Santa Fe SUV 2012,Hyundai Elantra Touring Hatchback 2012,0.4315457046031952,False
+01891.jpg,Hyundai Santa Fe SUV 2012,BMW X5 SUV 2007,0.3796910345554352,False
+07085.jpg,Hyundai Santa Fe SUV 2012,Jeep Grand Cherokee SUV 2012,0.7296910285949707,False
+04243.jpg,Jeep Liberty SUV 2012,GMC Savana Van 2012,0.28813523054122925,False
+06782.jpg,Jeep Liberty SUV 2012,Jeep Patriot SUV 2012,0.7135648131370544,False
+04727.jpg,Ram C-V Cargo Van Minivan 2012,Honda Odyssey Minivan 2007,0.468522310256958,False
+07117.jpg,Ram C-V Cargo Van Minivan 2012,Dodge Caliber Wagon 2007,0.9611489176750183,False
+00475.jpg,Ram C-V Cargo Van Minivan 2012,Dodge Durango SUV 2007,0.2755090594291687,False
+03342.jpg,Ram C-V Cargo Van Minivan 2012,Dodge Caravan Minivan 1997,0.8395761251449585,False
+02975.jpg,Ram C-V Cargo Van Minivan 2012,Scion xD Hatchback 2012,0.6723605394363403,False
+00654.jpg,Ram C-V Cargo Van Minivan 2012,Lincoln Town Car Sedan 2011,0.3679066300392151,False
+03743.jpg,Ram C-V Cargo Van Minivan 2012,Chevrolet Express Van 2007,0.4291771352291107,False
+06625.jpg,Ram C-V Cargo Van Minivan 2012,Dodge Magnum Wagon 2008,0.6429606676101685,False
+02406.jpg,Ram C-V Cargo Van Minivan 2012,Chrysler Town and Country Minivan 2012,0.9662056565284729,False
+06043.jpg,Chevrolet Malibu Sedan 2007,Suzuki SX4 Sedan 2012,0.7078475952148438,False
+06013.jpg,Chevrolet Malibu Sedan 2007,Ford Freestar Minivan 2007,0.5460459589958191,False
+00350.jpg,Chevrolet Malibu Sedan 2007,Bentley Continental Flying Spur Sedan 2007,0.7373586893081665,False
+01661.jpg,Chevrolet Malibu Sedan 2007,Suzuki SX4 Sedan 2012,0.47430872917175293,False
+07023.jpg,Chevrolet Malibu Sedan 2007,Chevrolet Monte Carlo Coupe 2007,0.9994981288909912,False
+05282.jpg,Chevrolet Malibu Sedan 2007,Chevrolet Malibu Hybrid Sedan 2010,0.9554911851882935,False
+04953.jpg,Aston Martin Virage Convertible 2012,Aston Martin V8 Vantage Convertible 2012,0.7539457678794861,False
+05967.jpg,Aston Martin Virage Convertible 2012,BMW Z4 Convertible 2012,0.612451434135437,False
+07265.jpg,Aston Martin Virage Convertible 2012,Aston Martin V8 Vantage Convertible 2012,0.9996864795684814,False
+02253.jpg,Aston Martin Virage Convertible 2012,Aston Martin V8 Vantage Convertible 2012,0.846971333026886,False
+06237.jpg,Aston Martin Virage Convertible 2012,Aston Martin V8 Vantage Convertible 2012,0.640888512134552,False
+06848.jpg,Aston Martin Virage Convertible 2012,Aston Martin V8 Vantage Convertible 2012,0.6609199047088623,False
+06722.jpg,Aston Martin Virage Convertible 2012,Aston Martin V8 Vantage Convertible 2012,0.5596947073936462,False
+07895.jpg,Aston Martin Virage Convertible 2012,Chrysler Crossfire Convertible 2008,0.46574559807777405,False
+01555.jpg,Aston Martin Virage Convertible 2012,Aston Martin V8 Vantage Convertible 2012,0.9495072364807129,False
+00166.jpg,Aston Martin Virage Convertible 2012,Aston Martin V8 Vantage Convertible 2012,0.9068715572357178,False
+04388.jpg,Acura TSX Sedan 2012,Hyundai Tucson SUV 2012,0.39864373207092285,False
+05135.jpg,Acura TSX Sedan 2012,Acura TL Sedan 2012,1.0,False
+07739.jpg,Acura TSX Sedan 2012,Acura RL Sedan 2012,0.9113798141479492,False
+06564.jpg,Acura TSX Sedan 2012,Acura TL Sedan 2012,0.9999995231628418,False
+04118.jpg,Acura TSX Sedan 2012,Acura TL Sedan 2012,0.9998574256896973,False
+07461.jpg,Chevrolet Tahoe Hybrid SUV 2012,Chevrolet Avalanche Crew Cab 2012,0.9889776110649109,False
+01957.jpg,Chevrolet Tahoe Hybrid SUV 2012,Chevrolet Avalanche Crew Cab 2012,0.9553654193878174,False
+04554.jpg,Chevrolet Tahoe Hybrid SUV 2012,Chevrolet Avalanche Crew Cab 2012,0.48280519247055054,False
+05361.jpg,Chevrolet Tahoe Hybrid SUV 2012,Chrysler Crossfire Convertible 2008,0.33319300413131714,False
+02087.jpg,Chevrolet Tahoe Hybrid SUV 2012,Chevrolet Avalanche Crew Cab 2012,0.8018769025802612,False
+07241.jpg,Chevrolet Tahoe Hybrid SUV 2012,Chevrolet Avalanche Crew Cab 2012,0.8181380033493042,False
+00781.jpg,Chevrolet Tahoe Hybrid SUV 2012,Chevrolet Avalanche Crew Cab 2012,0.8584820032119751,False
+03663.jpg,Chevrolet Tahoe Hybrid SUV 2012,Chevrolet Avalanche Crew Cab 2012,0.9012197256088257,False
+03925.jpg,Chevrolet Tahoe Hybrid SUV 2012,Cadillac Escalade EXT Crew Cab 2007,0.9999194145202637,False
+04790.jpg,Chevrolet Tahoe Hybrid SUV 2012,Chevrolet Avalanche Crew Cab 2012,0.9999963045120239,False
+03147.jpg,Cadillac Escalade EXT Crew Cab 2007,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,0.33412763476371765,False
+04085.jpg,Cadillac Escalade EXT Crew Cab 2007,Jeep Grand Cherokee SUV 2012,0.7778621912002563,False
+05320.jpg,Maybach Landaulet Convertible 2012,AM General Hummer SUV 2000,0.9851383566856384,False
+05454.jpg,Ford Fiesta Sedan 2012,Hyundai Azera Sedan 2012,0.6222366094589233,False
+02803.jpg,Ford Fiesta Sedan 2012,Buick Regal GS 2012,0.7621216177940369,False
+06437.jpg,Ford Fiesta Sedan 2012,Hyundai Genesis Sedan 2012,0.4978208541870117,False
+03047.jpg,Jeep Compass SUV 2012,HUMMER H3T Crew Cab 2010,0.9309236407279968,False
+07373.jpg,Jeep Compass SUV 2012,Jeep Grand Cherokee SUV 2012,0.9999953508377075,False
+07654.jpg,Jeep Compass SUV 2012,Jeep Grand Cherokee SUV 2012,0.9999980926513672,False
+01332.jpg,Jeep Compass SUV 2012,Isuzu Ascender SUV 2008,0.9990094900131226,False
+02172.jpg,Jeep Compass SUV 2012,Jeep Grand Cherokee SUV 2012,0.9999901056289673,False
+01907.jpg,Hyundai Elantra Sedan 2007,Toyota Corolla Sedan 2012,0.5932678580284119,False
+07350.jpg,Hyundai Elantra Sedan 2007,Lamborghini Aventador Coupe 2012,0.6454751491546631,False
+05571.jpg,Hyundai Elantra Sedan 2007,Nissan 240SX Coupe 1998,0.7765620946884155,False
+03321.jpg,Hyundai Elantra Sedan 2007,Nissan Leaf Hatchback 2012,0.33286750316619873,False
+05444.jpg,Hyundai Elantra Sedan 2007,Dodge Charger Sedan 2012,0.1857515424489975,False
+04872.jpg,Hyundai Elantra Sedan 2007,Nissan Leaf Hatchback 2012,0.43697166442871094,False
+00874.jpg,Toyota Sequoia SUV 2012,Chevrolet Tahoe Hybrid SUV 2012,0.31407904624938965,False
+01743.jpg,Toyota Sequoia SUV 2012,Volvo C30 Hatchback 2012,0.4186282157897949,False
+04566.jpg,Toyota Sequoia SUV 2012,GMC Savana Van 2012,0.9349575042724609,False
+03492.jpg,Toyota Sequoia SUV 2012,Jeep Grand Cherokee SUV 2012,0.32160142064094543,False
+06136.jpg,Toyota Sequoia SUV 2012,Toyota 4Runner SUV 2012,0.9998109936714172,False
+01642.jpg,Chevrolet TrailBlazer SS 2009,Buick Rainier SUV 2007,0.9936012625694275,False
+02935.jpg,Chevrolet TrailBlazer SS 2009,Jeep Compass SUV 2012,0.30301719903945923,False
+01017.jpg,Volvo XC90 SUV 2007,Dodge Dakota Crew Cab 2010,0.25185027718544006,False
+07843.jpg,Ford Focus Sedan 2007,Toyota Corolla Sedan 2012,0.7667582035064697,False
+03901.jpg,Ford Focus Sedan 2007,Chevrolet Malibu Sedan 2007,0.40877705812454224,False
+00160.jpg,Ford Focus Sedan 2007,Suzuki Aerio Sedan 2007,0.2364894449710846,False
+06547.jpg,Ford Focus Sedan 2007,Cadillac CTS-V Sedan 2012,0.16040945053100586,False
+00470.jpg,Scion xD Hatchback 2012,Ford Edge SUV 2012,0.21574221551418304,False
+02699.jpg,Scion xD Hatchback 2012,Jeep Patriot SUV 2012,0.7067529559135437,False
+00561.jpg,Suzuki Aerio Sedan 2007,Suzuki SX4 Sedan 2012,0.9979777932167053,False
+07189.jpg,Suzuki Aerio Sedan 2007,Ford Focus Sedan 2007,0.9497893452644348,False
+00918.jpg,Suzuki Aerio Sedan 2007,Ford Focus Sedan 2007,0.35556837916374207,False
+06845.jpg,Suzuki Aerio Sedan 2007,Suzuki SX4 Hatchback 2012,0.5172050595283508,False
+06294.jpg,Suzuki Aerio Sedan 2007,Plymouth Neon Coupe 1999,0.4756726622581482,False
+06395.jpg,BMW X3 SUV 2012,BMW 3 Series Wagon 2012,0.9970964193344116,False
+02673.jpg,Ford E-Series Wagon Van 2012,Mercedes-Benz Sprinter Van 2012,0.9097155332565308,False
+03405.jpg,Acura RL Sedan 2012,Acura TL Sedan 2012,0.9999779462814331,False
+03325.jpg,Acura RL Sedan 2012,Hyundai Sonata Hybrid Sedan 2012,0.6078246235847473,False
+03306.jpg,Acura RL Sedan 2012,Maybach Landaulet Convertible 2012,0.31539031863212585,False
+00347.jpg,Acura RL Sedan 2012,BMW ActiveHybrid 5 Sedan 2012,0.4143975079059601,False
+06469.jpg,Acura RL Sedan 2012,Acura TSX Sedan 2012,0.8968533277511597,False
+04638.jpg,Acura RL Sedan 2012,Acura TL Sedan 2012,0.999908447265625,False
+03643.jpg,Ford Mustang Convertible 2007,Chevrolet Camaro Convertible 2012,0.8484845757484436,False
+03653.jpg,Ford Mustang Convertible 2007,Volkswagen Golf Hatchback 1991,0.4472099542617798,False
+02576.jpg,Ford Mustang Convertible 2007,Bentley Arnage Sedan 2009,0.4617806673049927,False
+01626.jpg,Ford Mustang Convertible 2007,Bentley Continental Supersports Conv. Convertible 2012,0.7217189073562622,False
+00024.jpg,Ford Mustang Convertible 2007,Nissan 240SX Coupe 1998,0.8609185814857483,False
+00169.jpg,Ford Mustang Convertible 2007,Chevrolet Camaro Convertible 2012,0.5474765300750732,False
+02067.jpg,Rolls-Royce Ghost Sedan 2012,Rolls-Royce Phantom Sedan 2012,0.9274349212646484,False
+06766.jpg,Rolls-Royce Ghost Sedan 2012,Mercedes-Benz 300-Class Convertible 1993,0.5394713282585144,False
+04030.jpg,Rolls-Royce Ghost Sedan 2012,Rolls-Royce Phantom Sedan 2012,0.9996134638786316,False
+06261.jpg,Dodge Charger SRT-8 2009,Dodge Charger Sedan 2012,0.6738957762718201,False
+05523.jpg,Dodge Charger SRT-8 2009,Lamborghini Diablo Coupe 2001,0.6351999640464783,False
+05528.jpg,Bentley Continental Supersports Conv. Convertible 2012,Ford Mustang Convertible 2007,0.9572213292121887,False
+00727.jpg,Bentley Continental Supersports Conv. Convertible 2012,Bentley Arnage Sedan 2009,0.9869649410247803,False
+02270.jpg,Bentley Continental Supersports Conv. Convertible 2012,Aston Martin Virage Convertible 2012,0.932613730430603,False
+02041.jpg,Bentley Continental Supersports Conv. Convertible 2012,Bugatti Veyron 16.4 Convertible 2009,0.4164574444293976,False
+02861.jpg,Bentley Continental Supersports Conv. Convertible 2012,Chevrolet Silverado 1500 Hybrid Crew Cab 2012,0.3685716390609741,False
+03911.jpg,Dodge Journey SUV 2012,Chrysler Town and Country Minivan 2012,0.522263765335083,False
+07488.jpg,Dodge Journey SUV 2012,Dodge Caliber Wagon 2007,0.7794573903083801,False
+02832.jpg,Dodge Journey SUV 2012,Chrysler Town and Country Minivan 2012,0.32129019498825073,False
+03317.jpg,BMW ActiveHybrid 5 Sedan 2012,BMW M3 Coupe 2012,0.5666625499725342,False
+04034.jpg,Hyundai Genesis Sedan 2012,Acura RL Sedan 2012,0.390580415725708,False
+02000.jpg,Hyundai Accent Sedan 2012,Hyundai Sonata Hybrid Sedan 2012,0.6064181327819824,False
+03061.jpg,Hyundai Accent Sedan 2012,Ferrari 458 Italia Coupe 2012,0.3671859800815582,False
+06535.jpg,Volkswagen Golf Hatchback 2012,Aston Martin V8 Vantage Coupe 2012,0.664121150970459,False
+03905.jpg,Volkswagen Golf Hatchback 2012,Mitsubishi Lancer Sedan 2012,0.6521319150924683,False
+03762.jpg,Volkswagen Golf Hatchback 2012,Hyundai Elantra Touring Hatchback 2012,0.32003816962242126,False
+06596.jpg,Volkswagen Golf Hatchback 2012,Audi S6 Sedan 2011,0.3128398656845093,False
+00766.jpg,Volkswagen Golf Hatchback 2012,BMW 1 Series Coupe 2012,0.3052777051925659,False
+00509.jpg,Suzuki SX4 Sedan 2012,Suzuki SX4 Hatchback 2012,0.960283100605011,False
+01198.jpg,Suzuki SX4 Sedan 2012,Hyundai Elantra Touring Hatchback 2012,0.790174126625061,False
+07640.jpg,Suzuki SX4 Sedan 2012,Chevrolet Malibu Hybrid Sedan 2010,0.6391611695289612,False
+01136.jpg,Suzuki SX4 Sedan 2012,Acura Integra Type R 2001,0.9195164442062378,False
+03250.jpg,Suzuki SX4 Sedan 2012,Chevrolet Malibu Hybrid Sedan 2010,0.44362780451774597,False
+04650.jpg,Suzuki SX4 Sedan 2012,Hyundai Elantra Touring Hatchback 2012,0.3616064786911011,False
+06542.jpg,Suzuki SX4 Sedan 2012,Hyundai Elantra Touring Hatchback 2012,0.39357879757881165,False
+03159.jpg,Suzuki SX4 Sedan 2012,Mitsubishi Lancer Sedan 2012,0.8345054388046265,False
+06142.jpg,Suzuki SX4 Sedan 2012,Suzuki Aerio Sedan 2007,0.9687453508377075,False
+05507.jpg,Suzuki SX4 Sedan 2012,Nissan Leaf Hatchback 2012,0.47444483637809753,False
+00639.jpg,Porsche Panamera Sedan 2012,Aston Martin Virage Convertible 2012,0.3595510423183441,False
+03974.jpg,Porsche Panamera Sedan 2012,Volkswagen Beetle Hatchback 2012,0.9619202017784119,False
+03730.jpg,Chrysler Aspen SUV 2009,Dodge Durango SUV 2007,0.6114063858985901,False
+05731.jpg,Chrysler Town and Country Minivan 2012,Ram C-V Cargo Van Minivan 2012,0.8342006206512451,False
+02674.jpg,Chrysler Town and Country Minivan 2012,Dodge Durango SUV 2007,0.6702873706817627,False
+05867.jpg,Volvo C30 Hatchback 2012,Audi S5 Coupe 2012,0.34503597021102905,False
+07969.jpg,Volvo C30 Hatchback 2012,BMW M5 Sedan 2010,0.26495081186294556,False
+04112.jpg,Volvo C30 Hatchback 2012,Bentley Continental GT Coupe 2007,0.33788323402404785,False
+06321.jpg,Ford GT Coupe 2006,Spyker C8 Convertible 2009,0.43587392568588257,False
+02656.jpg,GMC Terrain SUV 2012,Jeep Compass SUV 2012,0.7596533298492432,False
+07435.jpg,GMC Terrain SUV 2012,Chevrolet Malibu Hybrid Sedan 2010,0.2232694923877716,False
+04974.jpg,Audi S5 Convertible 2012,BMW M6 Convertible 2010,0.4540784955024719,False
+04165.jpg,Audi S5 Convertible 2012,Bugatti Veyron 16.4 Coupe 2009,0.25429293513298035,False
+01321.jpg,Audi S5 Convertible 2012,Audi RS 4 Convertible 2008,0.7436809539794922,False
+06188.jpg,Audi S5 Convertible 2012,Audi RS 4 Convertible 2008,0.813292920589447,False
+07473.jpg,Audi S5 Convertible 2012,BMW M6 Convertible 2010,0.8609576225280762,False
+05148.jpg,Audi S5 Convertible 2012,Audi S5 Coupe 2012,0.7946210503578186,False
+00362.jpg,Audi S5 Convertible 2012,Chrysler PT Cruiser Convertible 2008,0.9126638174057007,False
+07346.jpg,Audi S5 Convertible 2012,Audi RS 4 Convertible 2008,0.9035468101501465,False
+06439.jpg,Audi S5 Convertible 2012,Bugatti Veyron 16.4 Convertible 2009,0.8124411702156067,False
+04651.jpg,Hyundai Sonata Sedan 2012,Hyundai Sonata Hybrid Sedan 2012,0.9613196849822998,False
+05542.jpg,Hyundai Sonata Sedan 2012,Hyundai Sonata Hybrid Sedan 2012,0.5080931782722473,False
+02783.jpg,Hyundai Sonata Sedan 2012,Honda Accord Sedan 2012,0.834125280380249,False
+05599.jpg,Hyundai Sonata Sedan 2012,Hyundai Azera Sedan 2012,0.5722589492797852,False
+04438.jpg,Acura TL Sedan 2012,Acura RL Sedan 2012,0.6276817917823792,False
+00043.jpg,Acura TL Sedan 2012,Rolls-Royce Ghost Sedan 2012,0.3098140060901642,False
+03838.jpg,Acura TL Sedan 2012,Acura RL Sedan 2012,0.9998384714126587,False
+05906.jpg,Dodge Ram Pickup 3500 Quad Cab 2009,Dodge Dakota Crew Cab 2010,0.7728937864303589,False
+07119.jpg,Dodge Ram Pickup 3500 Quad Cab 2009,Dodge Ram Pickup 3500 Crew Cab 2010,0.9731721878051758,False
+02192.jpg,Dodge Ram Pickup 3500 Quad Cab 2009,Nissan 240SX Coupe 1998,0.3804246187210083,False
+02972.jpg,Dodge Ram Pickup 3500 Quad Cab 2009,Dodge Ram Pickup 3500 Crew Cab 2010,0.9767385721206665,False
+07672.jpg,Dodge Ram Pickup 3500 Quad Cab 2009,Dodge Ram Pickup 3500 Crew Cab 2010,0.5977915525436401,False
+07381.jpg,Audi 100 Sedan 1994,Audi 100 Wagon 1994,0.5346387624740601,False
+02187.jpg,Audi 100 Sedan 1994,Audi V8 Sedan 1994,0.5980492830276489,False
+06963.jpg,Audi 100 Sedan 1994,Audi V8 Sedan 1994,0.9999995231628418,False
+00082.jpg,Audi 100 Sedan 1994,Audi V8 Sedan 1994,0.9999872446060181,False
+06204.jpg,Audi 100 Sedan 1994,Audi V8 Sedan 1994,0.9032524824142456,False
+00789.jpg,Audi 100 Sedan 1994,Audi 100 Wagon 1994,0.595962405204773,False
+05891.jpg,Audi 100 Sedan 1994,Audi V8 Sedan 1994,0.8441426753997803,False
+01335.jpg,Audi 100 Sedan 1994,Audi V8 Sedan 1994,0.3970319330692291,False
+04250.jpg,Audi 100 Sedan 1994,Audi V8 Sedan 1994,0.9999912977218628,False
+02885.jpg,Chrysler Crossfire Convertible 2008,Chrysler Sebring Convertible 2010,0.9999663829803467,False
+05153.jpg,Chrysler Crossfire Convertible 2008,Ford Mustang Convertible 2007,0.5352953672409058,False
+02638.jpg,Chrysler Crossfire Convertible 2008,Ford Mustang Convertible 2007,0.4851822555065155,False
+03224.jpg,Chevrolet Corvette Convertible 2012,Chevrolet Corvette Ron Fellows Edition Z06 2007,0.8929778337478638,False
+07054.jpg,Chevrolet Corvette Convertible 2012,Chevrolet Corvette Ron Fellows Edition Z06 2007,0.5971601605415344,False
+07173.jpg,Chevrolet Corvette Convertible 2012,Chevrolet Corvette Ron Fellows Edition Z06 2007,0.5030944347381592,False
+04516.jpg,HUMMER H2 SUT Crew Cab 2009,AM General Hummer SUV 2000,0.5015523433685303,False
+01854.jpg,HUMMER H2 SUT Crew Cab 2009,HUMMER H3T Crew Cab 2010,0.998313307762146,False
+02634.jpg,HUMMER H2 SUT Crew Cab 2009,AM General Hummer SUV 2000,0.7442818284034729,False
+01735.jpg,HUMMER H2 SUT Crew Cab 2009,HUMMER H3T Crew Cab 2010,1.0,False
+00568.jpg,HUMMER H2 SUT Crew Cab 2009,HUMMER H3T Crew Cab 2010,0.8825750946998596,False
+03064.jpg,Chrysler 300 SRT-8 2010,Scion xD Hatchback 2012,0.424042671918869,False
