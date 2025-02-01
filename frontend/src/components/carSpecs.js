@@ -1,0 +1,554 @@
+export const carSpecsData = [
+  {
+    "Title": "Hyundai Elantra Touring Hatchback 2012",
+    "Key Specs": {
+      "Body Style": "4-door",
+      "Seating Capacity": "5 seats",
+      "Engine": "138.0-hp, 2.0-liter, 4 Cylinder Engine (Gasoline Fuel)",
+      "MPG": "26 combined",
+      "Dimensions": {
+        "Length": "176.6\"",
+        "Height": "59.8\""
+      },
+      "Drive Type": "Front Wheel Drive"
+    },
+    "Color Options": {
+      "Exterior": [
+        "Titanium Gray Metallic",
+        "Atlantic Blue",
+        "Volcanic Red",
+        "Black Noir Pearl",
+        "Chilipepper Red",
+        "Monaco White",
+        "Polar White",
+        "Long Beach Blue",
+        "Summit White"
+      ],
+      "Interior": [
+        "Black",
+        "Beige"
+      ]
+    },
+    "Specifications": {
+      "Engine": {
+        "Type": "Gas I4",
+        "Horsepower": "138 hp",
+        "Torque": "136 lb-ft",
+        "Displacement": "2.0L/121",
+        "Transmission": "5-Speed M/T",
+        "Cooling System Capacity": "3.2 qts"
+      },
+      "Brakes": {
+        "ABS System": "4-wheel",
+        "Front Brake Rotor": "11.8 x -TBD- in",
+        "Rear Brake Rotor": "10.3 x -TBD- in",
+        "Brake Type": "Pwr",
+        "Disc - Front": "Yes",
+        "Disc - Rear": "Yes"
+      },
+      "Electrical": {
+        "Alternator Capacity": "90 amps",
+        "Cold Cranking Amps": "550"
+      },
+      "Measurements": {
+        "Passenger Capacity": "5",
+        "Overall Height": "60 in",
+        "Second Head Room": "39 in",
+        "Min Ground Clearance": "6 in",
+        "Cargo Volume to Seat 1": "65 ft³",
+        "Cargo Volume to Seat 2": "24 ft³",
+        "Front Head Room": "40 in",
+        "Wheelbase": "106 in",
+        "Passenger Volume": "101 ft³",
+        "Front Shoulder Room": "55 in",
+        "Front Hip Room": "54 in",
+        "Second Hip Room": "53 in",
+        "Second Shoulder Room": "55 in",
+        "Front Leg Room": "44 in",
+        "Track Width, Rear": "N/A"
+      },
+      "Safety": {
+        "Stability Control": "Standard",
+        "Brake Assist": "Standard"
+      },
+      "Steering": {
+        "Lock to Lock Turns": "3",
+        "Steering Ratio": "14:1",
+        "Type": "Pwr Rack & Pinion",
+        "Turning Diameter - Curb to Curb": "34 ft"
+      },
+      "Suspension": {
+        "Front": "MacPherson Strut",
+        "Rear": "Multi-Link"
+      },
+      "Tires & Wheels": {
+        "Front Wheel Size": "15 x 5.5 in",
+        "Rear Wheel Size": "15 x 5.5 in",
+        "Spare Wheel Size": "Compact",
+        "Front Tire Size": "P195/65R15",
+        "Rear Tire Size": "P195/65R15",
+        "Spare Tire Size": "Compact"
+      },
+      "Weight & Capacity": {
+        "Base Curb Weight": "2,937 lbs",
+        "Fuel Tank Capacity": "14 gal"
+      }
+    }
+  },
+  {
+    "Title": "Hyundai Sonata Sedan 2012",
+    "Key Specs": {
+      "Body Style": "4-door",
+      "Seating Capacity": "5 seats",
+      "Engine": "198.0-hp, 2.4-liter, 4 Cylinder Engine (Gasoline Fuel)",
+      "MPG": "28 combined",
+      "Dimensions": {
+        "Length": "189.8\"",
+        "Height": "57.7\""
+      },
+      "Drive Type": "Front Wheel Drive"
+    },
+    "Color Options": {
+      "Exterior": [
+        "Midnight Black",
+        "Sparkling Ruby",
+        "Silver Metallic",
+        "Meteor Silver Metallic",
+        "Azure Gray Metallic",
+        "Shimmering White",
+        "Satellite Silver Metallic",
+        "Windveil Blue Metallic"
+      ],
+      "Interior": [
+        "Cocoa",
+        "Gray"
+      ]
+    },
+    "Specifications": {
+      "Engine": {
+        "Type": "Gas I4",
+        "Horsepower": "198 hp",
+        "Torque": "184 @ 4250",
+        "Displacement": "2.4L/144",
+        "Transmission": "6-Speed M/T",
+        "Cooling System Capacity": "2.7 qts"
+      },
+      "Brakes": {
+        "ABS System": "4-Wheel",
+        "Front Brake Rotor": "11.8 x 1.1 in",
+        "Rear Brake Rotor": "11.2 x 0.4 in",
+        "Brake Type": "Pwr-Assisted",
+        "Disc - Front": "Yes",
+        "Disc - Rear": "Yes"
+      },
+      "Measurements": {
+        "Passenger Capacity": "5",
+        "Overall Height": "57.7 in",
+        "Length": "189.8 in",
+        "Wheelbase": "110 in",
+        "Front Leg Room": "46 in",
+        "Second Leg Room": "33 in"
+      },
+      "Safety": {
+        "Stability Control": "Standard",
+        "Brake Assist": "Standard"
+      },
+      "Steering": {
+        "Lock to Lock Turns": "3",
+        "Steering Ratio": "15:1",
+        "Type": "Pwr Rack & Pinion",
+        "Turning Diameter - Curb to Curb": "36 ft"
+      },
+      "Suspension": {
+        "Front": "MacPherson Strut",
+        "Rear": "Multi-Link"
+      },
+      "Tires & Wheels": {
+        "Front Wheel Size": "16 x 6.5 in",
+        "Rear Wheel Size": "16 x 6.5 in",
+        "Spare Wheel Size": "N/A",
+        "Front Tire Size": "P205/65R16",
+        "Rear Tire Size": "P205/65R16",
+        "Spare Tire Size": "N/A"
+      },
+      "Weight & Capacity": {
+        "Base Curb Weight": "3,161 lbs",
+        "Fuel Tank Capacity": "19 gal"
+      }
+    }
+  },
+  {
+    "Title": "BMW X6 SUV 2012",
+    "Key Specs": {
+      "Body Style": "4-door",
+      "Seating Capacity": "4 seats",
+      "Engine": "300.0-hp, 3.0-liter, Straight 6 Cylinder Engine (Gasoline Fuel)",
+      "MPG": "19 combined",
+      "Drive Type": "All Wheel Drive"
+    },
+    "Color Options": {
+      "Exterior": [
+        "Tasman Green Metallic",
+        "Azurite Black Metallic",
+        "Monaco Blue Metallic",
+        "Citrin Black Metallic",
+        "Pearl Silver Metallic",
+        "Ruby Black Metallic",
+        "Space Gray Metallic",
+        "Deep Sea Blue Metallic",
+        "Vermilion Red Metallic",
+        "Black Sapphire Metallic",
+        "Mineral Silver Metallic",
+        "Jet Black",
+        "Titanium Silver Metallic"
+      ],
+      "Interior": [
+        "Black",
+        "Champagne",
+        "Sand Beige",
+        "Oyster",
+        "Criollo Brown",
+        "Chateau Red",
+        "Sand",
+        "Saddle Brown",
+        "Platinum",
+        "Chateau"
+      ]
+    },
+    "Specifications": {
+      "Engine": {
+        "Type": "Turbocharged Gas I6",
+        "Horsepower": "300 hp",
+        "Torque": "300 lb-ft",
+        "Displacement": "3.0L/182",
+        "Transmission": "8-Speed A/T",
+        "Cooling System Capacity": "N/A"
+      },
+      "Brakes": {
+        "ABS System": "4 Wheel",
+        "Front Brake Rotor": "13.7 x -TBD- in",
+        "Rear Brake Rotor": "14.4 x -TBD- in",
+        "Brake Type": "Pwr",
+        "Disc - Front": "Yes",
+        "Disc - Rear": "Yes"
+      },
+      "Electrical": {
+        "Alternator Capacity": "210 amps",
+        "Cold Cranking Amps": "N/A"
+      },
+      "Measurements": {
+        "Passenger Capacity": "4",
+        "Overall Height": "67 in",
+        "Track Width, Rear": "67 in",
+        "Track Width, Front": "65 in",
+        "Length": "192 in",
+        "Wheelbase": "116 in",
+        "Front Leg Room": "40 in",
+        "Front Head Room": "38 in",
+        "Second Head Room": "37 in",
+        "Second Leg Room": "36 in"
+      },
+      "Safety": {
+        "Stability Control": "Standard",
+        "Bluetooth": "Standard"
+      },
+      "Steering": {
+        "Lock to Lock Turns": "N/A",
+        "Steering Ratio": "20:1",
+        "Type": "Pwr Rack & Pinion",
+        "Turning Diameter - Curb to Curb": "42 ft"
+      },
+      "Suspension": {
+        "Front": "Double Wishbone",
+        "Rear": "Multilink"
+      },
+      "Tires & Wheels": {
+        "Front Wheel Size": "19 x 9.0 in",
+        "Rear Wheel Size": "19 x 9.0 in",
+        "Spare Wheel Size": "N/A",
+        "Front Tire Size": "P255/50R19",
+        "Rear Tire Size": "P255/50R19",
+        "Spare Tire Size": "Compact"
+      },
+      "Weight & Capacity": {
+        "Base Curb Weight": "4,894 lbs",
+        "Fuel Tank Capacity": "23 gal"
+      }
+    }
+  },
+  {
+    "Title": "Hyundai Accent Sedan 2012",
+    "Key Specs": {
+      "Body Style": "4-door",
+      "Seating Capacity": "5 seats",
+      "Engine": "138.0-hp, 1.6-liter, 4 Cylinder Engine (Gasoline Fuel)",
+      "MPG": "32 combined",
+      "Dimensions": {
+        "Length": "172.0\"",
+        "Height": "57.1\""
+      },
+      "Drive Type": "Front Wheel Drive"
+    },
+    "Color Options": {
+      "Exterior": [
+        "Ironman Silver",
+        "Boston Red",
+        "Ultra Black",
+        "Mocha Bronze",
+        "Cyclone Gray",
+        "Clearwater Blue",
+        "Century White",
+        "Marathon Blue"
+      ],
+      "Interior": [
+        "Tan",
+        "Gray"
+      ]
+    },
+    "Specifications": {
+      "Engine": {
+        "Type": "Gas I4",
+        "Horsepower": "138 hp",
+        "Torque": "123 @ 4850",
+        "Displacement": "1.6L/97",
+        "Transmission": "6-Speed M/T",
+        "Cooling System Capacity": "5.7 qts"
+      },
+      "Brakes": {
+        "ABS System": "4-Wheel",
+        "Front Brake Rotor": "10.1 x -TBD- in",
+        "Rear Brake Rotor": "10.3 x -TBD- in",
+        "Brake Type": "Pwr",
+        "Disc - Front": "Yes",
+        "Disc - Rear": "Yes"
+      },
+      "Measurements": {
+        "Passenger Capacity": "5",
+        "Overall Height": "57.1 in",
+        "Length": "172 in",
+        "Wheelbase": "101 in",
+        "Front Leg Room": "40 in",
+        "Second Leg Room": "36 in"
+      },
+      "Safety": {
+        "Stability Control": "Standard",
+        "Brake Assist": "Standard"
+      },
+      "Steering": {
+        "Lock to Lock Turns": "3",
+        "Steering Ratio": "15:1",
+        "Type": "Pwr Rack & Pinion",
+        "Turning Diameter - Curb to Curb": "34 ft"
+      },
+      "Suspension": {
+        "Front": "MacPherson Strut",
+        "Rear": "Multi-Link"
+      },
+      "Tires & Wheels": {
+        "Front Wheel Size": "14 x 5.0 in",
+        "Rear Wheel Size": "14 x 5.0 in",
+        "Spare Wheel Size": "N/A",
+        "Front Tire Size": "P175/70R14",
+        "Rear Tire Size": "P175/70R14",
+        "Spare Tire Size": "N/A"
+      },
+      "Weight & Capacity": {
+        "Base Curb Weight": "2,396 lbs",
+        "Fuel Tank Capacity": "11 gal"
+      }
+    }
+  },
+  {
+  "Title": "BMW M5 Sedan 2010",
+  "Key Specs": {
+    "Body Style": "4-door",
+    "Seating Capacity": "5 seats",
+    "Engine": "500.0-hp, 5.0-liter, 10 Cylinder Engine (Gasoline Fuel)",
+    "MPG": "13 combined",
+    "Dimensions": {
+      "Length": "191.5\"",
+      "Height": "57.8\""
+    },
+    "Drive Type": "Rear Wheel Drive"
+  },
+  "Color Options": {
+    "Exterior": [
+      "Monaco Blue Metallic",
+      "Carbon Black",
+      "Space Gray Metallic",
+      "Silverstone Silver Metallic",
+      "Cool Silver",
+      "Interlagos Blue Metallic",
+      "Black Sapphire Metallic",
+      "Alpine White",
+      "Sepang Bronze Metallic"
+    ],
+    "Interior": [
+      "Silverstone II",
+      "Black",
+      "Silverstone",
+      "Sepang",
+      "Indianapolis Red",
+      "Portland Brown"
+    ]
+  },
+  "Specifications": {
+    "Engine": {
+      "Type": "Gas V10",
+      "Horsepower": "500 hp",
+      "Torque": "500 lb-ft",
+      "Displacement": "5.0L/305",
+      "Transmission": "7-Speed A/T",
+      "Cooling System Capacity": "N/A"
+    },
+    "Brakes": {
+      "ABS System": "4-Wheel",
+      "Front Brake Rotor": "14.7 x -TBD- in",
+      "Rear Brake Rotor": "14.6 x -TBD- in",
+      "Brake Type": "Pwr-Assisted",
+      "Disc - Front": "Yes",
+      "Disc - Rear": "Yes"
+    },
+    "Electrical": {
+      "Alternator Capacity": "170 amps",
+      "Cold Cranking Amps": "N/A"
+    },
+    "Measurements": {
+      "Passenger Capacity": "5",
+      "Overall Height": "57.8 in",
+      "Track Width, Rear": "62 in",
+      "Track Width, Front": "62 in",
+      "Length": "191.5 in",
+      "Wheelbase": "114 in",
+      "Front Leg Room": "39 in",
+      "Front Head Room": "N/A",
+      "Second Head Room": "N/A",
+      "Second Leg Room": "38 in"
+    },
+    "Safety": {
+      "Stability Control": "Standard",
+      "Bluetooth": "Standard"
+    },
+    "Steering": {
+      "Lock to Lock Turns": "N/A",
+      "Steering Ratio": "12:1",
+      "Type": "Pwr Rack & Pinion",
+      "Turning Diameter - Curb to Curb": "41 ft"
+    },
+    "Suspension": {
+      "Front": "Double-Pivot",
+      "Rear": "Not Available"
+    },
+    "Tires & Wheels": {
+      "Front Wheel Size": "19 x 8.5 in",
+      "Rear Wheel Size": "19 x 9.5 in",
+      "Spare Wheel Size": "N/A",
+      "Front Tire Size": "P255/40ZR19",
+      "Rear Tire Size": "P285/35ZR19",
+      "Spare Tire Size": "Not Available"
+    },
+    "Weight & Capacity": {
+      "Base Curb Weight": "4,012 lbs",
+      "Fuel Tank Capacity": "19 gal"
+    }
+  }
+},
+{
+  "Title": "BMW X3 SUV 2012",
+  "Key Specs": {
+    "Body Style": "4-door",
+    "Seating Capacity": "5 seats",
+    "Engine": "258.0-hp, 3.0-liter, Straight 6 Cylinder Engine (Gasoline Fuel)",
+    "MPG": "21 combined",
+    "Dimensions": {
+      "Length": "183.0\"",
+      "Height": "65.4\""
+    },
+    "Drive Type": "All Wheel Drive"
+  },
+  "Color Options": {
+    "Exterior": [
+      "Sparkling Bronze Metallic",
+      "Carbon Black",
+      "Space Gray Metallic",
+      "Deep Sea Blue Metallic",
+      "Vermilion Red Metallic",
+      "Blue Water Metallic",
+      "Black Sapphire Metallic",
+      "Mineral Silver Metallic",
+      "Alpine White",
+      "Jet Black",
+      "Titanium Silver Metallic"
+    ],
+    "Interior": [
+      "Beige",
+      "Black",
+      "Sand Beige",
+      "Oyster",
+      "Chestnut",
+      "Mojave"
+    ]
+  },
+  "Specifications": {
+    "Engine": {
+      "Type": "Gas I6",
+      "Horsepower": "258 hp",
+      "Torque": "221 lb-ft",
+      "Displacement": "3.0L/183",
+      "Transmission": "8-Speed A/T",
+      "Cooling System Capacity": "N/A"
+    },
+    "Brakes": {
+      "ABS System": "4-Wheel",
+      "Front Brake Rotor": "12.9 x 1.1 in",
+      "Rear Brake Rotor": "13.0 x 0.8 in",
+      "Brake Type": "Pwr",
+      "Disc - Front": "Yes",
+      "Disc - Rear": "Yes"
+    },
+    "Electrical": {
+      "Alternator Capacity": "210 amps",
+      "Cold Cranking Amps": "N/A"
+    },
+    "Measurements": {
+      "Passenger Capacity": "5",
+      "Overall Height": "65 in",
+      "Track Width, Rear": "64 in",
+      "Track Width, Front": "64 in",
+      "Length": "183 in",
+      "Wheelbase": "111 in",
+      "Front Leg Room": "40 in",
+      "Front Head Room": "41 in",
+      "Second Head Room": "39 in",
+      "Second Leg Room": "39 in"
+    },
+    "Safety": {
+      "Stability Control": "Standard",
+      "Bluetooth": "Standard"
+    },
+    "Steering": {
+      "Lock to Lock Turns": "N/A",
+      "Steering Ratio": "18:1",
+      "Type": "Electric",
+      "Turning Diameter - Curb to Curb": "39 ft"
+    },
+    "Suspension": {
+      "Front": "Double-Joint Strut",
+      "Rear": "Five-Link"
+    },
+    "Tires & Wheels": {
+      "Front Wheel Size": "17 x 8.0 in",
+      "Rear Wheel Size": "17 x 8.0 in",
+      "Spare Wheel Size": "N/A",
+      "Front Tire Size": "P245/55R17",
+      "Rear Tire Size": "P245/55R17",
+      "Spare Tire Size": "Not Available"
+    },
+    "Weight & Capacity": {
+      "Base Curb Weight": "4,112 lbs",
+      "Fuel Tank Capacity": "18 gal"
+    }
+  }
+},
+  // Add other car specifications here...
+]; 
