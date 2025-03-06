@@ -1,3 +1,44 @@
+# Exclude Python virtual environments
+venv/
+env/
+ENV/
+venv.bak/
+virtualenv/
+
+# Python bytecode
 __pycache__/
-*.pt
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Ignore ML model files (typically large)
 *.pkl
+*.h5
+*.pt
+*.pth
+*.weights
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Logs
+logs/
+*.log
+
+# Local development settings
+.env
+.venv
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
