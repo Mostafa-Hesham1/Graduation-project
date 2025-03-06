@@ -3,6 +3,8 @@ from typing import List, Dict, Union
 import pandas as pd
 import logging
 import random
+import json
+import os
 
 router = APIRouter()
 
@@ -10,7 +12,7 @@ router = APIRouter()
 logging.basicConfig(level=logging.INFO)
 
 # Load the dataset
-DATA_PATH = "C:/Users/Mostafa/Desktop/VehicleSouq/backend/expanded_car_data.csv"
+DATA_PATH = "C:/Users/mosta/OneDrive/Desktop/VehicleSouq (2)/VehicleSouq/backend/expanded_car_data.csv"
 try:
     df = pd.read_csv(DATA_PATH)
     logging.info(f"Dataset loaded successfully from: {DATA_PATH}")
@@ -79,3 +81,23 @@ async def get_random_data():
     except Exception as e:
         logging.error(f"Failed to fetch all data: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to fetch all data")
+
+@router.get("/all")
+async def get_all_data():
+    """Endpoint to get all scraped data"""
+    try:
+        # Try to load data from a saved file
+        json_file_path = os.path.join(os.path.dirname(__file__), '../dataset/car_data.json')
+        
+        if os.path.exists(json_file_path):
+            with open(json_file_path, 'r', encoding='utf-8') as file:
+                data = json.load(file)
+            return {"data": data, "count": len(data)}
+        else:
+            # If file doesn't exist, return empty data
+            logging.warning(f"Data file not found at {json_file_path}")
+            return {"data": [], "count": 0, "message": "No data available"}
+    
+    except Exception as e:
+        logging.error(f"Error fetching data: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching data: {str(e)}")

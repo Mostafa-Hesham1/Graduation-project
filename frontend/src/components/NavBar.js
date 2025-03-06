@@ -14,15 +14,26 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Link as RouterLink, useNavigate } from 'react-router-dom'; // Import RouterLink and useNavigate
 import { useAuth } from '../context/AuthContext'; // Import your Auth context
+import { AccountCircle } from '@mui/icons-material'; // Import AccountCircle icon
 
-const pages = ['Scrape', 'Price Prediction', 'Data Visualization','Car Recognizer']; // Add Sign Up to pages
-const settings = ['Profile', 'Account', 'Dashboard', 'Car Listing']; // Add Car Listing to settings
+const pages = ['Scrape', 'Price Prediction', 'Data Visualization', 'Car Recognizer']; // Add Sign Up to pages
+
+// User menu items array
+const userMenuItems = [
+  { label: 'Profile', action: 'profile' },
+  { label: 'My Listings', action: 'myListings' },
+  { label: 'Car Listing', action: 'carListing' },
+  { label: 'Logout', action: 'logout' }
+];
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const { isAuthenticated, setIsAuthenticated } = useAuth(); // Use context to get authentication state
   const navigate = useNavigate(); // Use useNavigate for navigation
+
+  // Debug authentication state
+  console.log("Auth state in NavBar:", isAuthenticated);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -49,6 +60,38 @@ function ResponsiveAppBar() {
       navigate('/car-listing'); // Navigate to car listing page
     } else {
       alert('You must be signed in to list a car.'); // Alert if not signed in
+    }
+  };
+
+  const handleMyListings = () => {
+    console.log("Starting navigation to My Listings");
+    handleCloseUserMenu();
+    
+    // Try window.location.href as a fallback if regular navigation doesn't work
+    try {
+      console.log("Using navigate('/my-listings')");
+      navigate('/my-listings');
+    } catch (e) {
+      console.error("Navigation failed, using direct href", e);
+      window.location.href = "/my-listings";
+    }
+    console.log("Navigation code complete");
+  };
+
+  const handleMenuItemClick = (action) => {
+    console.log("Menu item clicked:", action);
+    switch(action) {
+      case 'myListings':
+        handleMyListings();
+        break;
+      case 'carListing':
+        handleCarListing();
+        break;
+      case 'logout':
+        handleSignOut();
+        break;
+      default:
+        handleCloseUserMenu();
     }
   };
 
@@ -148,9 +191,12 @@ function ResponsiveAppBar() {
           <Box sx={{ flexGrow: 0 }}>
             {isAuthenticated ? (
               <>
-                <Tooltip title="Open settings">
+                <Tooltip title="Open user menu">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar alt="User Profile" src="/static/images/avatar/2.jpg" />
+                    {/* Use AccountCircle icon instead of missing image */}
+                    <Avatar>
+                      <AccountCircle />
+                    </Avatar>
                   </IconButton>
                 </Tooltip>
                 <Menu
@@ -169,14 +215,21 @@ function ResponsiveAppBar() {
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
                 >
-                  {settings.map((setting) => (
-                    <MenuItem key={setting} onClick={setting === 'Car Listing' ? handleCarListing : handleCloseUserMenu}>
-                      <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
+                  {userMenuItems.map((item) => (
+                    <MenuItem 
+                      key={item.label} 
+                      onClick={() => handleMenuItemClick(item.action)}
+                      sx={{
+                        // Highlight My Listings menu item
+                        ...(item.action === 'myListings' && {
+                          fontWeight: 'bold',
+                          bgcolor: '#f0f7ff'
+                        })
+                      }}
+                    >
+                      <Typography sx={{ textAlign: 'center' }}>{item.label}</Typography>
                     </MenuItem>
                   ))}
-                  <MenuItem onClick={handleSignOut}>
-                    <Typography sx={{ textAlign: 'center' }}>Logout</Typography>
-                  </MenuItem>
                 </Menu>
               </>
             ) : (

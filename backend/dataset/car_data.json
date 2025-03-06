@@ -1,0 +1,30 @@
+[
+  {
+    "Name": "BMW 316i 2005",
+    "Price": "250,000 EGP",
+    "Color": "Black",
+    "Mileage": "120,000 Km",
+    "Make": "BMW",
+    "Model": "316i",
+    "Year": "2005",
+    "City": "Cairo",
+    "Date Displayed": "2 days ago",
+    "Item URL": "https://eg.hatla2ee.com/en/car/bmw/316i/2005-sedan",
+    "Fuel Type": "Gasoline",
+    "Transmission Type": "Automatic"
+  },
+  {
+    "Name": "Mercedes-Benz C180 2018",
+    "Price": "1,200,000 EGP",
+    "Color": "White",
+    "Mileage": "45,000 Km",
+    "Make": "Mercedes-Benz",
+    "Model": "C180",
+    "Year": "2018",
+    "City": "Alexandria",
+    "Date Displayed": "1 day ago",
+    "Item URL": "https://eg.hatla2ee.com/en/car/mercedes-benz/c180/2018-sedan",
+    "Fuel Type": "Gasoline",
+    "Transmission Type": "Automatic"
+  }
+]

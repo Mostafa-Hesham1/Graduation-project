@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -17,10 +19,7 @@ import ForgotPassword from './ForgotPassword';
 import { GoogleIcon, FacebookIcon } from './CustomIcons';
 import AppTheme from '../shared-theme/AppTheme';
 import { loginUser } from '../api';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import CircularList from './CircularList';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -33,48 +32,30 @@ const Card = styled(MuiCard)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: {
     maxWidth: '450px',
   },
-  boxShadow:
-    'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
-  ...theme.applyStyles('dark', {
-    boxShadow:
-      'hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px',
-  }),
+  boxShadow: theme.shadows[3],
   borderRadius: theme.shape.borderRadius,
 }));
 
 const SignInContainer = styled(Stack)(({ theme }) => ({
-  height: 'calc((1 - var(--template-frame-height, 0)) * 100dvh)',
-  minHeight: '100%',
+  minHeight: '100vh',
   padding: theme.spacing(2),
   [theme.breakpoints.up('sm')]: {
     padding: theme.spacing(4),
   },
-  '&::before': {
-    content: '""',
-    display: 'block',
-    position: 'absolute',
-    zIndex: -1,
-    inset: 0,
-    backgroundImage:
-      'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
-    backgroundRepeat: 'no-repeat',
-    ...theme.applyStyles('dark', {
-      backgroundImage:
-        'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
-    }),
-  },
-  backgroundColor: theme.palette.background.default,
+  background: theme.palette.mode === 'dark'
+    ? 'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))'
+    : 'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
 }));
 
 export default function SignIn(props) {
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-  const [open, setOpen] = React.useState(false);
+  const [emailError, setEmailError] = useState(false);
+  const [emailErrorMessage, setEmailErrorMessage] = useState('');
+  const [passwordError, setPasswordError] = useState(false);
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
-  const { setUser, setIsAuthenticated } = useAuth();
+  const { setUser, setIsAuthenticated, login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -87,29 +68,8 @@ export default function SignIn(props) {
     setOpen(false);
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (emailError || passwordError) {
-      return;
-    }
-    try {
-      const user = await loginUser({ email, password });
-      console.log('Login successful:', user);
-      setMessage('Login successful!');
-      setUser(user);
-      setIsAuthenticated(true);
-      localStorage.setItem('userId', user.id);
-      setIsLoggedIn(true);
-      navigate('/');
-    } catch (error) {
-      console.error('Login failed:', error);
-      setMessage('An unexpected error occurred. Please try again later.');
-    }
-  };
-
   const validateInputs = () => {
     let isValid = true;
-
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
       setEmailError(true);
       setEmailErrorMessage('Please enter a valid email address.');
@@ -118,136 +78,120 @@ export default function SignIn(props) {
       setEmailError(false);
       setEmailErrorMessage('');
     }
-
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
     if (!password || !passwordRegex.test(password)) {
       setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 8 characters long and contain at least one uppercase and one lowercase letter.');
+      setPasswordErrorMessage('Password must be at least 8 characters and contain uppercase and lowercase letters.');
       isValid = false;
     } else {
       setPasswordError(false);
       setPasswordErrorMessage('');
     }
-
     return isValid;
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!validateInputs()) return;
+    try {
+      const response = await loginUser({ email, password });
+      console.log('Login successful:', response);
+      setMessage('Login successful!');
+      
+      // Save token and user data using the auth context
+      const userData = {
+        id: response.user_id,
+        username: response.username,
+        email: response.email
+      };
+      
+      // Use the auth context login method
+      login(userData, response.access_token);
+      
+      navigate('/');
+    } catch (error) {
+      console.error('Login failed:', error);
+      setMessage('Login failed. Please check your credentials.');
+    }
   };
 
   return (
     <AppTheme {...props}>
-      <CssBaseline enableColorScheme />
+      <CssBaseline />
       <SignInContainer direction="column" justifyContent="center">
         <Card variant="outlined">
-          <Typography
-            component="h1"
-            variant="h4"
-            sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
-          >
+          <Typography component="h1" variant="h4" align="center">
             Sign in
           </Typography>
           {message && (
-            <Typography
-              variant="body2"
-              color="error"
-              sx={{ textAlign: 'center', marginBottom: 2 }}
-            >
+            <Typography variant="body2" color="error" align="center" sx={{ mb: 2 }}>
               {message}
             </Typography>
           )}
-          {isLoggedIn ? (
-            <CircularList />
-          ) : (
-            <Box
-              component="form"
-              onSubmit={handleSubmit}
-              noValidate
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                width: '100%',
-                gap: 2,
-              }}
-            >
-              <FormControl>
-                <FormLabel htmlFor="email">Email</FormLabel>
-                <TextField
-                  error={emailError}
-                  helperText={emailErrorMessage}
-                  id="email"
-                  type="email"
-                  name="email"
-                  placeholder="your@email.com"
-                  autoComplete="email"
-                  autoFocus
-                  required
-                  fullWidth
-                  variant="outlined"
-                  color={emailError ? 'error' : 'primary'}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </FormControl>
-              <FormControl>
-                <FormLabel htmlFor="password">Password</FormLabel>
-                <TextField
-                  error={passwordError}
-                  helperText={passwordErrorMessage}
-                  name="password"
-                  placeholder="••••••"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  autoFocus
-                  required
-                  fullWidth
-                  variant="outlined"
-                  color={passwordError ? 'error' : 'primary'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </FormControl>
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              />
-              <ForgotPassword open={open} handleClose={handleClose} />
-              <Button
-                type="submit"
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+            }}
+          >
+            <FormControl>
+              <FormLabel htmlFor="email">Email</FormLabel>
+              <TextField
+                error={emailError}
+                helperText={emailErrorMessage}
+                id="email"
+                type="email"
+                name="email"
+                placeholder="your@email.com"
+                autoComplete="email"
+                required
                 fullWidth
-                variant="contained"
-                onClick={validateInputs}
-              >
-                Sign in
-              </Button>
-              <Link
-                component="button"
-                type="button"
-                onClick={handleClickOpen}
-                variant="body2"
-                sx={{ alignSelf: 'center' }}
-              >
-                Forgot your password?
-              </Link>
-            </Box>
-          )}
-          <Divider>or</Divider>
+                variant="outlined"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor="password">Password</FormLabel>
+              <TextField
+                error={passwordError}
+                helperText={passwordErrorMessage}
+                name="password"
+                placeholder="••••••"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                required
+                fullWidth
+                variant="outlined"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </FormControl>
+            <FormControlLabel
+              control={<Checkbox value="remember" color="primary" />}
+              label="Remember me"
+            />
+            <ForgotPassword open={open} handleClose={handleClose} />
+            <Button type="submit" fullWidth variant="contained">
+              Sign in
+            </Button>
+            <Link component="button" onClick={handleClickOpen} variant="body2" align="center">
+              Forgot your password?
+            </Link>
+          </Box>
+          <Divider sx={{ my: 2 }}>or</Divider>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign in with Google')}
-              startIcon={<GoogleIcon />}
-            >
+            <Button fullWidth variant="outlined" startIcon={<GoogleIcon />}>
               Sign in with Google
             </Button>
-            <Typography sx={{ textAlign: 'center' }}>
+            <Typography align="center">
               Don&apos;t have an account?{' '}
-              <Link
-                component="button"
-                type="button"
-                onClick={() => navigate('/signup')}
-                variant="body2"
-                sx={{ alignSelf: 'center' }}
-              >
+              <Link component="button" onClick={() => navigate('/signup')} variant="body2">
                 Sign up
               </Link>
             </Typography>
@@ -256,4 +200,4 @@ export default function SignIn(props) {
       </SignInContainer>
     </AppTheme>
   );
-} 
+}

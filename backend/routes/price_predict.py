@@ -11,9 +11,9 @@ router = APIRouter()
 logging.basicConfig(level=logging.INFO)
 
 # Load the model, scaler, and label encoders
-MODEL_PATH = Path(r"C:\Users\Mostafa\Desktop\VehicleSouq\backend\ML-Models\Price-predection\PricePredection-1-.pkl")
-SCALER_PATH = Path(r"C:\Users\Mostafa\Desktop\VehicleSouq\backend\ML-Models\Price-predection\scaler (1).pkl")
-ENCODERS_PATH = Path(r"C:\Users\Mostafa\Desktop\VehicleSouq\backend\ML-Models\Price-predection\label_encoders.pkl")
+MODEL_PATH = Path(r"C:\Users\mosta\OneDrive\Desktop\VehicleSouq (2)\VehicleSouq\backend\ML-Models\Price-predection\PricePredection-1-.pkl")
+SCALER_PATH = Path(r"C:\Users\mosta\OneDrive\Desktop\VehicleSouq (2)\VehicleSouq\backend\ML-Models\Price-predection\scaler (1).pkl")
+ENCODERS_PATH = Path(r"C:\Users\mosta\OneDrive\Desktop\VehicleSouq (2)\VehicleSouq\backend\ML-Models\Price-predection\label_encoders.pkl")
 
 with open(MODEL_PATH, 'rb') as model_file:
     best_model = pickle.load(model_file)

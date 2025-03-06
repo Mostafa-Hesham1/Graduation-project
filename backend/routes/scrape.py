@@ -1,18 +1,24 @@
 from fastapi import APIRouter, HTTPException
-from bs4 import BeautifulSoup  # Ensure this import is correct
+from bs4 import BeautifulSoup
 from pydantic import BaseModel
 import requests
 import csv
 from time import sleep
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+from requests.exceptions import TooManyRedirects, RequestException
 import logging
 import os
 from fastapi.responses import FileResponse
 from datetime import datetime
 
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 router = APIRouter()
 
+# Request model for scraping parameters
 class ScrapeRequest(BaseModel):
     main_url: str
     pages: int
@@ -21,6 +27,8 @@ class ScrapeRequest(BaseModel):
 
 def create_session():
     session = requests.Session()
+    # If you have proxy issues, disable trusting env variables:
+    session.trust_env = False
     retries = Retry(total=5, backoff_factor=1, status_forcelist=[500, 502, 503, 504])
     session.mount('https://', HTTPAdapter(max_retries=retries))
     session.mount('http://', HTTPAdapter(max_retries=retries))
@@ -38,8 +46,8 @@ def extract_car_info(card, fuel_type, transmission_type):
         'City': None,
         'Date Displayed': None,
         'Item URL': None,
-        'Fuel Type': fuel_type,  # Set Fuel Type from request
-        'Transmission Type': transmission_type,  # Set Transmission Type from request
+        'Fuel Type': fuel_type,
+        'Transmission Type': transmission_type,
     }
 
     meta_tags = card.find_all("span", class_="newCarListUnit_metaTag")
@@ -47,44 +55,48 @@ def extract_car_info(card, fuel_type, transmission_type):
         car_info['Color'] = meta_tags[0].text.strip()
         car_info['Mileage'] = meta_tags[-1].text.strip() if meta_tags[-1].text.strip() != "- Km" else None
 
-    meta_links = card.find("div", class_="newCarListUnit_metaTags").find_all("span", class_="newCarListUnit_metaLink")
-    if meta_links:
-        car_info['Make'] = meta_links[0].text.strip()
-        car_info['Model'] = meta_links[1].text.strip()
-        car_info['City'] = meta_links[-1].text.strip()
+    meta_container = card.find("div", class_="newCarListUnit_metaTags")
+    if meta_container:
+        meta_links = meta_container.find_all("span", class_="newCarListUnit_metaLink")
+        if meta_links:
+            if len(meta_links) > 0:
+                car_info['Make'] = meta_links[0].text.strip()
+            if len(meta_links) > 1:
+                car_info['Model'] = meta_links[1].text.strip()
+            if len(meta_links) > 2:
+                car_info['City'] = meta_links[-1].text.strip()
 
-    # Extract year from the name
     if car_info['Name']:
-        name_parts = car_info['Name'].split()
-        for part in name_parts:
-            if part.isdigit() and len(part) == 4:  # Assuming the year is a 4-digit number
+        for part in car_info['Name'].split():
+            if part.isdigit() and len(part) == 4:
                 car_info['Year'] = part
                 break
 
-    date_displayed = card.find("div", class_="otherData_Date").find("span")
-    if date_displayed:
-        car_info['Date Displayed'] = date_displayed.text.strip()
+    date_container = card.find("div", class_="otherData_Date")
+    if date_container:
+        date_span = date_container.find("span")
+        if date_span:
+            car_info['Date Displayed'] = date_span.text.strip()
 
-    item_url = card.find("div", class_="newMainImg").find('a')
-    if item_url:
-        car_info['Item URL'] = f"https://eg.hatla2ee.com{item_url.get('href')}"
+    main_img = card.find("div", class_="newMainImg")
+    if main_img:
+        item_link = main_img.find('a')
+        if item_link:
+            car_info['Item URL'] = f"https://eg.hatla2ee.com{item_link.get('href')}"
 
     return car_info
 
-@router.post("/")
-def scrape_data(request: ScrapeRequest):
+@router.post("")
+async def scrape_data(request: ScrapeRequest):
     try:
         data = []
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
         }
         session = create_session()
-
         date_str = datetime.now().strftime("%Y-%m-%d")
         csv_file_path = os.path.join(os.getcwd(), f'hatla2ee_scraped_data_{date_str}.csv')
-        file_exists = os.path.isfile(csv_file_path)
-
-        with open(csv_file_path, mode='w', newline='', encoding='utf-8') as temp_csvfile:  # Use 'w' mode to overwrite file
+        with open(csv_file_path, mode='w', newline='', encoding='utf-8') as temp_csvfile:
             fieldnames = ['Name', 'Price', 'Color', 'Mileage', 'Make', 'Model', 'Year', 'City', 'Date Displayed', 'Item URL', 'Fuel Type', 'Transmission Type']
             writer = csv.DictWriter(temp_csvfile, fieldnames=fieldnames)
             writer.writeheader()
@@ -97,10 +109,17 @@ def scrape_data(request: ScrapeRequest):
                 if url in scraped_urls:
                     continue
                 scraped_urls.add(url)
+                try:
+                    response = session.get(url, headers=headers)
+                except TooManyRedirects as e:
+                    logger.error(f"Too many redirects for {url}: {str(e)}")
+                    break
+                except RequestException as e:
+                    logger.error(f"Failed to fetch {url}: {str(e)}")
+                    continue
 
-                response = session.get(url, headers=headers)
                 if response.status_code != 200:
-                    logging.error(f"Failed to fetch {url}: Status code {response.status_code}")
+                    logger.error(f"Failed to fetch {url}: Status code {response.status_code}")
                     continue
 
                 soup = BeautifulSoup(response.content, "html.parser")
@@ -114,19 +133,14 @@ def scrape_data(request: ScrapeRequest):
                     data.append(car_info)
                     total_items += 1
 
-                logging.info(f"***** Page {i} Scrapped Successfully with {len(car_cards)} Items *****")
-                logging.info(f"***** Total items scraped so far: {total_items} *****")
+                logger.info(f"Page {i} scraped successfully with {len(car_cards)} items.")
+                logger.info(f"Total items scraped so far: {total_items}")
                 sleep(5)
 
-        logging.info(f"***** Total Number of Scrapped Items: {total_items} *****")
-
-        if data:
-            return {"message": "Data scraped successfully", "data": data, "csv_file_path": csv_file_path}
-        else:
-            return {"message": "No data collected", "data": data, "csv_file_path": csv_file_path}
-
+        logger.info(f"Total number of scraped items: {total_items}")
+        return {"message": "Data scraped successfully", "data": data, "csv_file_path": csv_file_path}
     except Exception as e:
-        logging.error(f"An error occurred: {str(e)}")
+        logger.error(f"An error occurred: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/download_csv")
@@ -137,12 +151,3 @@ def download_csv():
         return FileResponse(csv_file_path, media_type='text/csv', filename=f'hatla2ee_scraped_data_{date_str}.csv')
     else:
         raise HTTPException(status_code=404, detail="CSV file not found")
-
-# Ensure the router is included in the main application
-# filepath: /c:/Users/Mostafa/Desktop/VehicleSouq/backend/main.py
-from fastapi import FastAPI
-from routes import scrape
-
-app = FastAPI()
-
-app.include_router(scrape.router, prefix="/scrape", tags=["scrape"])

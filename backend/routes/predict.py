@@ -15,7 +15,7 @@ router = APIRouter()
 logging.basicConfig(level=logging.INFO)
 
 # Correct path to your new model (densenet201_best_model.pkl)
-MODEL_PATH = Path(r"C:\Users\Mostafa\Desktop\VehicleSouq\backend\densenet201_best_model.pkl")
+MODEL_PATH = Path(r"C:\Users\mosta\OneDrive\Desktop\VehicleSouq (2)\VehicleSouq\backend\densenet201_best_model.pkl")
 
 # Global variable to hold the model
 learn = None

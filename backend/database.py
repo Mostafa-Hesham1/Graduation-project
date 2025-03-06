@@ -6,14 +6,17 @@ import logging
 # Load environment variables from .env file
 load_dotenv()
 
+# Get MongoDB URI from environment variable
 MONGODB_URI = os.getenv("MONGODB_URI")
 
 # Create a MongoDB client
 client = AsyncIOMotorClient(MONGODB_URI)
 
-# Specify the database name (replace 'your_database_name' with the actual name)
-DATABASE_NAME = 'VEHICLESOUQ'  # Change this to your actual database name
-db = client[DATABASE_NAME]
+# Get the database
+db = client.vehicle_souq  # Use your actual database name
+
+# Print connection status for debugging
+print(f"Connected to MongoDB: {MONGODB_URI.split('@')[1] if MONGODB_URI else 'Not connected'}")
 
 # Attempt to connect to the database
 try:
@@ -21,4 +24,4 @@ try:
     collections = db.list_collection_names()
     logging.info("Connected to MongoDB successfully. Collections: %s", collections)
 except Exception as e:
-    logging.error("Failed to connect to MongoDB: %s", e) 
+    logging.error("Failed to connect to MongoDB: %s", e)
