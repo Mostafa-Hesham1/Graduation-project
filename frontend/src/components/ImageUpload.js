@@ -41,7 +41,7 @@ const currentYear = new Date().getFullYear();
 const yearOptions = Array.from(new Array(currentYear - 1999 + 1), (val, index) => 1999 + index);
 
 const HeroSection = muiStyled(Box)(({ theme }) => ({
-  width: '100vw',
+  width: '100%', // Changed from '100vw' to '100%'
   height: '25vh',
   backgroundImage: 'url(/CAR-BG.jpg)',
   backgroundSize: 'cover',
@@ -56,6 +56,9 @@ const HeroSection = muiStyled(Box)(({ theme }) => ({
   textAlign: 'center',
   position: 'relative',
   top: 0,
+  left: 0, // Added to ensure full width alignment
+  right: 0, // Added to ensure full width alignment
+  overflowX: 'hidden', // Added to prevent horizontal scrolling
 }));
 
 const StyledUploadButton = styled(Button)(({ theme }) => ({
@@ -371,7 +374,16 @@ const ImageUpload = () => {
 
   return (
     <>
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 0, p: 0 }}>
+      <Box sx={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center', 
+        mt: 0, 
+        p: 0,
+        width: '100%', // Added to ensure full width
+        maxWidth: '100%', // Added to prevent overflow
+        overflowX: 'hidden' // Added to prevent horizontal scrolling
+      }}>
         <HeroSection>
           <Typography variant="h5" component="h2">Upload Your Car Image</Typography>
         </HeroSection>
