@@ -11,6 +11,7 @@ import SignUp from './components/SignUp';
 import Login from './components/Login';
 import CarListing from './components/CarListing';
 import UserListings from './components/UserListings';
+import DamageDetect from './components/DamageDetect';
 import Footer from './components/Footer';
 import { Box } from '@mui/material';
 
@@ -33,11 +34,11 @@ function App() {
       <Router>
         <ResponsiveAppBar />
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 0, minHeight: '80vh' }}>
-          {/* Remove the RouteCheck component for now */}
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/car-recognizer" element={<ImageUpload />} />
             <Route path="/image-upload" element={<ImageUpload />} />
+            <Route path="/damage-detect" element={<DamageDetect />} />
             <Route path="/scrape" element={<Scrape />} />
             <Route path="/price-prediction" element={<PricePrediction />} />
             <Route path="/data-visualization" element={<DataVisualization />} />

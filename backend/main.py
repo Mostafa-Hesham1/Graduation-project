@@ -114,6 +114,7 @@ from database import db
 from bson import json_util
 from bson.objectid import ObjectId
 from routes import car_routes
+from routes.damage_detect import router as damage_detect_router
 
 # Mount all routers
 app.include_router(scrape.router, prefix="/scrape", tags=["scrape"])
@@ -124,6 +125,7 @@ app.include_router(car_specs_router, prefix="/car", tags=["car"])
 app.include_router(price_predict_router, prefix="/price", tags=["price"])
 app.include_router(data_router, prefix="/data", tags=["data"])
 app.include_router(car_routes.router, prefix="/cars", tags=["cars"])
+app.include_router(damage_detect_router, prefix="/damage", tags=["damage"])
 app.include_router(auth.router)
 
 # Add this right after the app.include_router(auth.router) line:

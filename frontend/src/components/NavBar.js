@@ -16,7 +16,14 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom'; // Import Ro
 import { useAuth } from '../context/AuthContext'; // Import your Auth context
 import { AccountCircle } from '@mui/icons-material'; // Import AccountCircle icon
 
-const pages = ['Scrape', 'Price Prediction', 'Data Visualization', 'Car Recognizer']; // Add Sign Up to pages
+// Ensure the pages array includes Damage Detect with the correct path and styling
+const pages = [
+  { name: 'Home', path: '/' }, 
+  { name: 'Car Recognizer', path: '/car-recognizer' },
+  { name: 'Damage Detect', path: '/damage-detect', highlight: true },
+  { name: 'Price Prediction', path: '/price-prediction' },
+  { name: 'Listings', path: '/my-listings', requireAuth: true }
+];
 
 // User menu items array
 const userMenuItems = [
@@ -149,8 +156,20 @@ function ResponsiveAppBar() {
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu} component={RouterLink} to={`/${page.toLowerCase().replace(' ', '-')}`}>
-                  <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
+                <MenuItem 
+                  key={page.name} 
+                  onClick={handleCloseNavMenu} 
+                  component={RouterLink} 
+                  to={page.path}
+                  sx={{
+                    // Add highlight styling for the Damage Detect menu item on mobile
+                    ...(page.highlight && {
+                      fontWeight: 'bold',
+                      bgcolor: '#f0f7ff'
+                    })
+                  }}
+                >
+                  <Typography sx={{ textAlign: 'center' }}>{page.name}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -179,12 +198,25 @@ function ResponsiveAppBar() {
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
-                key={page}
+                key={page.name}
                 onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-                component={RouterLink} to={`/${page.toLowerCase().replace(' ', '-')}`} // Replace spaces with hyphens
+                sx={{ 
+                  my: 2, 
+                  color: 'white', 
+                  display: 'block',
+                  // Add highlight styling for the Damage Detect button
+                  ...(page.highlight && {
+                    fontWeight: 'bold',
+                    bgcolor: 'rgba(255,255,255,0.1)',
+                    '&:hover': {
+                      bgcolor: 'rgba(255,255,255,0.2)',
+                    }
+                  })
+                }}
+                component={RouterLink} 
+                to={page.path}
               >
-                {page}
+                {page.name}
               </Button>
             ))}
           </Box>
