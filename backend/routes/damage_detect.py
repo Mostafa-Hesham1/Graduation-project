@@ -1,4 +1,4 @@
-from fastapi import APIRouter, File, UploadFile, HTTPException
+from fastapi import APIRouter, File, UploadFile, HTTPException, Form
 from fastapi.responses import JSONResponse
 from ultralytics import YOLO
 import numpy as np
@@ -18,7 +18,7 @@ router = APIRouter()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Update path to the new segmentation model
+# Update path to the segmentation model
 MODEL_PATH = r"C:\Users\mosta\OneDrive\Desktop\VehicleSouq (2)\VehicleSouq\backend\ML-Models\CarDamageModels\yolov8l_seg_car_damage.pt"
 
 # Define the class names and color mapping for visualization
@@ -42,7 +42,64 @@ except Exception as e:
     logger.error(f"Failed to load damage segmentation model: {e}")
     model = None
 
-def custom_visualize(image, results, score_threshold=0.3, mask_threshold=0.5, alpha=0.5):
+def preprocess_image(img, reduce_reflection=True, enhance_contrast=True):
+    """
+    Preprocess the image to improve damage detection accuracy
+    
+    Args:
+        img: Input image (numpy array)
+        reduce_reflection: Whether to apply reflection reduction
+        enhance_contrast: Whether to enhance image contrast
+        
+    Returns:
+        Preprocessed image
+    """
+    # Convert to HSV color space to work with brightness
+    if img.max() <= 1.0:
+        img = (img * 255).astype(np.uint8)
+    
+    # Make a copy of the original image
+    processed_img = img.copy()
+    
+    if reduce_reflection:
+        # Convert to HSV color space
+        hsv = cv2.cvtColor(processed_img, cv2.COLOR_BGR2HSV)
+        
+        # Identify bright areas (potential reflections)
+        _, s, v = cv2.split(hsv)
+        bright_mask = (v > 220) & (s < 30)  # High value and low saturation = white/bright reflection
+        
+        # Dilate the mask to cover reflection areas better
+        kernel = np.ones((5, 5), np.uint8)
+        bright_mask = cv2.dilate(bright_mask.astype(np.uint8), kernel, iterations=1)
+        
+        # Apply a median blur to just the reflection areas to reduce their impact
+        reflection_reduced = cv2.medianBlur(processed_img, 7)
+        
+        # Create a mask for blending the processed and original image
+        mask_3d = np.stack([bright_mask, bright_mask, bright_mask], axis=2)
+        
+        # Blend original image with processed where reflections were detected
+        processed_img = np.where(mask_3d, reflection_reduced, processed_img)
+    
+    if enhance_contrast:
+        # Convert to LAB color space for better contrast enhancement
+        lab = cv2.cvtColor(processed_img, cv2.COLOR_BGR2LAB)
+        l, a, b = cv2.split(lab)
+        
+        # Apply CLAHE (Contrast Limited Adaptive Histogram Equalization) to L channel
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+        cl = clahe.apply(l)
+        
+        # Merge the CLAHE enhanced L-channel back with the a and b channels
+        limg = cv2.merge((cl, a, b))
+        
+        # Convert back to BGR color space
+        processed_img = cv2.cvtColor(limg, cv2.COLOR_LAB2BGR)
+    
+    return processed_img
+
+def custom_visualize(image, results, score_threshold=0.25, mask_threshold=0.5, alpha=0.5):
     """
     Overlays segmentation masks with specified colors for each damage type onto the input image.
     
@@ -102,9 +159,15 @@ def custom_visualize(image, results, score_threshold=0.3, mask_threshold=0.5, al
     return img
 
 @router.post("/detect")
-async def detect_damage(file: UploadFile = File(...)):
+async def detect_damage(
+    file: UploadFile = File(...),
+    reduce_reflection: bool = Form(True),
+    enhance_contrast: bool = Form(True),
+    confidence_threshold: float = Form(0.25)
+):
     """
     Detects and segments car damage in the uploaded image.
+    Now with options to handle reflections and improve small damage detection.
     """
     try:
         if model is None:
@@ -117,19 +180,30 @@ async def detect_damage(file: UploadFile = File(...)):
         # Convert PIL image to numpy array for OpenCV processing
         np_img = np.array(pil_img)
         
-        # Run inference with the segmentation model
-        results = model(np_img, conf=0.3)
+        # Apply preprocessing to handle reflections and enhance contrast
+        processed_img = preprocess_image(
+            np_img, 
+            reduce_reflection=reduce_reflection,
+            enhance_contrast=enhance_contrast
+        )
         
-        # Visualize results with custom segmentation masks
-        annotated_img = custom_visualize(np_img, results)
-        
-        # Convert numpy array to base64 for response
-        _, buffer_full = cv2.imencode('.jpg', annotated_img)
-        annotated_img_str = base64.b64encode(buffer_full).decode()
-        
-        # Convert original image to base64
+        # Convert original and processed images to base64 for response
         _, buffer_orig = cv2.imencode('.jpg', np_img)
         orig_img_str = base64.b64encode(buffer_orig).decode()
+        
+        _, buffer_processed = cv2.imencode('.jpg', processed_img)
+        processed_img_str = base64.b64encode(buffer_processed).decode()
+        
+        # Run inference with the segmentation model on processed image
+        # Use a lower confidence threshold to detect smaller damages
+        results = model(processed_img, conf=confidence_threshold)
+        
+        # Visualize results with custom segmentation masks
+        annotated_img = custom_visualize(processed_img, results, score_threshold=confidence_threshold)
+        
+        # Convert annotated image to base64 for response
+        _, buffer_full = cv2.imencode('.jpg', annotated_img)
+        annotated_img_str = base64.b64encode(buffer_full).decode()
         
         # Process results: detections and damage counts
         detections = []
@@ -143,7 +217,7 @@ async def detect_damage(file: UploadFile = File(...)):
             
             for i in range(len(scores)):
                 confidence = float(scores[i])
-                if confidence < 0.3:  # Skip low confidence detections
+                if confidence < confidence_threshold:  # Skip low confidence detections
                     continue
                     
                 class_id = int(labels[i])
@@ -165,7 +239,7 @@ async def detect_damage(file: UploadFile = File(...)):
                 
                 # Crop the detected damage region 
                 x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-                crop = np_img[y1:y2, x1:x2]
+                crop = processed_img[y1:y2, x1:x2]
                 
                 # Add mask overlay to crop if available
                 if hasattr(results[0], 'masks') and results[0].masks is not None:
@@ -175,8 +249,8 @@ async def detect_damage(file: UploadFile = File(...)):
                     
                     if i < len(masks):  # Ensure there's a mask for this detection
                         mask = masks[i]
-                        if mask.shape != (np_img.shape[0], np_img.shape[1]):
-                            mask = cv2.resize(mask, (np_img.shape[1], np_img.shape[0]), 
+                        if mask.shape != (processed_img.shape[0], processed_img.shape[1]):
+                            mask = cv2.resize(mask, (processed_img.shape[1], processed_img.shape[0]), 
                                              interpolation=cv2.INTER_NEAREST)
                         
                         # Apply color to the cropped region based on damage type
@@ -206,10 +280,15 @@ async def detect_damage(file: UploadFile = File(...)):
             "status": "success",
             "message": "Car damage detected",
             "original_image": orig_img_str,
+            "processed_image": processed_img_str,
             "annotated_image": annotated_img_str,
             "detections": detections,
             "damage_counts": damage_counts,
-            "damage_crops": damage_crops
+            "damage_crops": damage_crops,
+            "preprocessing_applied": {
+                "reflection_reduction": reduce_reflection,
+                "contrast_enhancement": enhance_contrast
+            }
         }
     
     except Exception as e:

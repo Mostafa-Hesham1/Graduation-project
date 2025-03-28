@@ -20,12 +20,25 @@ import {
   AccordionDetails,
   ListItem,
   List,
+  IconButton,
+  Tabs,
+  Tab,
+  FormGroup,
+  FormControlLabel,
+  Switch,
+  Slider,
+  Tooltip,
+  Collapse,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import WarningIcon from '@mui/icons-material/Warning';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
+import TuneIcon from '@mui/icons-material/Tune';
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
+import ContrastIcon from '@mui/icons-material/Contrast';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import axios from 'axios';
 
 // Styled components
@@ -143,6 +156,12 @@ const DamageDetect = () => {
   const [detections, setDetections] = useState([]);
   const [damageCounts, setDamageCounts] = useState({});
   const [totalDamage, setTotalDamage] = useState(0);
+  const [showSettings, setShowSettings] = useState(false);
+  const [reduceReflection, setReduceReflection] = useState(true);
+  const [enhanceContrast, setEnhanceContrast] = useState(true);
+  const [confidenceThreshold, setConfidenceThreshold] = useState(0.25);
+  const [processedImage, setProcessedImage] = useState(null);
+  const [activeTab, setActiveTab] = useState(0);
 
   // Format the damage type name for better display
   const formatDamageType = (damageType) => {
@@ -175,6 +194,9 @@ const DamageDetect = () => {
     try {
       const formData = new FormData();
       formData.append('file', image);
+      formData.append('reduce_reflection', reduceReflection);
+      formData.append('enhance_contrast', enhanceContrast);
+      formData.append('confidence_threshold', confidenceThreshold);
       const response = await axios.post(
         'http://localhost:8000/damage/detect',
         formData,
@@ -185,6 +207,7 @@ const DamageDetect = () => {
       );
       if (response.data) {
         setAnnotatedImage(`data:image/jpeg;base64,${response.data.annotated_image}`);
+        setProcessedImage(`data:image/jpeg;base64,${response.data.processed_image}`);
         setDetections(response.data.detections || []);
         setDamageCounts(response.data.damage_counts || {});
         setDamageCrops(response.data.damage_crops || []);
@@ -201,6 +224,10 @@ const DamageDetect = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const toggleSettings = () => {
+    setShowSettings(!showSettings);
   };
 
   return (
@@ -229,9 +256,92 @@ const DamageDetect = () => {
                 flexDirection: 'column'
               }}
             >
-              <Typography variant="h6" gutterBottom>
-                Upload Vehicle Image
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h6">
+                  Upload Vehicle Image
+                </Typography>
+                <Tooltip title="Detection Settings">
+                  <IconButton onClick={toggleSettings} color="primary">
+                    <TuneIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+              
+              <Collapse in={showSettings}>
+                <Paper sx={{ p: 2, mb: 2, bgcolor: 'background.paper', borderRadius: 2 }}>
+                  <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'medium', color: 'primary.main' }}>
+                    Detection Settings
+                  </Typography>
+                  
+                  <FormGroup>
+                    <Box sx={{ mb: 2 }}>
+                      <FormControlLabel
+                        control={
+                          <Switch 
+                            checked={reduceReflection} 
+                            onChange={(e) => setReduceReflection(e.target.checked)} 
+                            color="primary"
+                          />
+                        }
+                        label={
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <WbSunnyIcon fontSize="small" sx={{ mr: 0.5 }} />
+                            <Typography variant="body2">Reduce Sun Reflections</Typography>
+                          </Box>
+                        }
+                      />
+                      <Typography variant="caption" sx={{ display: 'block', ml: 7, mt: -0.5, color: 'text.secondary' }}>
+                        Helps with glare and sun reflections on the car surface
+                      </Typography>
+                    </Box>
+                    
+                    <Box sx={{ mb: 2 }}>
+                      <FormControlLabel
+                        control={
+                          <Switch 
+                            checked={enhanceContrast} 
+                            onChange={(e) => setEnhanceContrast(e.target.checked)} 
+                            color="primary"
+                          />
+                        }
+                        label={
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <ContrastIcon fontSize="small" sx={{ mr: 0.5 }} />
+                            <Typography variant="body2">Enhance Small Damages</Typography>
+                          </Box>
+                        }
+                      />
+                      <Typography variant="caption" sx={{ display: 'block', ml: 7, mt: -0.5, color: 'text.secondary' }}>
+                        Improves detection of subtle scratches and small dents
+                      </Typography>
+                    </Box>
+                    
+                    <Box sx={{ mt: 2 }}>
+                      <Typography variant="body2" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                        <ZoomInIcon fontSize="small" sx={{ mr: 0.5 }} />
+                        Detection Sensitivity: {(confidenceThreshold * 100).toFixed(0)}%
+                      </Typography>
+                      <Slider
+                        value={confidenceThreshold}
+                        onChange={(e, value) => setConfidenceThreshold(value)}
+                        min={0.1}
+                        max={0.5}
+                        step={0.05}
+                        marks={[
+                          { value: 0.1, label: 'High' },
+                          { value: 0.3, label: 'Med' },
+                          { value: 0.5, label: 'Low' }
+                        ]}
+                        sx={{ ml: 1 }}
+                      />
+                      <Typography variant="caption" sx={{ display: 'block', ml: 1, color: 'text.secondary' }}>
+                        Lower values detect more subtle damages but may increase false positives
+                      </Typography>
+                    </Box>
+                  </FormGroup>
+                </Paper>
+              </Collapse>
+
               <Typography variant="body2" color="text.secondary" paragraph>
                 Please upload a clear image of the damaged vehicle. For best results, ensure good lighting and that the damage is clearly visible.
               </Typography>
@@ -329,30 +439,76 @@ const DamageDetect = () => {
                     Damage Detection Results
                   </Typography>
                   
-                  <Box 
-                    sx={{ 
-                      width: '100%', 
-                      pt: '56.25%',  
-                      position: 'relative',
-                      borderRadius: 1,
-                      overflow: 'hidden',
-                      boxShadow: '0 2px 10px rgba(0,0,0,0.15)',
-                      mb: 2
-                    }}
-                  >
-                    <img 
-                      src={annotatedImage} 
-                      alt="Damage Analysis" 
-                      style={{ 
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'contain',
-                        backgroundColor: '#f5f5f5'
+                  <Box sx={{ mb: 2 }}>
+                    <Tabs 
+                      value={activeTab} 
+                      onChange={(e, newValue) => setActiveTab(newValue)}
+                      indicatorColor="primary"
+                      textColor="primary"
+                      variant="fullWidth"
+                      sx={{ mb: 1 }}
+                    >
+                      <Tab label="Detected Damage" />
+                      <Tab label="Processed Image" />
+                      <Tab label="Original" />
+                    </Tabs>
+                    
+                    <Box 
+                      sx={{ 
+                        width: '100%', 
+                        pt: '56.25%',  
+                        position: 'relative',
+                        borderRadius: 1,
+                        overflow: 'hidden',
+                        boxShadow: '0 2px 10px rgba(0,0,0,0.15)',
                       }}
-                    />
+                    >
+                      {activeTab === 0 && (
+                        <img 
+                          src={annotatedImage} 
+                          alt="Damage Analysis" 
+                          style={{ 
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'contain',
+                            backgroundColor: '#f5f5f5'
+                          }}
+                        />
+                      )}
+                      {activeTab === 1 && processedImage && (
+                        <img 
+                          src={processedImage} 
+                          alt="Processed Image" 
+                          style={{ 
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'contain',
+                            backgroundColor: '#f5f5f5'
+                          }}
+                        />
+                      )}
+                      {activeTab === 2 && (
+                        <img 
+                          src={previewImage} 
+                          alt="Original Image" 
+                          style={{ 
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'contain',
+                            backgroundColor: '#f5f5f5'
+                          }}
+                        />
+                      )}
+                    </Box>
                   </Box>
                   
                   <DamageSummaryCard sx={{ mt: 2, flexGrow: 1 }}>
@@ -421,13 +577,22 @@ const DamageDetect = () => {
                   <Typography variant="body1" color="text.secondary" align="center">
                     Upload and analyze an image to see damage detection results here
                   </Typography>
+                  
+                  <Alert severity="info" sx={{ mt: 4, width: '100%' }}>
+                    <Typography variant="subtitle2" gutterBottom>Tips for best results:</Typography>
+                    <Typography variant="body2">
+                      • Take photos in indirect or diffused light to avoid reflections<br />
+                      • Capture damage areas from multiple angles<br />
+                      • Ensure clear focus on the damaged area<br />
+                      • For small damages, take close-up photos
+                    </Typography>
+                  </Alert>
                 </Paper>
               )}
             </Box>
           </Grid>
         </Grid>
 
-        {/* Additional section to display cropped damage areas */}
         {damageCrops.length > 0 && (
           <Paper elevation={3} sx={{ mt: 4, p: 3, borderRadius: 2 }}>
             <Typography variant="h6" gutterBottom>
@@ -464,7 +629,6 @@ const DamageDetect = () => {
   );
 };
 
-// Helper function to get recommendations based on damage type
 function getRecommendation(damageType) {
   const recommendations = {
     'Front-Windscreen-Damage': 'Requires immediate replacement to ensure safe driving visibility',
