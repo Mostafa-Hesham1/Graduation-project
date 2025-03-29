@@ -5,6 +5,7 @@ from fastapi.responses import FileResponse, JSONResponse
 import os
 import logging
 import sys
+from datetime import datetime, timedelta
 
 # Configure logging with more detail
 logging.basicConfig(
@@ -23,11 +24,10 @@ app = FastAPI()
 # Add CORS middleware with updated settings
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Allow requests from your frontend
+    allow_origins=["*"],  # In production, specify your frontend domain
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all methods 
-    allow_headers=["*"],  # Allow all headers
-    expose_headers=["*"],  # Expose all headers
+    allow_methods=["*"],  # Allow all methods including OPTIONS
+    allow_headers=["*"],
 )
 
 # Define uploads directory with absolute path
@@ -115,6 +115,8 @@ from bson import json_util
 from bson.objectid import ObjectId
 from routes import car_routes
 from routes.damage_detect import router as damage_detect_router
+# Import the admin router
+from routes.admin import router as admin_router
 
 # Mount all routers
 app.include_router(scrape.router, prefix="/scrape", tags=["scrape"])
@@ -127,8 +129,9 @@ app.include_router(data_router, prefix="/data", tags=["data"])
 app.include_router(car_routes.router, prefix="/cars", tags=["cars"])
 app.include_router(damage_detect_router, prefix="/damage", tags=["damage"])
 app.include_router(auth.router)
+app.include_router(admin_router, prefix="/admin", tags=["admin"])
 
-# Add this right after the app.include_router(auth.router) line:
+# Direct auth check endpoint
 @app.get("/auth-check")
 async def root_auth_check():
     """Direct auth check endpoint"""
@@ -161,7 +164,161 @@ async def root_auth_check():
             "error_type": str(type(e))
         }
 
-# Add this after your other routes
+# Add direct admin endpoints as a fallback if router inclusion doesn't work
+@app.get("/admin/stats-direct")
+async def admin_stats_direct():
+    """Direct access to admin stats"""
+    try:
+        # Get collection counts directly
+        total_users = await db.users.count_documents({})
+        total_cars = await db.cars.count_documents({})
+        active_listings = await db.listings.count_documents({"status": {"$ne": "sold"}})
+        completed_sales = await db.listings.count_documents({"status": "sold"})
+        
+        return {
+            "total_users": total_users,
+            "total_cars": total_cars,
+            "active_listings": active_listings,
+            "completed_sales": completed_sales
+        }
+    except Exception as e:
+        logger.error(f"Error in direct admin stats: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error fetching admin statistics: {str(e)}"
+        )
+
+# Add these new direct endpoints for debugging
+@app.get("/admin/users-direct")
+async def admin_users_direct():
+    """Direct access to admin users (no auth check for debugging)"""
+    try:
+        cursor = db.users.find({}).sort("created_at", -1)
+        
+        users = []
+        async for user in cursor:
+            if "_id" in user:
+                user["_id"] = str(user["_id"])
+                
+            # Remove sensitive information
+            if "password" in user:
+                del user["password"]
+            if "hashed_password" in user:
+                del user["hashed_password"]
+                
+            # Ensure we have created_at
+            if "created_at" not in user:
+                user["created_at"] = datetime.utcnow()
+                
+            users.append(user)
+        
+        if not users:
+            # Add sample data for UI testing
+            sample_users = [
+                {
+                    "_id": "admin1",
+                    "username": "admin",
+                    "email": "admin@vehiclesouq.com",
+                    "role": "admin",
+                    "created_at": datetime.utcnow() - timedelta(days=60)
+                },
+                {
+                    "_id": "user1",
+                    "username": "user1",
+                    "email": "user1@example.com",
+                    "role": "user",
+                    "created_at": datetime.utcnow() - timedelta(days=30)
+                }
+            ]
+            users = sample_users
+            
+        return {"users": users}
+    except Exception as e:
+        logger.error(f"Error in direct admin users: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error fetching users: {str(e)}"
+        )
+
+@app.get("/admin/listings-direct")
+async def admin_listings_direct():
+    """Direct access to admin listings (no auth check for debugging)"""
+    try:
+        cursor = db.listings.find().sort("created_at", -1).limit(10)
+        
+        listings = []
+        async for listing in cursor:
+            if "_id" in listing:
+                listing["_id"] = str(listing["_id"])
+                
+            # Process user_id
+            if "user_id" in listing and isinstance(listing["user_id"], ObjectId):
+                listing["user_id"] = str(listing["user_id"])
+                
+            # Ensure we have required fields with defaults
+            if "price" not in listing:
+                listing["price"] = 0
+                
+            if "created_at" not in listing:
+                listing["created_at"] = datetime.utcnow()
+                
+            listings.append(listing)
+        
+        if not listings:
+            # Add sample data for UI testing
+            sample_listings = [
+                {
+                    "_id": "sample1",
+                    "title": "Sample BMW X5",
+                    "make": "BMW",
+                    "model": "X5",
+                    "price": 750000,
+                    "created_at": datetime.utcnow(),
+                    "user": {"username": "admin"}
+                }
+            ]
+            listings = sample_listings
+            
+        return {"listings": listings}
+    except Exception as e:
+        logger.error(f"Error in direct admin listings: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error fetching listings: {str(e)}"
+        )
+
+@app.get("/admin/growth-metrics-direct") 
+async def admin_growth_metrics_direct():
+    """Direct access to growth metrics (no auth check for debugging)"""
+    try:
+        # Calculate time periods
+        now = datetime.utcnow()
+        
+        # Generate sample growth data
+        total_users = await db.users.count_documents({})
+        total_cars = await db.cars.count_documents({})
+        
+        return {
+            "users_growth": f"+{max(5, int(total_users * 0.1))}",
+            "cars_growth": f"+{max(3, int(total_cars * 0.1))}",
+            "listings_growth": "+7",
+            "sales_growth": "+2"
+        }
+    except Exception as e:
+        logger.error(f"Error in direct growth metrics: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error fetching growth metrics: {str(e)}"
+        )
+
+# Add specific handler for admin preflight requests
+@app.options("/admin/{rest_of_path:path}")
+async def admin_options_handler(rest_of_path: str):
+    """Handle OPTIONS requests to /admin routes"""
+    logger.info(f"Processing OPTIONS request for /admin/{rest_of_path}")
+    return {}
+
+# General CORS preflight handler
 @app.options("/{path:path}")
 async def cors_preflight(path: str, request: Request):
     """Handle CORS preflight requests for all routes"""

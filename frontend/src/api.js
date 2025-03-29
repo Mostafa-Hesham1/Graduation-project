@@ -1,64 +1,83 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000'; // Base URL without /api
+const API_URL = 'http://localhost:8000';
 
-// Update the registerUser function to better handle CORS errors
+// Configure axios defaults
+axios.defaults.baseURL = API_URL;
+
+// Get token from localStorage
+const getAuthHeader = () => {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+// User registration
 export const registerUser = async (userData) => {
   try {
-    console.log("Sending registration request:", userData);
-    const response = await fetch(`${API_URL}/signup`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify(userData),
-      // Don't include credentials for signup/login
-    });
-
-    const data = await response.json();
-    
-    if (!response.ok) {
-      console.error("Registration error:", data);
-      throw new Error(data.detail || "Registration failed");
-    }
-    
-    return data;
+    const response = await axios.post('/signup', userData);
+    return response.data;
   } catch (error) {
-    console.error("Registration error:", error);
-    throw error;
+    console.error('Registration error:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.detail || error.message);
   }
 };
 
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return token ? { 'Authorization': `Bearer ${token}` } : {};
-};
-
-// Update the login function
-export const loginUser = async (userData) => {
+// User login - simplified direct approach
+export const loginUser = async (credentials) => {
   try {
-    const response = await fetch(`${API_URL}/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.detail || 'Login failed');
+    // Create a plain object for direct JSON login
+    const loginData = {
+      email: credentials.email,
+      password: credentials.password
+    };
+    
+    console.log('Attempting simplified JSON login');
+    
+    // Try the JSON login endpoint directly
+    const response = await axios.post('/json-login', loginData);
+    console.log('Login successful with JSON endpoint');
+    return response.data;
+  } catch (error) {
+    // If JSON login fails, try form-based login as fallback
+    try {
+      if (error.response?.status === 404 || error.response?.status === 422) {
+        console.log('JSON login failed, trying form login as fallback');
+        const formData = new URLSearchParams();
+        formData.append('username', credentials.email);
+        formData.append('password', credentials.password);
+        
+        const formResponse = await axios.post('/login', formData, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        });
+        
+        console.log('Form login successful');
+        return formResponse.data;
+      }
+    } catch (formError) {
+      console.error('Form login also failed:', formError);
+      throw formError;
     }
     
-    return await response.json();
-  } catch (error) {
-    console.error('Login error:', error);
-    throw error;
+    // If we get here, neither method worked
+    console.error('Login error details:', {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: JSON.stringify(error.response?.data || {})
+    });
+    
+    if (error.response?.data?.detail) {
+      throw new Error(error.response.data.detail);
+    } else {
+      throw new Error('Login failed. Please try again with correct credentials.');
+    }
   }
 };
 
+// Get user's listings
+
+// Upload car listing
 export const uploadCarListing = async (carData) => {
   console.log("Sending car listing with auth token"); // Debug log
   const token = localStorage.getItem('token') || 'testing'; // Use stored token or fallback
@@ -139,29 +158,6 @@ export const getUserListings = async () => {
   }
 };
 
-// Add a function to check auth status
-export const checkAuthStatus = async () => {
-  const token = localStorage.getItem('token');
-  if (!token) return null;
-  
-  try {
-    const response = await fetch(`${API_URL}/me`, {
-      headers: {
-        ...getAuthHeaders()
-      },
-    });
-    
-    if (response.ok) {
-      return await response.json();
-    } else {
-      // If server rejects the token, clear it
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      return null;
-    }
-  } catch (error) {
-    console.error('Error checking auth status:', error);
-    return null;
-  }
-};
+
+// Add other API functions as needed
 

@@ -171,60 +171,77 @@ export default function Login(props) {
 
   const validateInputs = () => {
     let isValid = true;
-    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+    
+    // Email validation - only check if it's not empty
+    if (!email) {
       setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
+      setEmailErrorMessage('Email is required.');
       isValid = false;
     } else {
       setEmailError(false);
       setEmailErrorMessage('');
     }
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
-    if (!password || !passwordRegex.test(password)) {
+    
+    // Password validation - only check if it's not empty
+    if (!password) {
       setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 8 characters and contain uppercase and lowercase letters.');
+      setPasswordErrorMessage('Password is required.');
       isValid = false;
     } else {
       setPasswordError(false);
       setPasswordErrorMessage('');
     }
+    
     return isValid;
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!validateInputs()) return;
+    
+    setLoginSuccess(false);
+    setMessage('');
+    
+    // Debug logging
+    console.log('Login attempt with:', { emailLength: email.length, passwordLength: password.length });
+    
     try {
+      // Call the API with a clear try/catch
       const response = await loginUser({ email, password });
-      console.log('Login successful:', response);
       
-      // Check if response contains the expected data structure
+      // Check response format
+      console.log('Login response type:', typeof response);
+      console.log('Login success, received token:', !!response.access_token);
+      
       if (response && response.access_token) {
-        // Show success message
         setLoginSuccess(true);
         setMessage('Login successful! Redirecting...');
         
-        // Save token and user data using the auth context
+        // Store user data
         const userData = {
           id: response.user_id,
           username: response.username,
-          email: response.email
+          email: response.email,
+          role: response.role || 'user' // Default to user role if none provided
         };
         
-        // Store token directly without any processing 
+        // Login using context
         login(userData, response.access_token);
         
-        // Add a slight delay before navigating
+        // Redirect after delay
         setTimeout(() => {
-          navigate('/');
+          if (userData.role === 'admin') {
+            navigate('/admin-dashboard');
+          } else {
+            navigate('/');
+          }
         }, 1500);
       } else {
-        console.error('Login response missing token or user data:', response);
-        setMessage('Login failed: Invalid server response');
+        throw new Error('Invalid response format - missing token');
       }
     } catch (error) {
-      console.error('Login failed:', error);
-      setMessage('Login failed. Please check your credentials.');
+      console.error('Login error:', error);
+      setMessage(`Login failed: ${error.message}`);
     }
   };
 

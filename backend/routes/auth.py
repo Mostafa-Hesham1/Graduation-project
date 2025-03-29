@@ -1,16 +1,18 @@
 from datetime import datetime, timedelta
 from fastapi import APIRouter, HTTPException, Depends, status, Request
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from database import db
 import bcrypt
 from bson import ObjectId
 import re
 from jose import JWTError, jwt
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from dotenv import load_dotenv
 import os
 import logging
 import secrets
+from passlib.context import CryptContext
+import traceback
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -46,6 +48,7 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days for better user experience
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Models
 class UserCreate(BaseModel):
@@ -64,6 +67,12 @@ class Token(BaseModel):
     user_id: str
     username: str
     email: str
+
+# New model for admin creation
+class AdminCreate(BaseModel):
+    email: EmailStr
+    password: str
+    admin_secret: str  # Secret key to authorize admin creation
 
 # Utility functions
 def create_access_token(data: dict, expires_delta: timedelta = None):
@@ -190,64 +199,257 @@ async def signup(user: UserCreate):
         "email": new_user["email"]
     }
 
-@router.post("/login", response_model=Token)
-async def login(user: UserLogin, request: Request):
+@router.post("/create-admin")
+async def create_admin(admin: AdminCreate):
+    """
+    Create an admin user with a secret key verification
+    """
+    # Check if the admin secret key is correct
+    ADMIN_SECRET = os.getenv("ADMIN_SECRET", "supersecretadminkey")
+    if admin.admin_secret != ADMIN_SECRET:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid admin secret key"
+        )
+    
+    # Check if email already exists
+    existing_user = await db.users.find_one({"email": admin.email})
+    if existing_user:
+        # If user exists, update to admin role
+        await db.users.update_one(
+            {"email": admin.email},
+            {"$set": {"role": "admin"}}
+        )
+        return {"message": "User updated to admin role"}
+    
+    # Create new admin user
+    hashed_password = pwd_context.hash(admin.password)
+    new_admin = {
+        "email": admin.email,
+        "username": admin.email.split('@')[0],
+        "hashed_password": hashed_password,
+        "role": "admin",
+        "created_at": datetime.utcnow()
+    }
+    
+    result = await db.users.insert_one(new_admin)
+    
+    return {
+        "message": "Admin created successfully",
+        "id": str(result.inserted_id)
+    }
+
+# Fix the authenticate_user function to handle email/username more flexibly
+async def authenticate_user(email: str, password: str):
+    """
+    Enhanced authenticate user to be more flexible with email/username and password fields
+    """
     try:
-        logger.info(f"Login attempt for email: {user.email}")
+        # Check both email and username fields
+        user = None
+        queries = [
+            {"email": email},
+            {"username": email},
+        ]
         
-        # Find user
-        existing_user = await db.users.find_one({"email": user.email})
-        if not existing_user:
+        # Try each query until we find a user
+        for query in queries:
+            user = await db.users.find_one(query)
+            if user:
+                logger.info(f"Found user with query: {query}")
+                break
+        
+        if not user:
+            logger.warning(f"No user found for: {email}")
+            return None
+        
+        # Check all possible password field names
+        password_field = None
+        for field_name in ["password", "hashed_password"]:
+            if field_name in user and user[field_name]:
+                password_field = user[field_name]
+                logger.info(f"Using password field: {field_name}")
+                break
+        
+        if not password_field:
+            logger.error(f"No password field found for user: {email}")
+            return None
+        
+        # Try multiple verification methods
+        is_password_valid = False
+        
+        # Method 1: bcrypt
+        try:
+            if password_field.startswith("$2"):
+                is_password_valid = bcrypt.checkpw(
+                    password.encode('utf-8'), 
+                    password_field.encode('utf-8')
+                )
+                logger.info(f"Bcrypt verification result: {is_password_valid}")
+        except Exception as e:
+            logger.error(f"Bcrypt verification error: {e}")
+        
+        # Method 2: passlib
+        if not is_password_valid:
+            try:
+                is_password_valid = pwd_context.verify(password, password_field)
+                logger.info(f"Passlib verification result: {is_password_valid}")
+            except Exception as e:
+                logger.error(f"Passlib verification error: {e}")
+        
+        # Method 3: direct comparison (for development only)
+        if not is_password_valid and os.getenv("DEV_MODE") == "true":
+            is_password_valid = (password == password_field)
+            logger.warning(f"Using direct password comparison in dev mode: {is_password_valid}")
+        
+        if not is_password_valid:
+            logger.warning(f"Password verification failed for: {email}")
+            return None
+        
+        logger.info(f"Authentication successful for: {email}")
+        return user
+    except Exception as e:
+        logger.error(f"Unexpected error in authenticate_user: {e}")
+        logger.error(traceback.format_exc())
+        return None
+
+# Add a JSON-based login endpoint that doesn't use OAuth2PasswordRequestForm
+@router.post("/json-login")
+async def json_login(user_data: UserLogin):
+    """Login endpoint that accepts direct JSON with email and password"""
+    try:
+        # Enhanced logging
+        logger.info(f"JSON Login attempt started for: {user_data.email}")
+        logger.info(f"Password length: {len(user_data.password) if user_data.password else 0}")
+        
+        # Authenticate user with email
+        user = await authenticate_user(user_data.email, user_data.password)
+        
+        if not user:
+            logger.warning(f"JSON Login failed: Invalid credentials for {user_data.email}")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect email or password"
+                detail="Incorrect email or password",
             )
         
-        # Verify password
-        try:
-            password_match = bcrypt.checkpw(
-                user.password.encode('utf-8'),
-                existing_user['password'].encode('utf-8')
-            )
-            if not password_match:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Incorrect email or password"
-                )
-        except Exception as e:
-            logger.error(f"Password verification error: {e}")
-            raise HTTPException(status_code=500, detail=f"Authentication error: {str(e)}")
-
-        # Generate token with longer expiration
-        access_token = create_access_token(
-            data={"sub": str(existing_user["_id"])},
-            expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        )
+        # Get user ID from MongoDB ObjectId
+        user_id = str(user.get("_id"))
         
-        logger.info(f"Login successful for user: {user.email}")
+        # Create simplified token data
+        token_data = {
+            "sub": user_id,  # Change this to use the user ID as subject
+            "email": user.get("email"),
+            "role": user.get("role", "user"),
+        }
         
-        # Return user info along with token for frontend storage
+        # Generate access token
+        access_token = create_access_token(token_data)
+        
+        logger.info(f"JSON Login successful for {user_data.email}, role: {user.get('role', 'user')}")
+        
+        # Return token and user info
         return {
             "access_token": access_token,
             "token_type": "bearer",
-            "user_id": str(existing_user["_id"]),
-            "username": existing_user["username"],
-            "email": existing_user["email"]
+            "user_id": user_id,
+            "username": user.get("username"),
+            "email": user.get("email"),
+            "role": user.get("role", "user")
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error during JSON login: {str(e)}")
+        logger.error(f"Error trace: {traceback.format_exc()}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Login error: {str(e)}"
+        )
+
+# Modify the login endpoint for additional debugging and better error messages
+@router.post("/login")
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    """Standard OAuth2 login endpoint"""
+    try:
+        # Log incoming form data for debugging
+        logger.info(f"Login request received for: {form_data.username}")
+        logger.info(f"Form data type: {type(form_data)}")
+        logger.info(f"Form data dict: {form_data.__dict__}")
+        
+        if not form_data.username or not form_data.password:
+            logger.error("Missing username or password in login request")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Username and password are required",
+            )
+        
+        # Authenticate user
+        user = await authenticate_user(form_data.username, form_data.password)
+        
+        if not user:
+            logger.warning(f"Login failed for {form_data.username}: Invalid credentials")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect username or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        
+        # Get user ID as string from MongoDB ObjectId
+        user_id = str(user.get("_id"))
+        
+        # Log user data (excluding sensitive fields)
+        safe_user = {k: v for k, v in user.items() if k not in ["password", "hashed_password"]}
+        logger.info(f"User authenticated: {safe_user}")
+        
+        # Create token data
+        token_data = {
+            "sub": user.get("email"),
+            "user_id": user_id,
+            "role": user.get("role", "user"),  # Default to "user" if role not set
+        }
+        
+        # Generate access token
+        access_token = create_access_token(token_data)
+        
+        # Log success with role information
+        logger.info(f"Login successful for {form_data.username}, role: {user.get('role', 'user')}")
+        
+        # Return token and user info
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "user_id": user_id,
+            "username": user.get("username"),
+            "email": user.get("email"),
+            "role": user.get("role", "user")  # Include role in response
         }
     except HTTPException:
         # Re-raise HTTP exceptions
         raise
     except Exception as e:
-        logger.error(f"Login error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Login failed: {str(e)}")
+        # Log unexpected errors
+        logger.error(f"Unexpected error during login: {str(e)}")
+        logger.error(f"Error trace: {traceback.format_exc()}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Login error: {str(e)}"
+        )
 
 # Admin checker example
-async def get_current_admin(current_user: dict = Depends(get_current_user)):
-    if current_user.get("role") != "admin":
+async def get_current_admin(current_user = Depends(get_current_user)):
+    """
+    Checks if the current user has admin role
+    """
+    print(f"Checking admin status for user: {current_user.get('username', 'unknown')}")
+    
+    # Check if the user has admin role
+    if not current_user or not current_user.get("role") == "admin":
+        print(f"Access denied: User role is {current_user.get('role', 'none')}")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Insufficient permissions"
+            detail="Operation requires admin privileges"
         )
+    print(f"Admin access granted for user: {current_user.get('username', 'unknown')}")
     return current_user
 
 @router.get("/auth-check")
