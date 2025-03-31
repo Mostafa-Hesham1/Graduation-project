@@ -8,7 +8,10 @@ axios.defaults.baseURL = API_URL;
 // Get token from localStorage
 const getAuthHeader = () => {
   const token = localStorage.getItem('token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  if (!token) {
+    throw new Error('Authentication token is missing. Please log in again.');
+  }
+  return { Authorization: `Bearer ${token}` };
 };
 
 // User registration
@@ -75,89 +78,125 @@ export const loginUser = async (credentials) => {
   }
 };
 
-// Get user's listings
-
 // Upload car listing
 export const uploadCarListing = async (carData) => {
-  console.log("Sending car listing with auth token"); // Debug log
-  const token = localStorage.getItem('token') || 'testing'; // Use stored token or fallback
-  console.log("Using token:", token); // Debug token value
-  
+  console.log("Sending car listing with auth token");
   try {
-    // Important: Don't set Content-Type header when using FormData
-    // The browser will automatically set the correct multipart/form-data with boundary
-    const response = await fetch(`${API_URL}/cars/list`, {
-      method: 'POST',
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('Authentication token is missing. Please log in again.');
+    }
+
+    // Using axios for consistent error handling
+    const response = await axios.post('/cars/list', carData, {
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
       },
-      body: carData,
     });
     
-    console.log("Response status:", response.status); // Debug response status
-    
-    if (!response.ok) {
-      let errorText;
-      try {
-        const errorData = await response.json();
-        console.error("Error details:", errorData); // Debug error details
-        errorText = errorData.detail || errorData.message || 'Unknown error';
-      } catch (e) {
-        errorText = await response.text();
-        console.error("Non-JSON error response:", errorText);
-      }
-      throw new Error(`Failed to upload car listing: ${errorText}`);
-    }
-    
-    return await response.json();
+    console.log("Upload successful:", response.data);
+    return response.data;
   } catch (error) {
     console.error("API error:", error);
-    throw error;
+    
+    // Check if it's an authentication error
+    if (error.response?.status === 401) {
+      console.error("Error details:", error.response?.data || {});
+      // Clear invalid token and redirect to login
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      alert('Your session has expired. Please log in again.');
+      window.location.href = '/login';
+    }
+    
+    throw new Error(error.response?.data?.detail || error.message || 'Failed to upload car listing');
   }
 };
 
+// Get user's listings
 export const getUserListings = async () => {
   console.log("Fetching user listings");
-  const token = localStorage.getItem('token') || 'testing';
-  
   try {
-    // Make API request to get user's car listings
-    const response = await fetch(`${API_URL}/cars/my-listings`, {
-      method: 'GET',
+    // Using axios instead of fetch for consistency and better error handling
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('Authentication token is missing. Please log in again.');
+    }
+
+    const response = await axios.get('/cars/my-listings', {
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Accept': 'application/json',
       },
     });
     
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    console.log("Listings data received:", data);
-    
-    // If we got data with listings, return it
-    if (data && data.listings && data.listings.length > 0) {
-      return data;
-    }
-    
-    // If no listings were found, show a message and return empty listings array
-    console.log("No listings found for this user");
-    return { 
-      listings: [] 
-    };
-    
+    console.log("Listings data received:", response.data);
+    return response.data;
   } catch (error) {
     console.error("Error fetching listings:", error);
     
-    // Return empty listings array on error
-    return { 
-      listings: [] 
-    };
+    // Check if it's an authentication error
+    if (error.response?.status === 401) {
+      console.error("Error details:", error.response?.data || {});
+      // Clear invalid token and redirect to login
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      alert('Your session has expired. Please log in again.');
+      window.location.href = '/login';
+    }
+    
+    throw new Error(error.response?.data?.detail || error.message || 'Failed to fetch user listings');
   }
 };
 
+// Get all car listings with optional filters
+export const getAllListings = async (filters = {}) => {
+  try {
+    // Convert filters to query parameters
+    const queryParams = new URLSearchParams();
+    
+    // Add any filters to query params
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        // Handle array values
+        if (Array.isArray(value)) {
+          value.forEach(item => {
+            queryParams.append(key, item);
+          });
+        } else {
+          queryParams.append(key, value);
+        }
+      }
+    });
+    
+    const response = await axios.get(`/cars/listings${queryParams.toString() ? `?${queryParams.toString()}` : ''}`, {
+      headers: {
+        'Accept': 'application/json',
+      }
+    });
 
-// Add other API functions as needed
+    console.log("All listings data received:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching all listings:", error);
+    throw new Error(error.response?.data?.detail || error.message || 'Failed to fetch listings');
+  }
+};
+
+// Get listing details by ID
+export const getListingById = async (listingId) => {
+  try {
+    const response = await axios.get(`/cars/listing/${listingId}`, {
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching listing details:", error);
+    throw new Error(error.response?.data?.detail || error.message || 'Failed to fetch listing details');
+  }
+};
 

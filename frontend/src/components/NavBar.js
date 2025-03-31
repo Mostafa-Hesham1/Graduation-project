@@ -17,16 +17,6 @@ import { useAuth } from '../context/AuthContext'; // Import your Auth context
 import { AccountCircle } from '@mui/icons-material'; // Import AccountCircle icon
 import { useEffect } from 'react'; // Import useEffect
 
-// Ensure the pages array includes Admin Dashboard with the correct path and admin requirement
-const pages = [
-  { name: 'Home', path: '/' }, 
-  { name: 'Car Recognizer', path: '/car-recognizer' },
-  { name: 'Damage Detect', path: '/damage-detect', highlight: true },
-  { name: 'Price Prediction', path: '/price-prediction' },
-  { name: 'Listings', path: '/my-listings', requireAuth: true },
-  { name: 'Admin Dashboard', path: '/admin-dashboard', requireAdmin: true }
-];
-
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -35,6 +25,41 @@ function ResponsiveAppBar() {
 
   // Debug authentication state
   console.log("Auth state in NavBar:", { isAuthenticated, isAdmin, userRole: user?.role });
+
+  // Move pages array inside component to access isAuthenticated and isAdmin
+  const pages = [
+    { name: 'Home', path: '/' }, 
+    { name: 'Car Marketplace', path: '/car-marketplace' },
+    { name: 'Car Recognizer', path: '/car-recognizer' },
+    { name: 'Damage Detect', path: '/damage-detect', highlight: true },
+    { name: 'Price Prediction', path: '/price-prediction' },
+    { name: 'Listings', path: '/my-listings', requireAuth: true },
+    { name: 'Admin Dashboard', path: '/admin-dashboard', requireAdmin: true }
+  ];
+
+  // Move checkPageAccess inside component to properly access auth state
+  const checkPageAccess = (page) => {
+    console.log(`Checking page access for ${page.name}, isAdmin=${isAdmin}, requireAdmin=${page.requireAdmin}`);
+
+    // Allow access to listing detail pages
+    if (window.location.pathname.startsWith('/listing/')) {
+      console.log('Detected listing detail page');
+    }
+
+    // Only show admin pages if user is an admin
+    if (page.requireAdmin && !isAdmin) {
+      console.log(`Denying access to ${page.name} - requires admin`);
+      return false;
+    }
+
+    // Only show auth-required pages if user is authenticated
+    if (page.requireAuth && !isAuthenticated) {
+      console.log(`Denying access to ${page.name} - requires authentication`);
+      return false;
+    }
+
+    return true;
+  };
 
   useEffect(() => {
     // This will log whenever auth state changes
@@ -175,13 +200,7 @@ function ResponsiveAppBar() {
               {pages.map((page) => {
                 console.log(`Checking page ${page.name}: requireAdmin=${page.requireAdmin}, isAdmin=${isAdmin}`);
                 
-                // Only show admin pages if user is an admin
-                if (page.requireAdmin && !isAdmin) {
-                  return null;
-                }
-                
-                // Only show auth-required pages if user is authenticated
-                if (page.requireAuth && !isAuthenticated) {
+                if (!checkPageAccess(page)) {
                   return null;
                 }
                 
@@ -235,13 +254,7 @@ function ResponsiveAppBar() {
             {pages.map((page) => {
               console.log(`Checking page ${page.name}: requireAdmin=${page.requireAdmin}, isAdmin=${isAdmin}`);
               
-              // Only show admin pages if user is an admin
-              if (page.requireAdmin && !isAdmin) {
-                return null;
-              }
-              
-              // Only show auth-required pages if user is authenticated
-              if (page.requireAuth && !isAuthenticated) {
+              if (!checkPageAccess(page)) {
                 return null;
               }
               

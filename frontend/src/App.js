@@ -17,6 +17,9 @@ import AdminDashboard from './components/AdminDashboard';
 import Footer from './components/Footer';
 import Scrape from './components/Scrape';
 import DataVisualization from './components/DataVisualization';
+import ListingDetail from './components/ListingDetail';
+import MarketplaceCarDetail from './components/MarketplaceCarDetail';
+import CarMarketplace from './components/CarMarketplace';
 
 // Debug component for testing routes
 const MyListingsDebug = () => {
@@ -34,29 +37,65 @@ const AdminRoute = ({ children }) => {
   const navigate = useNavigate();
   
   useEffect(() => {
+    // Add immediate logging to debug admin access
+    console.log("AdminRoute - Auth state:", { isAuthenticated, isAdmin, loading });
+    
+    // If not loading and either not authenticated or not admin, redirect immediately
     if (!loading) {
       if (!isAuthenticated) {
+        console.log("Not authenticated, redirecting to login");
         navigate('/login');
       } else if (!isAdmin) {
+        console.log("Not admin, redirecting to home");
         navigate('/');
       }
     }
   }, [isAuthenticated, isAdmin, loading, navigate]);
   
+  // Show loading state while checking authentication
   if (loading) {
     return <Box sx={{ display: 'flex', justifyContent: 'center', p: 5 }}><CircularProgress /></Box>;
   }
   
-  return isAuthenticated && isAdmin ? children : null;
+  // Only render children if both authenticated AND admin
+  // This is a double-check in case the redirect hasn't happened yet
+  if (!isAuthenticated || !isAdmin) {
+    console.log("Blocking admin content render - not authorized");
+    return null;
+  }
+  
+  console.log("Admin access granted, rendering admin content");
+  return children;
 };
 
 function App() {
+  // Add location logging
+  useEffect(() => {
+    // Log current path when the app loads
+    console.log("Current path:", window.location.pathname);
+    
+    // Add a listener to log route changes
+    const logRouteChange = () => {
+      console.log("Route changed to:", window.location.pathname);
+    };
+    
+    window.addEventListener('popstate', logRouteChange);
+    return () => window.removeEventListener('popstate', logRouteChange);
+  }, []);
+
   return (
     <AuthProvider>
       <Router>
         <ResponsiveAppBar />
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 0, minHeight: '80vh' }}>
           <Routes>
+            {/* Use specialized components for different contexts */}
+            <Route path="/listing/:id" element={<MarketplaceCarDetail />} /> {/* Marketplace car details with messaging */}
+            <Route path="/my-listing/:id" element={<ListingDetail />} /> {/* Your own listings view */}
+            
+            {/* Add a test route that's easy to verify */}
+            <Route path="/test-detail" element={<div style={{padding: 20}}><h1>Test Detail Page</h1></div>} />
+            
             <Route path="/" element={<Home />} />
             <Route path="/car-recognizer" element={<ImageUpload />} />
             <Route path="/image-upload" element={<ImageUpload />} />
@@ -69,7 +108,8 @@ function App() {
             <Route path="/car-listing" element={<CarListing />} />
             <Route path="/my-listings" element={<UserListings />} />
             <Route path="/my-listings-debug" element={<MyListingsDebug />} />
-            
+            <Route path='/listingdetails' element={<ListingDetail />} />
+            <Route path="/car-marketplace" element={<CarMarketplace />} />
             {/* Protected Admin Dashboard Route */}
             <Route path="/admin-dashboard" element={
               <AdminRoute>
