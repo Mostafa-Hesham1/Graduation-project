@@ -101,48 +101,24 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    
+
     try:
-        # Add debug logging
-        logger.info(f"Validating token: {token[:15]}..." if token else "No token provided")
-        
-        # Check if token is None or empty
-        if not token:
-            logger.warning("No token provided for authentication")
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload.get("sub")
+        if not user_id:
             raise credentials_exception
-            
-        # Decode the token
-        try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-            user_id = payload.get("sub")
-            
-            if not user_id:
-                logger.warning("Token payload missing 'sub' claim")
-                raise credentials_exception
-                
-            logger.info(f"Token validated for user_id: {user_id}")
-        except JWTError as e:
-            logger.error(f"JWT decode error: {e}")
+
+        user = await db.users.find_one({"_id": ObjectId(user_id)})
+        if not user:
             raise credentials_exception
-        
-        # Find the user in the database
-        try:
-            user = await db.users.find_one({"_id": ObjectId(user_id)})
-            if not user:
-                logger.warning(f"No user found for id: {user_id}")
-                raise credentials_exception
-            
-            logger.info(f"User authenticated: {user.get('username')}")
-            return user
-        except Exception as e:
-            logger.error(f"Database error: {e}")
-            raise credentials_exception
-    
+
+        return user
+    except JWTError as e:
+        logger.error(f"JWT decode error: {e}")
+        raise credentials_exception
     except Exception as e:
-        if not isinstance(e, HTTPException):
-            logger.error(f"Unexpected error in authentication: {e}")
-            raise credentials_exception
-        raise
+        logger.error(f"Unexpected error in get_current_user: {e}")
+        raise credentials_exception
 
 @router.post("/signup", response_model=Token)
 async def signup(user: UserCreate):
