@@ -29,7 +29,6 @@ import {
   Alert,
   Tooltip,
   Stack,
-  Badge,
 } from '@mui/material';
 import {
   DirectionsCar as CarIcon,
@@ -54,91 +53,20 @@ import {
   Send,
   Money,
   Info,
-  VerifiedUser,
-  Star,
-  StarOutline,
   AttachMoney,
+  ContentCopy,
+  Info as InfoIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { getListingById } from '../api';
 
 const CAR_PLACEHOLDER = 'https://via.placeholder.com/800x500?text=No+Image+Available';
 
-// Styled components for better UI
 const DetailSection = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
   marginBottom: theme.spacing(3),
   borderRadius: theme.spacing(2),
   boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
-  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-  '&:hover': {
-    boxShadow: '0 8px 30px rgba(0,0,0,0.08)',
-  },
-}));
-
-const PriceTag = styled(Box)(({ theme }) => ({
-  position: 'absolute',
-  top: 16,
-  right: 16,
-  backgroundColor: alpha(theme.palette.primary.main, 0.9),
-  color: theme.palette.common.white,
-  padding: theme.spacing(1, 2),
-  borderRadius: theme.spacing(1),
-  fontWeight: 'bold',
-  zIndex: 1,
-  boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
-  display: 'flex',
-  alignItems: 'center',
-}));
-
-const DetailItem = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  marginBottom: theme.spacing(2),
-}));
-
-const DetailIcon = styled(Box)(({ theme }) => ({
-  width: 40,
-  height: 40,
-  borderRadius: '50%',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  marginRight: theme.spacing(2),
-  backgroundColor: alpha(theme.palette.primary.main, 0.1),
-  color: theme.palette.primary.main,
-}));
-
-const ArrowButton = styled(IconButton)(({ theme }) => ({
-  position: 'absolute',
-  top: '50%',
-  transform: 'translateY(-50%)',
-  backgroundColor: alpha(theme.palette.common.black, 0.5),
-  color: 'white',
-  '&:hover': {
-    backgroundColor: alpha(theme.palette.common.black, 0.7),
-  },
-  zIndex: 10,
-}));
-
-const ContactCard = styled(Card)(({ theme }) => ({
-  borderRadius: theme.spacing(2),
-  marginBottom: theme.spacing(3),
-  boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
-  overflow: 'hidden',
-  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-  '&:hover': {
-    transform: 'translateY(-5px)',
-    boxShadow: '0 12px 28px rgba(0,0,0,0.12)',
-  },
-}));
-
-const SellerAvatar = styled(Avatar)(({ theme }) => ({
-  width: 70,
-  height: 70,
-  backgroundColor: theme.palette.primary.main,
-  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-  border: `3px solid ${theme.palette.background.paper}`,
 }));
 
 const FeatureChip = styled(Chip)(({ theme, color }) => ({
@@ -146,11 +74,6 @@ const FeatureChip = styled(Chip)(({ theme, color }) => ({
   backgroundColor: color ? alpha(color, 0.1) : alpha(theme.palette.primary.main, 0.1),
   color: color || theme.palette.primary.main,
   fontWeight: 500,
-  border: 'none',
-  boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
-  '& .MuiChip-icon': {
-    color: 'inherit',
-  },
 }));
 
 const ImageContainer = styled(Box)(({ theme }) => ({
@@ -160,7 +83,6 @@ const ImageContainer = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2),
   borderRadius: theme.spacing(2),
   overflow: 'hidden',
-  boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
 }));
 
 const MarketplaceCarDetail = () => {
@@ -176,35 +98,34 @@ const MarketplaceCarDetail = () => {
   const [favorite, setFavorite] = useState(false);
   const [openMessageDialog, setOpenMessageDialog] = useState(false);
   const [message, setMessage] = useState('');
+  const [sendingMessage, setSendingMessage] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
-    severity: 'success'
+    severity: 'success',
   });
-  
+
   useEffect(() => {
     document.title = `Vehicle Details | Marketplace`;
-    
+
     const fetchListing = async () => {
       try {
         setLoading(true);
-        
+
         if (!id) {
-          throw new Error("No listing ID provided");
+          throw new Error('No listing ID provided');
         }
 
-        // Use the API function from api.js
         const data = await getListingById(id);
-        
+
         if (data) {
           setListing(data);
-          
-          // Check if the listing belongs to the current user
+
           if (user && data.owner_id === user._id) {
             setIsOwnListing(true);
           }
         } else {
-          throw new Error("Failed to fetch listing details");
+          throw new Error('Failed to fetch listing details');
         }
       } catch (err) {
         console.error('Error fetching listing:', err);
@@ -217,24 +138,22 @@ const MarketplaceCarDetail = () => {
     fetchListing();
   }, [id, user]);
 
-  // Function to get image URL
   const getImageUrl = (imageName) => {
-    if (!imageName) return CAR_PLACEHOLDER;     
-    
+    if (!imageName) return CAR_PLACEHOLDER;
+
     if (typeof imageName === 'object') {
       if (imageName.url) return imageName.url;
       if (imageName.path) return `http://localhost:8000/uploads/${imageName.path}`;
       return CAR_PLACEHOLDER;
     }
-    
+
     if (typeof imageName === 'string') {
       return `http://localhost:8000/uploads/${imageName}`;
     }
-    
+
     return CAR_PLACEHOLDER;
   };
 
-  // Format date
   const formatDate = (dateString) => {
     try {
       return new Date(dateString).toLocaleDateString('en-US', {
@@ -268,16 +187,16 @@ const MarketplaceCarDetail = () => {
       setSnackbar({
         open: true,
         message: 'Please log in to save favorites',
-        severity: 'info'
+        severity: 'info',
       });
       return;
     }
-    
+
     setFavorite(!favorite);
     setSnackbar({
       open: true,
       message: favorite ? 'Removed from favorites' : 'Added to favorites',
-      severity: 'success'
+      severity: 'success',
     });
   };
 
@@ -286,39 +205,68 @@ const MarketplaceCarDetail = () => {
       setSnackbar({
         open: true,
         message: 'Please log in to contact the seller',
-        severity: 'info'
+        severity: 'info',
       });
       return;
     }
     setOpenMessageDialog(true);
+    setMessage(`Hi, I'm interested in your ${listing.year} ${listing.make} ${listing.model}. Is it still available?`);
   };
 
   const handleCloseMessageDialog = () => {
     setOpenMessageDialog(false);
   };
 
-  const handleSendMessage = () => {
-    // Here you would implement the actual message sending functionality
+  const handleSendMessage = async () => {
     if (message.trim() === '') {
       setSnackbar({
         open: true,
         message: 'Please enter a message',
-        severity: 'warning'
+        severity: 'warning',
       });
       return;
     }
-    
-    console.log('Sending message:', message);
-    
-    // Mock success for now
-    setSnackbar({
-      open: true,
-      message: 'Message sent successfully! Seller will contact you soon.',
-      severity: 'success'
-    });
-    
-    setMessage('');
-    handleCloseMessageDialog();
+
+    setSendingMessage(true);
+
+    try {
+      const response = await fetch('/api/messages/send', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          recipient_id: listing.owner_id,
+          content: message,
+          listing_id: id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+
+      setSnackbar({
+        open: true,
+        message: 'Message sent successfully! The seller will respond soon.',
+        severity: 'success',
+      });
+
+      setMessage('');
+      handleCloseMessageDialog();
+
+      navigate(`/messages/${listing.owner_id}`);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setSnackbar({
+        open: true,
+        message: 'Failed to send message. Please try again.',
+        severity: 'error',
+      });
+    } finally {
+      setSendingMessage(false);
+    }
   };
 
   const handleCloseSnackbar = () => {
@@ -327,19 +275,19 @@ const MarketplaceCarDetail = () => {
 
   const handleShareListing = () => {
     if (navigator.share) {
-      navigator.share({
-        title: `${listing.make} ${listing.model} ${listing.year}`,
-        text: `Check out this ${listing.year} ${listing.make} ${listing.model} on VehicleSouq!`,
-        url: window.location.href,
-      })
-      .catch((error) => console.log('Error sharing:', error));
+      navigator
+        .share({
+          title: `${listing.make} ${listing.model} ${listing.year}`,
+          text: `Check out this ${listing.year} ${listing.make} ${listing.model} on VehicleSouq!`,
+          url: window.location.href,
+        })
+        .catch((error) => console.log('Error sharing:', error));
     } else {
-      // Fallback for browsers that don't support the Web Share API
       navigator.clipboard.writeText(window.location.href);
       setSnackbar({
         open: true,
         message: 'URL copied to clipboard',
-        severity: 'success'
+        severity: 'success',
       });
     }
   };
@@ -358,16 +306,13 @@ const MarketplaceCarDetail = () => {
   if (error) {
     return (
       <Box textAlign="center" mt={4} p={3}>
-        <Typography color="error" variant="h6" gutterBottom>{error}</Typography>
+        <Typography color="error" variant="h6" gutterBottom>
+          {error}
+        </Typography>
         <Typography variant="body1" sx={{ mt: 2, mb: 3 }}>
           Unable to load the vehicle details. The listing might not exist or there might be a server issue.
         </Typography>
-        <Button 
-          variant="contained" 
-          onClick={handleBackToMarketplace} 
-          startIcon={<BackIcon />}
-          sx={{ mt: 1 }}
-        >
+        <Button variant="contained" onClick={handleBackToMarketplace} startIcon={<BackIcon />} sx={{ mt: 1 }}>
           Back to Marketplace
         </Button>
       </Box>
@@ -377,43 +322,33 @@ const MarketplaceCarDetail = () => {
   if (!listing) {
     return (
       <Box textAlign="center" mt={4} p={3}>
-        <Typography variant="h6" gutterBottom>Listing not found</Typography>
+        <Typography variant="h6" gutterBottom>
+          Listing not found
+        </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
           The vehicle you're looking for doesn't exist or has been removed.
         </Typography>
-        <Button 
-          variant="contained" 
-          onClick={handleBackToMarketplace} 
-          startIcon={<BackIcon />}
-          sx={{ mt: 1 }}
-        >
+        <Button variant="contained" onClick={handleBackToMarketplace} startIcon={<BackIcon />} sx={{ mt: 1 }}>
           Explore Other Cars
         </Button>
       </Box>
     );
   }
 
-  // Don't show messaging UI for your own listings
   if (isOwnListing) {
     return (
       <Box textAlign="center" mt={4} p={3}>
-        <Typography variant="h6" gutterBottom>This is your own listing</Typography>
+        <Typography variant="h6" gutterBottom>
+          This is your own listing
+        </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
           You are viewing your own car listing. To manage your listings, please go to your dashboard.
         </Typography>
         <Stack direction="row" spacing={2} justifyContent="center" mt={2}>
-          <Button 
-            variant="outlined" 
-            onClick={handleBackToMarketplace} 
-            startIcon={<BackIcon />}
-          >
+          <Button variant="outlined" onClick={handleBackToMarketplace} startIcon={<BackIcon />}>
             Back to Marketplace
           </Button>
-          <Button 
-            variant="contained" 
-            onClick={() => navigate('/my-listings')} 
-            startIcon={<Person />}
-          >
+          <Button variant="contained" onClick={() => navigate('/my-listings')} startIcon={<Person />}>
             My Listings
           </Button>
         </Stack>
@@ -423,36 +358,28 @@ const MarketplaceCarDetail = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      {/* Top Navigation Bar */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Button 
-          variant="outlined" 
-          startIcon={<BackIcon />} 
-          onClick={handleBackToMarketplace}
-          size="large"
-        >
+        <Button variant="outlined" startIcon={<BackIcon />} onClick={handleBackToMarketplace} size="large">
           Back to Marketplace
         </Button>
-        
+
         <Box>
           <Tooltip title="Share this vehicle">
             <IconButton onClick={handleShareListing} color="primary" sx={{ mx: 1 }}>
               <Share />
             </IconButton>
           </Tooltip>
-          
-          <Tooltip title={favorite ? "Remove from favorites" : "Add to favorites"}>
-            <IconButton onClick={toggleFavorite} color={favorite ? "error" : "default"}>
+
+          <Tooltip title={favorite ? 'Remove from favorites' : 'Add to favorites'}>
+            <IconButton onClick={toggleFavorite} color={favorite ? 'error' : 'default'}>
               {favorite ? <Favorite /> : <FavoriteBorder />}
             </IconButton>
           </Tooltip>
         </Box>
       </Box>
-      
+
       <Grid container spacing={3}>
-        {/* Left Column - Car Details */}
         <Grid item xs={12} md={8}>
-          {/* Title and Price Section */}
           <DetailSection>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12}>
@@ -465,105 +392,110 @@ const MarketplaceCarDetail = () => {
                 <Typography variant="subtitle1" color="text.secondary" sx={{ mt: 1, mb: 2 }}>
                   Listed on {formatDate(listing.created_at)}
                 </Typography>
-                
+
                 <Divider sx={{ my: 2 }} />
-                
+
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 2 }}>
-                  <PriceTag>
-                    <AttachMoney sx={{ mr: 1 }} />
+                  <Typography variant="h5" fontWeight="bold" color="primary.main">
+                    <AttachMoney sx={{ mr: 1, fontSize: 24, verticalAlign: 'middle' }} />
                     EGP {Number(listing.price).toLocaleString()}
-                  </PriceTag>
-                  
+                  </Typography>
+
                   <Box>
-                    <FeatureChip 
-                      label={listing.condition || 'Used'} 
+                    <FeatureChip
+                      label={listing.condition || 'Used'}
                       color={listing.condition === 'New' ? theme.palette.success.main : theme.palette.info.main}
                       icon={<Info />}
                     />
-                    <FeatureChip 
-                      label={listing.location} 
-                      color={theme.palette.warning.main}
-                      icon={<LocationIcon />}
-                    />
+                    <FeatureChip label={listing.location} color={theme.palette.warning.main} icon={<LocationIcon />} />
                   </Box>
                 </Box>
               </Grid>
             </Grid>
           </DetailSection>
-          
-          {/* Images Gallery Section */}
+
           <DetailSection>
             <Box sx={{ mb: 2 }}>
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
                 Vehicle Photos
               </Typography>
-              
+
               {listing.images && listing.images.length > 0 ? (
                 <Box>
-                  {/* Main Image */}
                   <ImageContainer>
-                    <PriceTag>
-                      <AttachMoney sx={{ fontSize: 20, mr: 0.5 }} />
-                      {Number(listing.price).toLocaleString()} EGP
-                    </PriceTag>
-                    <img 
-                      src={getImageUrl(listing.images[mainImage])} 
-                      alt={`${listing.make} ${listing.model} - Main`} 
-                      style={{ 
-                        width: '100%', 
-                        height: '100%', 
+                    <img
+                      src={getImageUrl(listing.images[mainImage])}
+                      alt={`${listing.make} ${listing.model} - Main`}
+                      style={{
+                        width: '100%',
+                        height: '100%',
                         objectFit: 'cover',
                       }}
                     />
-                    
+
                     {listing.images.length > 1 && (
                       <>
-                        <ArrowButton
+                        <IconButton
                           onClick={handlePrevImage}
-                          sx={{ left: 8 }}
+                          sx={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: 8,
+                            transform: 'translateY(-50%)',
+                            backgroundColor: alpha(theme.palette.common.black, 0.5),
+                            color: 'white',
+                            '&:hover': {
+                              backgroundColor: alpha(theme.palette.common.black, 0.7),
+                            },
+                          }}
                         >
                           <BackIcon />
-                        </ArrowButton>
-                        <ArrowButton
+                        </IconButton>
+                        <IconButton
                           onClick={handleNextImage}
-                          sx={{ right: 8 }}
+                          sx={{
+                            position: 'absolute',
+                            top: '50%',
+                            right: 8,
+                            transform: 'translateY(-50%)',
+                            backgroundColor: alpha(theme.palette.common.black, 0.5),
+                            color: 'white',
+                            '&:hover': {
+                              backgroundColor: alpha(theme.palette.common.black, 0.7),
+                            },
+                          }}
                         >
                           <ArrowForward />
-                        </ArrowButton>
+                        </IconButton>
                       </>
                     )}
                   </ImageContainer>
-                  
-                  {/* Thumbnails */}
+
                   {listing.images.length > 1 && (
-                    <ImageList 
-                      cols={Math.min(listing.images.length, 6)} 
-                      rowHeight={80} 
-                      gap={8}
-                      sx={{ mb: 0 }}
-                    >
+                    <ImageList cols={Math.min(listing.images.length, 6)} rowHeight={80} gap={8} sx={{ mb: 0 }}>
                       {listing.images.map((img, index) => (
-                        <ImageListItem 
-                          key={index} 
+                        <ImageListItem
+                          key={index}
                           onClick={() => setMainImage(index)}
-                          sx={{ 
-                            cursor: 'pointer', 
+                          sx={{
+                            cursor: 'pointer',
                             borderRadius: 1,
                             overflow: 'hidden',
                             border: index === mainImage ? `2px solid ${theme.palette.primary.main}` : 'none',
-                            boxShadow: index === mainImage 
-                              ? `0 0 0 2px ${theme.palette.primary.main}, 0 4px 8px rgba(0,0,0,0.1)` 
-                              : '0 2px 4px rgba(0,0,0,0.05)',
+                            boxShadow:
+                              index === mainImage
+                                ? `0 0 0 2px ${theme.palette.primary.main}, 0 4px 8px rgba(0,0,0,0.1)`
+                                : '0 2px 4px rgba(0,0,0,0.05)',
                             transform: index === mainImage ? 'scale(1.05)' : 'scale(1)',
                             transition: 'all 0.2s ease-in-out',
                             '&:hover': {
                               transform: 'scale(1.05)',
-                              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                            }
+                              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                            },
                           }}
                         >
-                          <img 
-                            src={getImageUrl(img)} 
+                          <img
+                            src={getImageUrl(img)}
                             alt={`Thumbnail ${index + 1}`}
                             style={{ height: '100%', objectFit: 'cover' }}
                             loading="lazy"
@@ -574,15 +506,15 @@ const MarketplaceCarDetail = () => {
                   )}
                 </Box>
               ) : (
-                <Box 
-                  sx={{ 
-                    width: '100%', 
-                    height: 300, 
-                    display: 'flex', 
-                    justifyContent: 'center', 
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: 300,
+                    display: 'flex',
+                    justifyContent: 'center',
                     alignItems: 'center',
                     bgcolor: 'grey.100',
-                    borderRadius: 2
+                    borderRadius: 2,
                   }}
                 >
                   <Typography color="text.secondary">No images available</Typography>
@@ -590,376 +522,455 @@ const MarketplaceCarDetail = () => {
               )}
             </Box>
           </DetailSection>
-          
-          {/* Specifications Section */}
+
           <DetailSection>
             <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mb: 3 }}>
               Vehicle Specifications
             </Typography>
-            
+
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
-                <DetailItem>
-                  <DetailIcon>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Box
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginRight: theme.spacing(2),
+                      backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                      color: theme.palette.primary.main,
+                    }}
+                  >
                     <CarIcon />
-                  </DetailIcon>
+                  </Box>
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Make & Model</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Make & Model
+                    </Typography>
                     <Typography variant="body1" fontWeight="medium">
                       {listing.make} {listing.model}
                     </Typography>
                   </Box>
-                </DetailItem>
-                
-                <DetailItem>
-                  <DetailIcon>
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Box
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginRight: theme.spacing(2),
+                      backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                      color: theme.palette.primary.main,
+                    }}
+                  >
                     <YearIcon />
-                  </DetailIcon>
+                  </Box>
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Year</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Year
+                    </Typography>
                     <Typography variant="body1" fontWeight="medium">
                       {listing.year || 'N/A'}
                     </Typography>
                   </Box>
-                </DetailItem>
-                
-                <DetailItem>
-                  <DetailIcon>
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Box
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginRight: theme.spacing(2),
+                      backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                      color: theme.palette.primary.main,
+                    }}
+                  >
                     <SpeedIcon />
-                  </DetailIcon>
+                  </Box>
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Kilometers</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Kilometers
+                    </Typography>
                     <Typography variant="body1" fontWeight="medium">
                       {listing.kilometers?.toLocaleString() || 'N/A'} km
                     </Typography>
                   </Box>
-                </DetailItem>
-                
-                <DetailItem>
-                  <DetailIcon>
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Box
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginRight: theme.spacing(2),
+                      backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                      color: theme.palette.primary.main,
+                    }}
+                  >
                     <CategoryIcon />
-                  </DetailIcon>
+                  </Box>
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Body Type</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Body Type
+                    </Typography>
                     <Typography variant="body1" fontWeight="medium">
                       {listing.bodyType || 'N/A'}
                     </Typography>
                   </Box>
-                </DetailItem>
+                </Box>
               </Grid>
-              
+
               <Grid item xs={12} md={6}>
-                <DetailItem>
-                  <DetailIcon>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Box
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginRight: theme.spacing(2),
+                      backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                      color: theme.palette.primary.main,
+                    }}
+                  >
                     <FuelIcon />
-                  </DetailIcon>
+                  </Box>
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Fuel Type</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Fuel Type
+                    </Typography>
                     <Typography variant="body1" fontWeight="medium">
                       {listing.fuelType || 'N/A'}
                     </Typography>
                   </Box>
-                </DetailItem>
-                
-                <DetailItem>
-                  <DetailIcon>
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Box
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginRight: theme.spacing(2),
+                      backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                      color: theme.palette.primary.main,
+                    }}
+                  >
                     <GearboxIcon />
-                  </DetailIcon>
+                  </Box>
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Transmission</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Transmission
+                    </Typography>
                     <Typography variant="body1" fontWeight="medium">
-                      {listing.transmissionType === 'automatic' ? 'Automatic' : 
-                       listing.transmissionType === 'manual' ? 'Manual' : 
-                       listing.transmissionType || 'N/A'}
+                      {listing.transmissionType === 'automatic'
+                        ? 'Automatic'
+                        : listing.transmissionType === 'manual'
+                        ? 'Manual'
+                        : listing.transmissionType || 'N/A'}
                     </Typography>
                   </Box>
-                </DetailItem>
-                
-                <DetailItem>
-                  <DetailIcon>
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Box
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginRight: theme.spacing(2),
+                      backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                      color: theme.palette.primary.main,
+                    }}
+                  >
                     <ColorIcon />
-                  </DetailIcon>
+                  </Box>
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Color</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Color
+                    </Typography>
                     <Typography variant="body1" fontWeight="medium">
                       {listing.color || 'N/A'}
                     </Typography>
                   </Box>
-                </DetailItem>
-                
-                <DetailItem>
-                  <DetailIcon>
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Box
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginRight: theme.spacing(2),
+                      backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                      color: theme.palette.primary.main,
+                    }}
+                  >
                     <CarIcon />
-                  </DetailIcon>
+                  </Box>
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Engine Capacity</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Engine Capacity
+                    </Typography>
                     <Typography variant="body1" fontWeight="medium">
                       {listing.cc ? `${listing.cc} cc` : 'N/A'}
                     </Typography>
                   </Box>
-                </DetailItem>
+                </Box>
               </Grid>
             </Grid>
           </DetailSection>
-          
-          {/* Description Section */}
+
           <DetailSection>
-            <Typography variant="h6" gutterBottom sx={{ 
-              fontWeight: 'bold', 
-              mb: 2, 
-              display: 'flex', 
-              alignItems: 'center'
-            }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{
+                fontWeight: 'bold',
+                mb: 2,
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
               <DescriptionIcon sx={{ mr: 1 }} />
               Description
             </Typography>
-            
-            <Typography variant="body1" sx={{ 
-              whiteSpace: 'pre-line',
-              lineHeight: 1.7,
-              color: theme.palette.text.primary
-            }}>
+
+            <Typography
+              variant="body1"
+              sx={{
+                whiteSpace: 'pre-line',
+                lineHeight: 1.7,
+                color: theme.palette.text.primary,
+              }}
+            >
               {listing.description || 'No description provided by the seller.'}
             </Typography>
           </DetailSection>
         </Grid>
-        
-        {/* Right Column - Seller Info & Contact */}
+
         <Grid item xs={12} md={4}>
-          {/* Seller Info */}
           <Box sx={{ position: 'sticky', top: 20 }}>
-            <ContactCard>
-              <CardContent sx={{ p: 0 }}>
-                <Box sx={{ 
-                  bgcolor: theme.palette.primary.main, 
-                  p: 2, 
+            <Paper elevation={2} sx={{ borderRadius: 2, overflow: 'hidden', mb: 3 }}>
+              <Box
+                sx={{
+                  p: 2,
+                  bgcolor: theme.palette.primary.main,
                   color: 'white',
-                  borderTopLeftRadius: theme.spacing(2),
-                  borderTopRightRadius: theme.spacing(2),
-                }}>
-                  <Typography variant="h6" fontWeight="bold">
-                    Seller Information
-                  </Typography>
-                </Box>
-                
-                <Box sx={{ 
-                  display: 'flex', 
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  position: 'relative',
-                  mt: -3,
-                  mb: 2,
-                  pt: 3
-                }}>
-                  <Badge
-                    overlap="circular"
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                    badgeContent={
-                      <Tooltip title="Verified Seller">
-                        <VerifiedUser color="primary" sx={{ fontSize: 24, bgcolor: 'white', borderRadius: '50%' }} />
-                      </Tooltip>
-                    }
+                }}
+              >
+                <Typography variant="h6" fontWeight="bold">
+                  Contact Seller
+                </Typography>
+              </Box>
+
+              <Box sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                  <Avatar
+                    sx={{
+                      bgcolor: theme.palette.primary.main,
+                      width: 56,
+                      height: 56,
+                      mr: 2,
+                    }}
                   >
-                    <SellerAvatar>
-                      {listing.owner_name ? listing.owner_name.charAt(0).toUpperCase() : 'S'}
-                    </SellerAvatar>
-                  </Badge>
-                  
-                  <Typography variant="h6" fontWeight="bold" sx={{ mt: 1 }}>
-                    {listing.owner_name || 'Seller'}
-                  </Typography>
-                  
-                  <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                    <LocationIcon sx={{ fontSize: 16, color: theme.palette.text.secondary, mr: 0.5 }} />
+                    {listing.owner_name ? listing.owner_name.charAt(0).toUpperCase() : 'S'}
+                  </Avatar>
+                  <Box>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      {listing.owner_name || 'Seller'}
+                    </Typography>
                     <Typography variant="body2" color="text.secondary">
+                      <LocationIcon sx={{ fontSize: 16, mr: 0.5, verticalAlign: 'text-bottom' }} />
                       {listing.location}
                     </Typography>
                   </Box>
-                  
-                  <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      star <= 4 ? 
-                        <Star key={star} sx={{ color: theme.palette.warning.main, fontSize: 18 }} /> : 
-                        <StarOutline key={star} sx={{ color: theme.palette.warning.main, fontSize: 18 }} />
-                    ))}
-                    <Typography variant="body2" color="text.secondary" sx={{ ml: 0.5 }}>
-                      (4.0)
-                    </Typography>
-                  </Box>
                 </Box>
-                
-                <Divider />
-                
-                <Box sx={{ p: 3 }}>
-                  {/* Phone Number if available */}
-                  {listing.showMobileNumber && listing.mobileNumber && (
-                    <Box>
-                      <Typography variant="subtitle2" fontWeight="medium" gutterBottom>
-                        Contact Number
-                      </Typography>
-                      <Box sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        bgcolor: alpha(theme.palette.success.main, 0.1),
+
+                <Divider sx={{ mb: 3 }} />
+
+                {listing.showPhoneNumber && listing.phoneNumber ? (
+                  <Box sx={{ mb: 3 }}>
+                    <Typography variant="subtitle2" gutterBottom>
+                      Phone Number
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
                         p: 1.5,
+                        border: '1px solid',
+                        borderColor: 'divider',
                         borderRadius: 1,
-                        mb: 2
-                      }}>
-                        <Phone sx={{ color: theme.palette.success.main, mr: 1 }} />
-                        <Typography variant="subtitle1" fontWeight="bold" color="success.main">
-                          +20 {listing.mobileNumber}
+                        bgcolor: 'background.paper',
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Phone color="primary" sx={{ mr: 1 }} />
+                        <Typography variant="subtitle1" fontWeight="medium">
+                          {listing.phoneNumber}
                         </Typography>
                       </Box>
-                      
-                      <Button
-                        fullWidth
-                        variant="outlined"
-                        color="success"
-                        startIcon={<Phone />}
-                        href={`tel:+20${listing.mobileNumber}`}
-                        sx={{ mb: 2 }}
-                      >
-                        Call Seller
-                      </Button>
+                      <Tooltip title="Copy number">
+                        <IconButton
+                          size="small"
+                          onClick={() => {
+                            navigator.clipboard.writeText(listing.phoneNumber);
+                            setSnackbar({
+                              open: true,
+                              message: 'Phone number copied to clipboard',
+                              severity: 'success',
+                            });
+                          }}
+                        >
+                          <ContentCopy fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
                     </Box>
-                  )}
-                  
-                  {/* Message Option */}
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                    startIcon={<Chat />}
-                    onClick={handleOpenMessageDialog}
-                    sx={{ 
-                      py: 1.5, 
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                      '&:hover': {
-                        boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
-                      }
+
+                    <Button
+                      variant="contained"
+                      color="success"
+                      fullWidth
+                      size="large"
+                      startIcon={<Phone />}
+                      href={`tel:${listing.phoneNumber}`}
+                      sx={{ mt: 2, mb: 2 }}
+                    >
+                      Call Seller
+                    </Button>
+                  </Box>
+                ) : (
+                  <Box
+                    sx={{
+                      mb: 3,
+                      p: 2,
+                      bgcolor: alpha(theme.palette.info.main, 0.1),
+                      borderRadius: 1,
                     }}
                   >
-                    Message Seller
-                  </Button>
-                  
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 2, textAlign: 'center' }}>
-                    Mention VehicleSouq when contacting the seller for better response
-                  </Typography>
-                </Box>
-              </CardContent>
-            </ContactCard>
-            
-            {/* Safety Tips Card */}
-            <Card sx={{ 
-              borderRadius: theme.spacing(2), 
-              overflow: 'hidden',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
-            }}>
-              <CardContent sx={{ p: 0 }}>
-                <Box sx={{ 
-                  bgcolor: alpha(theme.palette.warning.main, 0.1), 
-                  p: 2, 
-                  display: 'flex',
-                  alignItems: 'center',
-                }}>
+                    <Typography variant="body2" align="center" color="text.secondary">
+                      <InfoIcon sx={{ fontSize: 16, mr: 0.5, verticalAlign: 'text-bottom' }} />
+                      Seller has not provided a phone number
+                    </Typography>
+                  </Box>
+                )}
+
+                <Button
+                  variant="contained"
+                  fullWidth
+                  startIcon={<Chat />}
+                  onClick={handleOpenMessageDialog}
+                  sx={{ mb: 2 }}
+                >
+                  Message Seller
+                </Button>
+
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center' }}>
+                  Always meet in public places. Never pay in advance.
+                </Typography>
+              </Box>
+            </Paper>
+
+            <Paper elevation={1} sx={{ borderRadius: 2, overflow: 'hidden' }}>
+              <Box sx={{ p: 2, bgcolor: alpha(theme.palette.warning.main, 0.1) }}>
+                <Typography
+                  variant="subtitle1"
+                  fontWeight="bold"
+                  color="warning.dark"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
                   <Info color="warning" sx={{ mr: 1 }} />
-                  <Typography variant="subtitle1" fontWeight="medium" color="warning.dark">
-                    Safety Tips
-                  </Typography>
-                </Box>
-                
-                <Box sx={{ p: 2 }}>
-                  <Typography variant="body2" paragraph>
-                    • Meet in a safe, public place for viewing
-                  </Typography>
-                  <Typography variant="body2" paragraph>
-                    • Test drive only after verifying documents
-                  </Typography>
-                  <Typography variant="body2" paragraph>
-                    • Verify all vehicle documents before purchase
-                  </Typography>
-                  <Typography variant="body2">
-                    • Never send money in advance
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
+                  Safety Tips
+                </Typography>
+              </Box>
+              <Box sx={{ p: 2 }}>
+                <Typography variant="body2" paragraph>
+                  • Meet in a safe, public place
+                </Typography>
+                <Typography variant="body2" paragraph>
+                  • Verify vehicle documentation
+                </Typography>
+                <Typography variant="body2">• Never send money in advance</Typography>
+              </Box>
+            </Paper>
           </Box>
         </Grid>
       </Grid>
-      
-      {/* Message Dialog */}
-      <Dialog 
-        open={openMessageDialog} 
-        onClose={handleCloseMessageDialog}
-        fullWidth
-        maxWidth="sm"
-        PaperProps={{
-          sx: {
-            borderRadius: 2,
-            boxShadow: '0 10px 40px rgba(0,0,0,0.1)'
-          }
-        }}
-      >
-        <DialogTitle sx={{ pb: 1, borderBottom: `1px solid ${theme.palette.divider}` }}>
+
+      <Dialog open={openMessageDialog} onClose={handleCloseMessageDialog} fullWidth maxWidth="sm">
+        <DialogTitle>
           <Typography variant="h6" fontWeight="bold">
-            Message to Seller
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            About: {listing.make} {listing.model} {listing.year}
+            Send Message to Seller
           </Typography>
         </DialogTitle>
-        
-        <DialogContent sx={{ mt: 2 }}>
+
+        <DialogContent dividers>
           <TextField
             autoFocus
-            margin="dense"
+            margin="normal"
             fullWidth
             multiline
             rows={4}
-            label="Your message"
-            placeholder="Hi, I'm interested in your car. Is it still available? I would like to arrange a viewing."
             variant="outlined"
+            placeholder="Type your message here..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
           />
-          
-          <Box sx={{ mt: 2, bgcolor: alpha(theme.palette.info.main, 0.1), p: 2, borderRadius: 1 }}>
-            <Typography variant="body2" color="text.secondary">
-              <b>Tip:</b> Be specific about when you'd like to view the car and ask any important questions upfront.
-            </Typography>
-          </Box>
         </DialogContent>
-        
-        <DialogActions sx={{ px: 3, pb: 3 }}>
+
+        <DialogActions sx={{ p: 2 }}>
           <Button onClick={handleCloseMessageDialog} color="inherit">
             Cancel
           </Button>
-          <Button 
-            onClick={handleSendMessage} 
-            variant="contained" 
-            color="primary"
-            startIcon={<Send />}
-            disabled={!message.trim()}
+          <Button
+            onClick={handleSendMessage}
+            variant="contained"
+            startIcon={sendingMessage ? <CircularProgress size={20} color="inherit" /> : <Send />}
+            disabled={!message.trim() || sendingMessage}
           >
-            Send Message
+            {sendingMessage ? 'Sending...' : 'Send Message'}
           </Button>
         </DialogActions>
       </Dialog>
-      
-      {/* Snackbar notifications */}
+
       <Snackbar
         open={snackbar.open}
         autoHideDuration={5000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert 
-          onClose={handleCloseSnackbar} 
-          severity={snackbar.severity} 
-          sx={{ width: '100%', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
-        >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
           {snackbar.message}
         </Alert>
       </Snackbar>

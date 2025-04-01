@@ -16,7 +16,6 @@ import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import ForgotPassword from './ForgotPassword';
 import AppTheme from '../shared-theme/AppTheme';
-import { loginUser } from '../api';
 import { useAuth } from '../context/AuthContext';
 import Alert from '@mui/material/Alert';
 import Fade from '@mui/material/Fade';
@@ -27,6 +26,8 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import GoogleIcon from '@mui/icons-material/Google';
+import CircularProgress from '@mui/material/CircularProgress';
+import { updateAuthTimestamp } from '../api';
 
 // Styled components with enhanced design
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -56,7 +57,6 @@ const Card = styled(MuiCard)(({ theme }) => ({
     height: '4px',
     background: 'linear-gradient(90deg, #3f51b5, #2196f3)',
   },
-  // Add animation using CSS
   animation: 'fadeInUp 0.5s ease-out',
   '@keyframes fadeInUp': {
     '0%': {
@@ -150,12 +150,13 @@ export default function Login(props) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
-  const { setUser, setIsAuthenticated, login } = useAuth();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -172,7 +173,6 @@ export default function Login(props) {
   const validateInputs = () => {
     let isValid = true;
     
-    // Email validation - only check if it's not empty
     if (!email) {
       setEmailError(true);
       setEmailErrorMessage('Email is required.');
@@ -182,7 +182,6 @@ export default function Login(props) {
       setEmailErrorMessage('');
     }
     
-    // Password validation - only check if it's not empty
     if (!password) {
       setPasswordError(true);
       setPasswordErrorMessage('Password is required.');
@@ -195,53 +194,41 @@ export default function Login(props) {
     return isValid;
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (!validateInputs()) return;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     
-    setLoginSuccess(false);
-    setMessage('');
+    if (!validateInputs()) {
+      return;
+    }
     
-    // Debug logging
-    console.log('Login attempt with:', { emailLength: email.length, passwordLength: password.length });
+    setLoading(true);
+    setError('');
     
     try {
-      // Call the API with a clear try/catch
-      const response = await loginUser({ email, password });
+      // Update the auth timestamp before login attempt to prevent false session expiry
+      updateAuthTimestamp();
       
-      // Check response format
-      console.log('Login response type:', typeof response);
-      console.log('Login success, received token:', !!response.access_token);
+      const result = await login({ email, password });
       
-      if (response && response.access_token) {
+      if (result.success) {
+        // Update the timestamp again after successful login
+        updateAuthTimestamp();
+        
         setLoginSuccess(true);
         setMessage('Login successful! Redirecting...');
         
-        // Store user data
-        const userData = {
-          id: response.user_id,
-          username: response.username,
-          email: response.email,
-          role: response.role || 'user' // Default to user role if none provided
-        };
-        
-        // Login using context
-        login(userData, response.access_token);
-        
-        // Redirect after delay
+        // Set a slight delay before redirecting to ensure auth context is updated
         setTimeout(() => {
-          if (userData.role === 'admin') {
-            navigate('/admin-dashboard');
-          } else {
-            navigate('/');
-          }
-        }, 1500);
+          navigate('/');
+        }, 800);
       } else {
-        throw new Error('Invalid response format - missing token');
+        setError(result.error || 'Login failed');
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      setMessage(`Login failed: ${error.message}`);
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(err.message || 'Failed to login. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -276,9 +263,9 @@ export default function Login(props) {
               <Alert severity="success" sx={{ mb: 3, borderRadius: 2 }}>
                 {message}
               </Alert>
-            ) : message && (
+            ) : error && (
               <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
-                {message}
+                {error}
               </Alert>
             )}
 
@@ -386,6 +373,7 @@ export default function Login(props) {
                 fullWidth 
                 variant="contained" 
                 size="large"
+                disabled={loading}
                 sx={{ 
                   mt: 1,
                   background: 'linear-gradient(45deg, #3f51b5, #2196f3)',
@@ -394,7 +382,11 @@ export default function Login(props) {
                   }
                 }}
               >
-                Sign In
+                {loading ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : (
+                  'Sign In'
+                )}
               </StyledButton>
             </Box>
 
@@ -408,6 +400,7 @@ export default function Login(props) {
                 variant="outlined"
                 color="primary"
                 startIcon={<GoogleIcon />}
+                disabled={loading}
               >
                 Google
               </StyledButton>

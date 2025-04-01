@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, Typography, Container } from '@mui/material';
 
-// Direct imports instead of lazy loading
+// Direct imports for existing components
 import ResponsiveAppBar from './components/NavBar';
 import Home from './components/Home';
 import ImageUpload from './components/ImageUpload';
@@ -20,105 +20,144 @@ import DataVisualization from './components/DataVisualization';
 import ListingDetail from './components/ListingDetail';
 import MarketplaceCarDetail from './components/MarketplaceCarDetail';
 import CarMarketplace from './components/CarMarketplace';
+import MessagesPage from './pages/MessagesPage';
+import CarDetails from './components/CarDetails'; // Import CarDetails component
 
-// Debug component for testing routes
-const MyListingsDebug = () => {
-  return (
-    <div style={{padding: 20}}>
-      <h1>My Listings Debug View</h1>
-      <p>This is a simple component to verify the route is working.</p>
-    </div>
-  );
-};
+// Simple placeholders for missing components
+const NotFound = () => (
+  <Container sx={{ py: 5, textAlign: 'center' }}>
+    <Typography variant="h4" gutterBottom>404 - Page Not Found</Typography>
+    <Typography variant="body1">The page you are looking for doesn't exist or has been moved.</Typography>
+  </Container>
+);
 
-// Protected route component for admin routes
+const Register = () => (
+  <Container sx={{ py: 5, textAlign: 'center' }}>
+    <Typography variant="h4" gutterBottom>Register</Typography>
+    <Typography variant="body1">We're currently using the SignUp component instead of Register.</Typography>
+  </Container>
+);
+
+const MyListings = () => (
+  <Container sx={{ py: 5, textAlign: 'center' }}>
+    <Typography variant="h4" gutterBottom>My Listings</Typography>
+    <Typography variant="body1">We're currently using the UserListings component instead.</Typography>
+  </Container>
+);
+
+const ListCar = () => (
+  <Container sx={{ py: 5, textAlign: 'center' }}>
+    <Typography variant="h4" gutterBottom>List Your Car</Typography>
+    <Typography variant="body1">We're currently using the CarListing component instead.</Typography>
+  </Container>
+);
+
+const UserProfile = () => (
+  <Container sx={{ py: 5, textAlign: 'center' }}>
+    <Typography variant="h4" gutterBottom>User Profile</Typography>
+    <Typography variant="body1">This feature is coming soon.</Typography>
+  </Container>
+);
+
+// Protected route component for admin-only routes
 const AdminRoute = ({ children }) => {
   const { isAuthenticated, isAdmin, loading } = useAuth();
-  const navigate = useNavigate();
   
-  useEffect(() => {
-    // Add immediate logging to debug admin access
-    console.log("AdminRoute - Auth state:", { isAuthenticated, isAdmin, loading });
-    
-    // If not loading and either not authenticated or not admin, redirect immediately
-    if (!loading) {
-      if (!isAuthenticated) {
-        console.log("Not authenticated, redirecting to login");
-        navigate('/login');
-      } else if (!isAdmin) {
-        console.log("Not admin, redirecting to home");
-        navigate('/');
-      }
-    }
-  }, [isAuthenticated, isAdmin, loading, navigate]);
-  
-  // Show loading state while checking authentication
   if (loading) {
-    return <Box sx={{ display: 'flex', justifyContent: 'center', p: 5 }}><CircularProgress /></Box>;
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+        <CircularProgress />
+      </Box>
+    );
   }
   
-  // Only render children if both authenticated AND admin
-  // This is a double-check in case the redirect hasn't happened yet
   if (!isAuthenticated || !isAdmin) {
-    console.log("Blocking admin content render - not authorized");
-    return null;
+    return <Navigate to="/" replace />;
   }
   
-  console.log("Admin access granted, rendering admin content");
+  return children;
+};
+
+// Protected route for authenticated users
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
   return children;
 };
 
 function App() {
-  // Add location logging
-  useEffect(() => {
-    // Log current path when the app loads
-    console.log("Current path:", window.location.pathname);
-    
-    // Add a listener to log route changes
-    const logRouteChange = () => {
-      console.log("Route changed to:", window.location.pathname);
-    };
-    
-    window.addEventListener('popstate', logRouteChange);
-    return () => window.removeEventListener('popstate', logRouteChange);
-  }, []);
-
   return (
     <AuthProvider>
       <Router>
         <ResponsiveAppBar />
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 0, minHeight: '80vh' }}>
           <Routes>
-            {/* Use specialized components for different contexts */}
-            <Route path="/listing/:id" element={<MarketplaceCarDetail />} /> {/* Marketplace car details with messaging */}
-            <Route path="/my-listing/:id" element={<ListingDetail />} /> {/* Your own listings view */}
-            
-            {/* Add a test route that's easy to verify */}
-            <Route path="/test-detail" element={<div style={{padding: 20}}><h1>Test Detail Page</h1></div>} />
-            
+            {/* Public routes */}
             <Route path="/" element={<Home />} />
-            <Route path="/car-recognizer" element={<ImageUpload />} />
-            <Route path="/image-upload" element={<ImageUpload />} />
-            <Route path="/damage-detect" element={<DamageDetect />} />
-            <Route path="/scrape" element={<Scrape />} />
-            <Route path="/price-prediction" element={<PricePrediction />} />
-            <Route path="/data-visualization" element={<DataVisualization />} />
-            <Route path="/signup" element={<SignUp />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/car-listing" element={<CarListing />} />
-            <Route path="/my-listings" element={<UserListings />} />
-            <Route path="/my-listings-debug" element={<MyListingsDebug />} />
-            <Route path='/listingdetails' element={<ListingDetail />} />
+            <Route path="/register" element={<SignUp />} /> {/* Using SignUp instead of Register */}
             <Route path="/car-marketplace" element={<CarMarketplace />} />
-            {/* Protected Admin Dashboard Route */}
+            <Route path="/listing/:id" element={<ListingDetail />} />
+            <Route path="/car-marketplace/:id" element={<MarketplaceCarDetail />} />
+            <Route path="/car-recognizer" element={<ImageUpload />} />
+            <Route path="/damage-detect" element={<DamageDetect />} />
+            <Route path="/price-prediction" element={<PricePrediction />} />
+            
+            {/* Messages routes */}
+            <Route path="/messages" element={
+              <ProtectedRoute>
+                <MessagesPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/messages/:userId" element={
+              <ProtectedRoute>
+                <MessagesPage />
+              </ProtectedRoute>
+            } />
+            
+            {/* Protected user routes */}
+            <Route path="/my-listings" element={
+              <ProtectedRoute>
+                <UserListings /> {/* Using UserListings instead of MyListings */}
+              </ProtectedRoute>
+            } />
+            <Route path="/my-listing/:id" element={
+              <ProtectedRoute>
+                <CarDetails /> {/* Added route for individual car details */}
+              </ProtectedRoute>
+            } />
+            <Route path="/car-listing" element={
+              <ProtectedRoute>
+                <CarListing /> {/* Using CarListing instead of ListCar */}
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            } />
+            
+            {/* Admin only routes */}
             <Route path="/admin-dashboard" element={
               <AdminRoute>
                 <AdminDashboard />
               </AdminRoute>
             } />
             
-            {/* Redirect unknown routes to home */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            {/* Catch-all route */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Box>
         <Footer />

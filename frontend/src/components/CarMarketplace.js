@@ -48,7 +48,7 @@ import {
   Settings 
 } from '@mui/icons-material';
 import { styled } from '@mui/system';
-import { getAllListings } from '../api';
+import { fetchCarListings } from '../api'; // Updated import name
 import { useAuth } from '../context/AuthContext';
 
 // Styled components for better UI
@@ -161,10 +161,43 @@ const transmissionOptions = [
   "manual", "automatic"
 ];
 
+// Add this at the top - a hook to persist and track the user ID
+const useUserIdTracking = () => {
+  const { isAuthenticated, user, loading } = useAuth();
+  const [currentUserId, setCurrentUserId] = useState(null);
+
+  // Store user ID in session storage when authenticated
+  useEffect(() => {
+    if (!loading && isAuthenticated && user) {
+      const userId = user.user_id || user._id;
+      if (userId) {
+        setCurrentUserId(userId);
+        // Store in session storage to persist during refresh
+        sessionStorage.setItem('marketplace_user_id', userId);
+        console.log('User ID stored for filtering:', userId);
+      }
+    } else if (!loading && !isAuthenticated) {
+      // Clear stored ID when not authenticated
+      setCurrentUserId(null);
+      sessionStorage.removeItem('marketplace_user_id');
+    } else if (!loading && isAuthenticated && !currentUserId) {
+      // Attempt to restore from session storage if not in state yet
+      const storedId = sessionStorage.getItem('marketplace_user_id');
+      if (storedId) {
+        setCurrentUserId(storedId);
+        console.log('User ID restored from session storage:', storedId);
+      }
+    }
+  }, [isAuthenticated, user, loading, currentUserId]);
+
+  return { currentUserId, isLoadingUser: loading };
+};
+
 const CarMarketplace = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, loading: authLoading } = useAuth();
+  const { currentUserId, isLoadingUser } = useUserIdTracking();
   
   // State for listings and loading
   const [listings, setListings] = useState([]);
@@ -215,6 +248,12 @@ const CarMarketplace = () => {
   
   // Fetch listings when filters change
   useEffect(() => {
+    // Skip fetching until auth state is resolved
+    if (isLoadingUser) {
+      console.log('Waiting for user authentication state to resolve...');
+      return;
+    }
+    
     const fetchListings = async () => {
       setLoading(true);
       setError(null);
@@ -223,7 +262,7 @@ const CarMarketplace = () => {
         // Prepare filter parameters
         const filterParams = {
           page,
-          limit: itemsPerPage,
+          limit: itemsPerPage * 2, // Request more items to handle client-side filtering
           ...filters,
           // Convert price range to min/max values if set
           minPrice: priceRange[0] > 0 ? priceRange[0] : undefined,
@@ -233,34 +272,98 @@ const CarMarketplace = () => {
         };
         
         // Add user ID to exclude their own listings if authenticated
-        if (isAuthenticated && user && user._id) {
-          filterParams.exclude_user_id = user._id;
-          console.log(`Adding exclude_user_id: ${user._id} to filter params`);
+        // Use both session storage and auth context for redundancy
+        const userIdToExclude = currentUserId || 
+                              (isAuthenticated && user ? (user.user_id || user._id) : null) ||
+                              sessionStorage.getItem('marketplace_user_id');
+        
+        if (userIdToExclude) {
+          filterParams.exclude_user_id = userIdToExclude;
+          console.log(`Excluding user's own listings with ID: ${userIdToExclude}`);
         }
         
         console.log("Fetching listings with params:", filterParams);
-        const response = await getAllListings(filterParams);
+        const response = await fetchCarListings(filterParams); // Updated function call
         
         // Handle the actual response format from our backend
         if (response && response.listings) {
-          // Double check on frontend to ensure user's own listings don't appear
-          let filteredListings = response.listings;
-          if (isAuthenticated && user && user._id) {
-            console.log(`Additional frontend filtering for user: ${user._id}`);
-            filteredListings = response.listings.filter(listing => {
-              // Convert both to strings to ensure proper comparison
-              return String(listing.owner_id) !== String(user._id);
+          // Apply client-side filtering as double verification
+          let filteredListings = [...response.listings];
+          
+          if (userIdToExclude) {
+            const initialCount = filteredListings.length;
+            filteredListings = filteredListings.filter(listing => {
+              // Skip listings without owner_id
+              if (!listing.owner_id) return true;
+              
+              // Normalize and compare owner IDs
+              const ownerIdStr = String(listing.owner_id).trim();
+              const userIdStr = String(userIdToExclude).trim();
+              
+              // Debug owner IDs on refresh to help catch issues
+              if (ownerIdStr === userIdStr) {
+                console.warn(`Found listing that should have been filtered: ${listing.title} (${listing._id})`);
+                console.warn(`Owner ID: "${ownerIdStr}", User ID: "${userIdStr}"`);
+              }
+              
+              return ownerIdStr !== userIdStr;
             });
             
-            if (filteredListings.length < response.listings.length) {
-              console.log(`Filtered out ${response.listings.length - filteredListings.length} user's own listings`);
+            const removedCount = initialCount - filteredListings.length;
+            if (removedCount > 0) {
+              console.log(`Filtered out ${removedCount} user's own listings client-side`);
             }
           }
           
-          setListings(filteredListings);
-          if (response.pagination) {
-            setTotalPages(response.pagination.totalPages);
+          // Calculate real pagination based on filtered results
+          const totalItemCount = response.pagination?.total || filteredListings.length;
+          const adjustedTotalPages = Math.max(1, Math.ceil(totalItemCount / itemsPerPage));
+          
+          // Combine smaller pages if necessary to make sure we have 12 items per page
+          if (filteredListings.length < itemsPerPage && page < adjustedTotalPages) {
+            // We need to fetch more items
+            console.log(`Page ${page} has fewer than ${itemsPerPage} items (${filteredListings.length}), fetching more...`);
+            
+            // Get items from next page
+            const nextPageParams = {
+              ...filterParams,
+              page: page + 1,
+            };
+            
+            try {
+              const additionalResponse = await fetchCarListings(nextPageParams); // Updated function call
+              if (additionalResponse && additionalResponse.listings) {
+                // Apply the same filtering
+                let additionalFilteredListings = [...additionalResponse.listings];
+                
+                if (userIdToExclude) {
+                  additionalFilteredListings = additionalFilteredListings.filter(listing => {
+                    if (!listing.owner_id) return true;
+                    return String(listing.owner_id).trim() !== String(userIdToExclude).trim();
+                  });
+                }
+                
+                // Combine listings (up to itemsPerPage total)
+                const combinedListings = [
+                  ...filteredListings,
+                  ...additionalFilteredListings.slice(0, itemsPerPage - filteredListings.length)
+                ];
+                
+                console.log(`Added ${combinedListings.length - filteredListings.length} items from next page`);
+                filteredListings = combinedListings;
+              }
+            } catch (additionalErr) {
+              console.error('Error fetching additional listings:', additionalErr);
+            }
           }
+          
+          // Ensure we have the right number of items per page
+          const finalListings = filteredListings.slice(0, itemsPerPage);
+          
+          console.log(`Showing ${finalListings.length} listings on page ${page} of ${adjustedTotalPages}`);
+          
+          setListings(finalListings);
+          setTotalPages(adjustedTotalPages);
         } else {
           setListings([]);
           setTotalPages(1);
@@ -275,7 +378,7 @@ const CarMarketplace = () => {
     };
     
     fetchListings();
-  }, [filters, page, priceRange, isAuthenticated, user]);
+  }, [filters, page, priceRange, isAuthenticated, user, currentUserId, isLoadingUser]);
   
   // Handle filter changes
   const handleFilterChange = (event) => {
@@ -320,6 +423,7 @@ const CarMarketplace = () => {
   
   // Handle view listing details
   const handleViewListing = (listingId) => {
+    // Navigate to the correct route that matches our detail component's URL pattern
     navigate(`/listing/${listingId}`);
   };
   
@@ -353,6 +457,7 @@ const CarMarketplace = () => {
         </Typography>
         <Typography variant="subtitle1" color="text.secondary">
           Browse all available cars from our community. Filter, sort, and find your perfect match.
+          {isAuthenticated && <span style={{ fontStyle: 'italic' }}> Your own listings are not shown here.</span>}
         </Typography>
       </Box>
       
@@ -712,90 +817,95 @@ const CarMarketplace = () => {
             <Grid item xs={12}>
               <Typography variant="subtitle1" sx={{ mb: 2, mt: 1, fontWeight: 500 }}>
                 Showing {listings.length} cars {filters.make ? `(${filters.make}${filters.model ? ` ${filters.model}` : ''})` : ''}
+                {totalPages > 1 && ` - Page ${page} of ${totalPages}`}
               </Typography>
               <Divider sx={{ mb: 3 }} />
             </Grid>
             
-            {listings.map((listing) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={listing._id}>
-                <ListingCard>
-                  <CardActionArea onClick={() => handleViewListing(listing._id)}>
-                    <CardMedia
-                      component="img"
-                      height="200"
-                      image={listing.images && listing.images.length > 0 ? `/uploads/${listing.images[0]}` : '/default-car.jpg'}
-                      alt={listing.title}
-                      sx={{ objectFit: 'cover' }}
-                    />
-                    <CardContent sx={{ flexGrow: 1, pb: 1 }}>
-                      <Typography gutterBottom variant="h6" component="div" noWrap sx={{ fontWeight: 'bold' }}>
-                        {listing.title}
-                      </Typography>
-                      
-                      <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold', mb: 1 }}>
-                        {Number(listing.price).toLocaleString()} EGP
-                      </Typography>
-                      
-                      <Box sx={{ mb: 1.5 }}>
-                        <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                          <Person sx={{ fontSize: 16, mr: 0.5 }} />
-                          {listing.owner_name ? listing.owner_name : "Listed by Seller"}
+            <Grid container spacing={3}>
+              {listings.map((listing) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={listing._id}>
+                  <ListingCard>
+                    <CardActionArea onClick={() => handleViewListing(listing._id)}>
+                      <CardMedia
+                        component="img"
+                        height="200"
+                        image={listing.images && listing.images.length > 0 ? `/uploads/${listing.images[0]}` : '/default-car.jpg'}
+                        alt={listing.title}
+                        sx={{ objectFit: 'cover' }}
+                      />
+                      <CardContent sx={{ flexGrow: 1, pb: 1 }}>
+                        <Typography gutterBottom variant="h6" component="div" noWrap sx={{ fontWeight: 'bold' }}>
+                          {listing.title}
                         </Typography>
                         
-                        <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
-                          <LocationOn sx={{ fontSize: 16, mr: 0.5 }} />
-                          {listing.location}
+                        <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold', mb: 1 }}>
+                          {Number(listing.price).toLocaleString()} EGP
                         </Typography>
-                      </Box>
-                      
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', mt: 1 }}>
-                        <ListingInfoChip 
-                          size="small" 
-                          icon={<CalendarToday />} 
-                          label={listing.year} 
-                          color={theme.palette.info.main} 
-                        />
-                        <ListingInfoChip 
-                          size="small" 
-                          icon={<Speed />} 
-                          label={`${Number(listing.kilometers).toLocaleString()} km`} 
-                          color={theme.palette.warning.main} 
-                        />
-                        <ListingInfoChip 
-                          size="small" 
-                          icon={<Settings />} 
-                          label={listing.transmissionType === 'automatic' ? 'Auto' : 'Manual'} 
-                          color={theme.palette.success.main} 
-                        />
-                        {listing.showMobileNumber && listing.mobileNumber && (
+                        
+                        <Box sx={{ mb: 1.5 }}>
+                          <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                            <Person sx={{ fontSize: 16, mr: 0.5 }} />
+                            {listing.owner_name ? listing.owner_name : "Listed by Seller"}
+                          </Typography>
+                          
+                          <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
+                            <LocationOn sx={{ fontSize: 16, mr: 0.5 }} />
+                            {listing.location}
+                          </Typography>
+                        </Box>
+                        
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', mt: 1 }}>
                           <ListingInfoChip 
                             size="small" 
-                            icon={<Phone />} 
-                            label={`+20${listing.mobileNumber}`} 
-                            color={theme.palette.secondary.main} 
+                            icon={<CalendarToday />} 
+                            label={listing.year} 
+                            color={theme.palette.info.main} 
                           />
-                        )}
-                      </Box>
-                    </CardContent>
-                  </CardActionArea>
-                </ListingCard>
-              </Grid>
-            ))}
+                          <ListingInfoChip 
+                            size="small" 
+                            icon={<Speed />} 
+                            label={`${Number(listing.kilometers).toLocaleString()} km`} 
+                            color={theme.palette.warning.main} 
+                          />
+                          <ListingInfoChip 
+                            size="small" 
+                            icon={<Settings />} 
+                            label={listing.transmissionType === 'automatic' ? 'Auto' : 'Manual'} 
+                            color={theme.palette.success.main} 
+                          />
+                          {listing.showMobileNumber && listing.mobileNumber && (
+                            <ListingInfoChip 
+                              size="small" 
+                              icon={<Phone />} 
+                              label={`+20${listing.mobileNumber}`} 
+                              color={theme.palette.secondary.main} 
+                            />
+                          )}
+                        </Box>
+                      </CardContent>
+                    </CardActionArea>
+                  </ListingCard>
+                </Grid>
+              ))}
+            </Grid>
             
             {/* Pagination */}
-            <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-              <Stack spacing={2}>
-                <Pagination 
-                  count={totalPages} 
-                  page={page} 
-                  onChange={handlePageChange} 
-                  color="primary"
-                  size="large"
-                  showFirstButton
-                  showLastButton
-                />
-              </Stack>
-            </Grid>
+            {totalPages > 1 && (
+              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <Stack spacing={2}>
+                  <Pagination 
+                    count={totalPages} 
+                    page={page} 
+                    onChange={handlePageChange} 
+                    color="primary"
+                    size="large"
+                    showFirstButton
+                    showLastButton
+                  />
+                </Stack>
+              </Grid>
+            )}
           </>
         )}
       </Grid>

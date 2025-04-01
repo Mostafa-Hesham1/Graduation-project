@@ -43,7 +43,7 @@ import {
   ArrowForward,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
-import { getUserListings } from '../api';
+import { fetchUserListings } from '../api'; // Updated import name
 
 const CAR_PLACEHOLDER =
   "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNFNUU1RTUiLz48cGF0aCBkPSJNMTUwIDEzMEg1MEM0NS44MTc5IDEzMCA0Mi41IDEyNi42ODMgNDIuNSAxMjIuNVYxMTVDNDIuNSAxMTAuODE3IDQ1LjgxNzkgMTA3LjUgNTAgMTA3LjVIMTUwQzE1NC4xODIgMTA3LjUgMTU3LjUgMTEwLjgxNyAxNTcuNSAxMTVWMTIyLjVDMTU3LjUgMTI2LjY4MyAxNTQuMTgyIDEzMCAxNTAgMTMwWiIgZmlsbD0iIzljOWM5YyIvPjxjaXJjbGUgY3g9IjY1IiBjeT0iMTI1IiByPSIxMCIgZmlsbD0iIzU1NSIvPjxjaXJjbGUgY3g9IjEzNSIgY3k9IjEyNSIgcj0iMTAiIGZpbGw9IiM1NTUiLz48cGF0aCBkPSJNMTUwIDEwNy41SDUwTDYwIDgwSDEzMEwxNTAgMTA3LjVaIiBmaWxsPSIjOUM5QzlDIi8+PHRleHQgeD0iMTAwIiB5PSI2MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM1NTUiPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==";
@@ -166,7 +166,7 @@ const UserListings = () => {
   const [currentImageIndices, setCurrentImageIndices] = useState({});
   
   useEffect(() => {
-    const fetchUserListings = async () => {
+    const fetchListings = async () => {
       if (!isAuthenticated) {
         navigate('/login');
         return;
@@ -174,7 +174,7 @@ const UserListings = () => {
       
       setLoading(true);
       try {
-        const response = await getUserListings();
+        const response = await fetchUserListings(); // Updated function call
         let listingsData = [];
         if (response.listings && Array.isArray(response.listings)) {
           listingsData = response.listings;
@@ -190,7 +190,7 @@ const UserListings = () => {
       }
     };
     
-    fetchUserListings();
+    fetchListings();
   }, [isAuthenticated, navigate]);
   
   useEffect(() => {
