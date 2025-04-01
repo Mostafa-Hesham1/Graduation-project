@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from fastapi import APIRouter, HTTPException, Depends, status, Request
+from fastapi import APIRouter, HTTPException, Depends, status, Request, Response
 from pydantic import BaseModel, EmailStr
 from database import db
 import bcrypt
@@ -13,6 +13,7 @@ import logging
 import secrets
 from passlib.context import CryptContext
 import traceback
+import json
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -291,7 +292,7 @@ async def authenticate_user(email: str, password: str):
 
 # Add a JSON-based login endpoint that doesn't use OAuth2PasswordRequestForm
 @router.post("/json-login")
-async def json_login(user_data: UserLogin):
+async def json_login(user_data: UserLogin, response: Response):
     """Login endpoint that accepts direct JSON with email and password"""
     try:
         # Enhanced logging
@@ -321,10 +322,8 @@ async def json_login(user_data: UserLogin):
         # Generate access token
         access_token = create_access_token(token_data)
         
-        logger.info(f"JSON Login successful for {user_data.email}, role: {user.get('role', 'user')}")
-        
-        # Return token and user info
-        return {
+        # Create response data
+        response_data = {
             "access_token": access_token,
             "token_type": "bearer",
             "user_id": user_id,
@@ -332,6 +331,18 @@ async def json_login(user_data: UserLogin):
             "email": user.get("email"),
             "role": user.get("role", "user")
         }
+        
+        # Add CORS headers
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        
+        # Log response
+        logger.info(f"JSON Login successful for {user_data.email}, role: {user.get('role', 'user')}")
+        logger.info(f"Response data: {json.dumps(response_data)}")
+        
+        return response_data
     except HTTPException:
         raise
     except Exception as e:
@@ -344,7 +355,7 @@ async def json_login(user_data: UserLogin):
 
 # Modify the login endpoint for additional debugging and better error messages
 @router.post("/login")
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), response: Response = None):
     """Standard OAuth2 login endpoint"""
     try:
         # Log incoming form data for debugging
@@ -387,11 +398,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         # Generate access token
         access_token = create_access_token(token_data)
         
-        # Log success with role information
-        logger.info(f"Login successful for {form_data.username}, role: {user.get('role', 'user')}")
-        
         # Return token and user info
-        return {
+        response_data = {
             "access_token": access_token,
             "token_type": "bearer",
             "user_id": user_id,
@@ -399,6 +407,14 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             "email": user.get("email"),
             "role": user.get("role", "user")  # Include role in response
         }
+        
+        # Add CORS headers
+        if response:
+            response.headers["Access-Control-Allow-Origin"] = "*"
+            response.headers["Access-Control-Allow-Credentials"] = "true"
+            
+        logger.info(f"Login response data: {json.dumps(response_data)}")
+        return response_data
     except HTTPException:
         # Re-raise HTTP exceptions
         raise
@@ -459,3 +475,66 @@ async def auth_check():
             "secret_key_type": str(type(SECRET_KEY)),
             "env_vars_loaded": os.getenv("JWT_SECRET_KEY") is not None
         }
+
+# Add a special debug login endpoint 
+@router.post("/debug-login")
+async def debug_login(user_data: UserLogin):
+    """Debug login endpoint that returns detailed information about the login process"""
+    try:
+        # Attempt to authenticate
+        user = await authenticate_user(user_data.email, user_data.password)
+        
+        # Prepare comprehensive response
+        response = {
+            "status": "success" if user else "failed",
+            "authenticated": user is not None,
+            "timestamp": str(datetime.utcnow()),
+            "request_data": {
+                "email": user_data.email,
+                "password_length": len(user_data.password) if user_data.password else 0
+            }
+        }
+        
+        # Add user data if authenticated
+        if user:
+            # Get user ID as string from MongoDB ObjectId
+            user_id = str(user.get("_id"))
+            
+            # Remove sensitive fields
+            safe_user = {k: v for k, v in user.items() if k not in ["password", "hashed_password"]}
+            
+            # Create token data
+            token_data = {
+                "sub": user_id,
+                "email": user.get("email"),
+                "role": user.get("role", "user"),
+            }
+            
+            # Generate access token
+            access_token = create_access_token(token_data)
+            
+            # Add to response
+            response["user"] = safe_user
+            response["auth_details"] = {
+                "access_token": access_token,
+                "token_type": "bearer",
+                "user_id": user_id,
+                "token_data": token_data
+            }
+        
+        return response
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": str(e),
+            "error_type": str(type(e)),
+            "traceback": traceback.format_exc()
+        }
+
+# Add OPTIONS endpoint handlers for CORS preflight requests
+@router.options("/json-login")
+@router.options("/login")
+@router.options("/signup")
+async def auth_options():
+    """Handle OPTIONS requests for authentication endpoints"""
+    return {"status": "ok"}

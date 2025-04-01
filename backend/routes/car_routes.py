@@ -215,7 +215,7 @@ async def get_car_listings(
     exclude_user_id: Optional[str] = None,
 ):
     try:
-        logger.info(f"Fetching car listings with filters. Page: {page}, Limit: {limit}")
+        logger.info(f"Fetching car listings with filters. Page: {page}, Limit: {limit}, Sort: {sortBy}")
         
         # Build the filter query
         filter_query = {}
@@ -258,29 +258,63 @@ async def get_car_listings(
                 {"description": {"$regex": search, "$options": "i"}}
             ]
         
-        # Exclude user's own listings if user_id is provided
-        if exclude_user_id and ObjectId.is_valid(exclude_user_id):
-            filter_query["owner_id"] = {"$ne": ObjectId(exclude_user_id)}
+        # Exclude user's own listings - simplify the logic for robustness
+        if exclude_user_id:
+            logger.info(f"Excluding listings from user: {exclude_user_id}")
+            
+            # Create exclusion condition that handles both string and ObjectId formats
+            exclusion_condition = {
+                "owner_id": {"$ne": exclude_user_id}
+            }
+            
+            # If it's a valid ObjectId, also try excluding the ObjectId version
+            if ObjectId.is_valid(exclude_user_id):
+                object_id = ObjectId(exclude_user_id)
+                # Use $and to combine existing filters with the owner_id filter
+                if "$and" not in filter_query:
+                    filter_query["$and"] = []
+                
+                filter_query["$and"].append({
+                    "$or": [
+                        {"owner_id": {"$ne": exclude_user_id}},
+                        {"owner_id": {"$ne": object_id}}
+                    ]
+                })
+                
+                logger.info(f"Applied ObjectId exclusion for user: {exclude_user_id}")
+            else:
+                # Simple string comparison if not a valid ObjectId
+                filter_query["owner_id"] = {"$ne": exclude_user_id}
+            
+            logger.info(f"Final filter query: {filter_query}")
         
-        # Determine sort order
+        # Determine sort order (with improved handling of various formats)
         sort_order = {}
         if sortBy == "newest":
             sort_order["created_at"] = -1
         elif sortBy == "oldest":
             sort_order["created_at"] = 1
-        elif sortBy == "price_low":
+        elif sortBy in ["priceAsc", "price_low"]:  # Support both naming conventions
             sort_order["price"] = 1
-        elif sortBy == "price_high":
+        elif sortBy in ["priceDesc", "price_high"]:  # Support both naming conventions
             sort_order["price"] = -1
         else:
-            sort_order["created_at"] = -1  # Default sort by newest
+            # Default to newest first
+            sort_order["created_at"] = -1
+        
+        # Ensure valid pagination parameters
+        page = max(1, page)  # Ensure page is at least 1
+        limit = max(1, min(limit, 100))  # Reasonable upper limit
         
         # Calculate skip value for pagination
         skip = (page - 1) * limit
         
         # Get total count for pagination info
         total_count = await db.car_listings.count_documents(filter_query)
-        total_pages = (total_count + limit - 1) // limit  # Ceiling division
+        total_pages = max(1, (total_count + limit - 1) // limit)  # Ceiling division, min 1 page
+        
+        # Log pagination details for debugging
+        logger.info(f"Pagination: page={page}, limit={limit}, skip={skip}, total={total_count}, pages={total_pages}")
         
         # Get the data with pagination
         cursor = db.car_listings.find(filter_query).sort(sort_order).skip(skip).limit(limit)
@@ -290,6 +324,11 @@ async def get_car_listings(
         async for doc in cursor:
             # Convert ObjectId to string for JSON serialization
             doc["_id"] = str(doc["_id"])
+            
+            # Convert owner_id to string for consistent comparison on frontend
+            if "owner_id" in doc and doc["owner_id"]:
+                if isinstance(doc["owner_id"], ObjectId):
+                    doc["owner_id"] = str(doc["owner_id"])
             
             # Add user information to the listing
             if "owner_id" in doc:
@@ -307,10 +346,6 @@ async def get_car_listings(
                         doc["owner_name"] = "Unknown Seller"
                 else:
                     doc["owner_name"] = "Unknown Seller"
-                
-                # Convert owner_id to string if it's an ObjectId
-                if isinstance(doc["owner_id"], ObjectId):
-                    doc["owner_id"] = str(doc["owner_id"])
             else:
                 doc["owner_name"] = "Unknown Seller"
             
@@ -320,7 +355,7 @@ async def get_car_listings(
                 
             listings.append(doc)
         
-        logger.info(f"Found {len(listings)} listings (page {page} of {total_pages})")
+        logger.info(f"Returning {len(listings)} listings (page {page} of {total_pages})")
         
         # Return response with pagination metadata
         return {
@@ -329,7 +364,9 @@ async def get_car_listings(
                 "total": total_count,
                 "page": page,
                 "totalPages": total_pages,
-                "limit": limit
+                "limit": limit,
+                "hasMore": page < total_pages,
+                "sortBy": sortBy  # Include sortBy in response for debugging
             }
         }
         

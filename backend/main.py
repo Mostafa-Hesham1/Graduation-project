@@ -6,6 +6,10 @@ import os
 import logging
 import sys
 from datetime import datetime, timedelta
+# Import database module to access the db instance
+from database import db
+# Import ObjectId for working with MongoDB IDs
+from bson import ObjectId
 
 # Configure logging with more detail
 logging.basicConfig(
@@ -105,31 +109,28 @@ async def root():
     return {"message": "Server is running properly"}
 
 # Import routers after app definition to avoid circular imports
-from routes import scrape, train, predict, car_specs, auth
-from routes.yolo import router as yolo_router
-from routes.car_specs import router as car_specs_router
-from routes.price_predict import router as price_predict_router
-from routes.data import router as data_router
-from database import db
-from bson import json_util
-from bson.objectid import ObjectId
-from routes import car_routes
-from routes.damage_detect import router as damage_detect_router
-# Import the admin router
-from routes.admin import router as admin_router
+from routes import auth, car_routes, car_specs, data, damage_detect, predict, price_predict, scrape, train, admin, yolo, messages, debug
 
-# Mount all routers
+# Mount all routers using the original prefixes to match frontend expectations
 app.include_router(scrape.router, prefix="/scrape", tags=["scrape"])
 app.include_router(train.router, prefix="/train", tags=["train"])
 app.include_router(predict.router, prefix="/predict", tags=["predict"])
-app.include_router(yolo_router, prefix="/yolo", tags=["yolo"])
-app.include_router(car_specs_router, prefix="/car", tags=["car"])
-app.include_router(price_predict_router, prefix="/price", tags=["price"])
-app.include_router(data_router, prefix="/data", tags=["data"])
+app.include_router(yolo.router, prefix="/yolo", tags=["yolo"])
+app.include_router(car_specs.router, prefix="/car", tags=["car"])
+app.include_router(price_predict.router, prefix="/price", tags=["price"])
+app.include_router(data.router, prefix="/data", tags=["data"])
 app.include_router(car_routes.router, prefix="/cars", tags=["cars"])
-app.include_router(damage_detect_router, prefix="/damage", tags=["damage"])
-app.include_router(auth.router)
-app.include_router(admin_router, prefix="/admin", tags=["admin"])
+# Add the car_routes router under /api prefix for frontend requests
+app.include_router(car_routes.router, prefix="/api/cars", tags=["api-cars"])
+app.include_router(damage_detect.router, prefix="/damage", tags=["damage"])
+
+# Mount auth router twice - once directly and once under /api prefix to support both paths
+app.include_router(auth.router)  # For backward compatibility
+app.include_router(auth.router, prefix="/api", tags=["auth-api"])  # For frontend API calls
+
+app.include_router(admin.router, prefix="/admin", tags=["admin"])
+app.include_router(messages.router, prefix="/api", tags=["messages"])
+app.include_router(debug.router, prefix="/api/debug", tags=["debug"])
 
 # Direct auth check endpoint
 @app.get("/auth-check")
@@ -353,6 +354,338 @@ async def not_found_handler(request: Request, exc):
         content={"detail": f"Not Found: {path}"},
         status_code=404,
     )
+
+# Support both /auth/login and /json-login for compatibility
+@app.post("/auth/login")
+async def auth_login_alias(request: Request):
+    # Extract the JSON body from the request
+    body = await request.json()
+    
+    # Call the json_login function from auth.router with the same data
+    try:
+        # Check for required fields
+        if not body.get("email") or not body.get("password"):
+            return JSONResponse(
+                status_code=422,
+                content={"detail": "Email and password are required"}
+            )
+        
+        # Create a UserLogin object to pass to json_login
+        from routes.auth import UserLogin
+        user_data = UserLogin(email=body["email"], password=body["password"])
+        
+        # Call the json_login function
+        result = await auth.json_login(user_data)
+        return result
+    except Exception as e:
+        logger.error(f"Error in auth/login alias: {str(e)}")
+        return JSONResponse(
+            status_code=500,
+            content={"detail": f"Login error: {str(e)}"
+        })
+
+# For debugging purposes
+@app.get("/debug/routes")
+def debug_routes():
+    """List all registered routes for debugging purposes"""
+    routes = []
+    for route in app.routes:
+        routes.append({
+            "path": route.path,
+            "name": route.name,
+            "methods": route.methods if hasattr(route, "methods") else None
+        })
+    return {"routes": routes}
+
+# Import auth and security dependencies
+from routes.auth import get_current_user
+
+# Modified version of the marketplace endpoint to handle all car listings requests
+@app.get("/api/cars/listings")
+async def get_all_listings(
+    page: int = 1, 
+    limit: int = 24, 
+    minYear: int = 2000,
+    maxYear: int = 2025,
+    sortBy: str = "newest",
+    exclude_current_user: bool = True,
+    current_user = Depends(get_current_user)
+):
+    """Get all car listings with option to exclude the current user's listings"""
+    try:
+        # Get user ID from current user
+        user_id = None
+        if current_user and "_id" in current_user:
+            user_id = str(current_user["_id"])
+            logger.info(f"Current user ID: {user_id}")
+        else:
+            logger.warning("No user ID found in current_user")
+        
+        # Skip and limit for pagination
+        skip = (page - 1) * limit
+        
+        # Build filter query
+        filter_query = {
+            "year": {"$gte": minYear, "$lte": maxYear}
+        }
+        
+        # Add user filtering - exclude current user's listings
+        if exclude_current_user and user_id:
+            filter_query["user_id"] = {"$ne": ObjectId(user_id)}
+            logger.info(f"Excluding listings from user_id: {user_id}")
+            logger.info(f"Final filter query: {filter_query}")
+        
+        # Log the number of user's own listings for debugging
+        if user_id:
+            own_listings_count = await db.listings.count_documents({"user_id": ObjectId(user_id)})
+            logger.info(f"User {user_id} has {own_listings_count} listings")
+        
+        # Determine sort order
+        if sortBy == "newest":
+            sort_field = "created_at"
+            sort_order = -1  # Descending
+        elif sortBy == "oldest":
+            sort_field = "created_at"
+            sort_order = 1   # Ascending
+        elif sortBy == "price_low":
+            sort_field = "price"
+            sort_order = 1   # Ascending
+        elif sortBy == "price_high":
+            sort_field = "price"
+            sort_order = -1  # Descending
+        else:
+            sort_field = "created_at"
+            sort_order = -1  # Default to newest
+            
+        # Get total count of matching listings
+        total_listings = await db.listings.count_documents(filter_query)
+        logger.info(f"Found {total_listings} listings matching filter")
+        
+        # Get paginated listings
+        cursor = db.listings.find(filter_query).sort(sort_field, sort_order).skip(skip).limit(limit)
+        
+        listings = []
+        user_listings_found = 0
+        
+        async for listing in cursor:
+            if "_id" in listing:
+                listing["_id"] = str(listing["_id"])
+            
+            # Convert ObjectId to string for user_id
+            listing_user_id = None
+            if "user_id" in listing:
+                if isinstance(listing["user_id"], ObjectId):
+                    listing_user_id = str(listing["user_id"])
+                    listing["user_id"] = listing_user_id
+                else:
+                    listing_user_id = listing["user_id"]
+            
+            # Count listings from current user for debugging
+            if listing_user_id == user_id:
+                user_listings_found += 1
+                logger.warning(f"Found user's own listing in results: {listing['_id']}")
+                
+                # Skip this listing if we're supposed to exclude current user's listings
+                if exclude_current_user:
+                    logger.warning(f"Filtering failed for listing {listing['_id']} - manually skipping")
+                    continue
+                
+            listings.append(listing)
+        
+        if user_listings_found > 0:
+            logger.warning(f"Found {user_listings_found} of the user's own listings in results despite filtering")
+        
+        # Calculate total pages
+        total_pages = (total_listings + limit - 1) // limit if total_listings > 0 else 1
+        
+        return {
+            "listings": listings,
+            "pagination": {
+                "current_page": page,
+                "total_pages": total_pages,
+                "total_listings": total_listings,
+                "has_next": page < total_pages,
+                "has_prev": page > 1
+            },
+            "debug": {
+                "user_id": user_id,
+                "filter_query": str(filter_query),
+                "exclude_current_user": exclude_current_user,
+                "user_listings_found": user_listings_found
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in listings: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error fetching listings: {str(e)}"
+        )
+
+# Keep the marketplace endpoint but have it call the listings endpoint with exclude_current_user=True
+@app.get("/api/cars/marketplace")
+async def get_marketplace_listings(
+    page: int = 1, 
+    limit: int = 24, 
+    minYear: int = 2000,
+    maxYear: int = 2025,
+    sortBy: str = "newest",
+    current_user = Depends(get_current_user)
+):
+    """Get all car listings except those belonging to the current user"""
+    return await get_all_listings(
+        page=page,
+        limit=limit,
+        minYear=minYear,
+        maxYear=maxYear,
+        sortBy=sortBy,
+        exclude_current_user=True,
+        current_user=current_user
+    )
+
+# Add an endpoint specifically for user's own listings
+@app.get("/api/cars/my-listings")
+async def get_user_listings(
+    page: int = 1, 
+    limit: int = 24,
+    current_user = Depends(get_current_user)
+):
+    """Get only the current user's listings"""
+    try:
+        # Get user ID from current user
+        user_id = str(current_user["_id"]) if "_id" in current_user else None
+        
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Authentication required")
+        
+        # Skip and limit for pagination
+        skip = (page - 1) * limit
+        
+        # Build filter query
+        filter_query = {
+            "user_id": ObjectId(user_id)
+        }
+        
+        # Get total count of matching listings
+        total_listings = await db.listings.count_documents(filter_query)
+        
+        # Get paginated listings
+        cursor = db.listings.find(filter_query).sort("created_at", -1).skip(skip).limit(limit)
+        
+        listings = []
+        async for listing in cursor:
+            if "_id" in listing:
+                listing["_id"] = str(listing["_id"])
+            
+            # Convert ObjectId to string for user_id
+            if "user_id" in listing and isinstance(listing["user_id"], ObjectId):
+                listing["user_id"] = str(listing["user_id"])
+                
+            listings.append(listing)
+            
+        # Calculate total pages
+        total_pages = (total_listings + limit - 1) // limit if total_listings > 0 else 1
+        
+        return {
+            "listings": listings,
+            "pagination": {
+                "current_page": page,
+                "total_pages": total_pages,
+                "total_listings": total_listings,
+                "has_next": page < total_pages,
+                "has_prev": page > 1
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in user listings: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error fetching user listings: {str(e)}"
+        )
+
+# Enhanced endpoint for fetching a single car by ID
+@app.get("/api/cars/{car_id}")
+async def get_car_by_id(car_id: str, request: Request):
+    """Get details for a specific car by ID"""
+    logger.info(f"Car details requested for ID: {car_id} from URL: {request.url}")
+    try:
+        # Validate the ID format
+        if not ObjectId.is_valid(car_id):
+            logger.warning(f"Invalid ObjectId format: {car_id}")
+            raise HTTPException(status_code=400, detail="Invalid car ID format")
+        
+        # Find the car in listings collection
+        car = await db.listings.find_one({"_id": ObjectId(car_id)})
+        
+        if not car:
+            logger.warning(f"Car not found with ID: {car_id}")
+            raise HTTPException(status_code=404, detail=f"Car with ID {car_id} not found")
+        
+        # Convert ObjectId to string for all fields
+        if "_id" in car:
+            car["_id"] = str(car["_id"])
+        
+        if "user_id" in car and isinstance(car["user_id"], ObjectId):
+            car["user_id"] = str(car["user_id"])
+        
+        # Try to get user details if available
+        if "user_id" in car:
+            user = await db.users.find_one({"_id": ObjectId(car["user_id"])})
+            if user:
+                car["seller"] = {
+                    "username": user.get("username", "Unknown"),
+                    "email": user.get("email"),
+                    "phone": user.get("phone", "No phone provided")
+                }
+        
+        logger.info(f"Returning car details for ID: {car_id}")
+        return car
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching car by ID {car_id}: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error retrieving car details: {str(e)}"
+        )
+
+# Alternative endpoint for car details - in case frontend uses a different pattern
+@app.get("/api/cars/details/{car_id}")
+async def get_car_details(car_id: str, request: Request):
+    """Alternative endpoint for car details"""
+    logger.info(f"Car details accessed through alternative endpoint: {car_id}")
+    return await get_car_by_id(car_id, request)
+
+# Another alternative endpoint for my-listings
+@app.get("/cars/my-listings/{car_id}")
+@app.get("/api/cars/my-listings/{car_id}")
+async def get_my_car_details(car_id: str, request: Request):
+    """Alternative endpoint for user's own car details"""
+    logger.info(f"My car details accessed: {car_id}")
+    return await get_car_by_id(car_id, request)
+
+# Provide car details through original /cars endpoint as well
+@app.get("/cars/{car_id}")
+async def get_original_car_details(car_id: str, request: Request):
+    """Original endpoint pattern for car details"""
+    logger.info(f"Car details accessed through original endpoint: {car_id}")
+    return await get_car_by_id(car_id, request)
+
+# Debug endpoint to check what URLs are available
+@app.get("/api/debug/car-detail-urls/{car_id}")
+async def debug_car_urls(car_id: str):
+    """Debug endpoint to check all available URLs for a car ID"""
+    base_url = "http://localhost:8000"
+    urls = [
+        f"{base_url}/api/cars/{car_id}",
+        f"{base_url}/api/cars/details/{car_id}",
+        f"{base_url}/cars/my-listings/{car_id}",
+        f"{base_url}/api/cars/my-listings/{car_id}",
+        f"{base_url}/cars/{car_id}"
+    ]
+    return {"car_id": car_id, "available_urls": urls}
 
 if __name__ == "__main__":
     import uvicorn
