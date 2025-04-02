@@ -463,11 +463,53 @@ export const fetchCarListings = async (filters = {}, page = 1, limit = 24) => {
     
     console.log('Fetching listings with params:', params.toString());
     
-    const response = await axios.get(`/api/cars/listings?${params}`);
+    // Get the auth token
+    const token = localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    
+    // Make the request to the regular listings endpoint that doesn't filter based on user
+    const response = await axios.get(`/api/cars/listings?${params}`, { 
+      headers 
+    });
+    
+    // If authenticated, filter out the user's own listings on the client side
+    if (token) {
+      try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        const userId = user?.id;
+        
+        if (userId && response.data && response.data.listings) {
+          console.log(`Filtering out listings for user ID: ${userId}`);
+          response.data.listings = response.data.listings.filter(listing => {
+            return listing.owner_id !== userId;
+          });
+          console.log(`After filtering: ${response.data.listings.length} listings remain`);
+        }
+      } catch (err) {
+        console.error('Error filtering user listings:', err);
+      }
+    }
     
     return response.data;
   } catch (error) {
     console.error('Error fetching car listings:', error.response || error.message);
+    
+    // If there's an authentication error, try a fallback to the public endpoint
+    if (error.response?.status === 401) {
+      try {
+        console.log('Attempting fallback to public listings endpoint');
+        const params = new URLSearchParams({
+          page,
+          limit,
+          ...cleanFilters
+        });
+        const response = await axios.get(`/api/cars/listings?${params}`);
+        return response.data;
+      } catch (fallbackError) {
+        console.error('Fallback also failed:', fallbackError);
+      }
+    }
+    
     return { listings: [], pagination: { total: 0, page: 1, totalPages: 1 } };
   }
 };

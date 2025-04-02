@@ -110,7 +110,7 @@ function App() {
             <Route path="/register" element={<SignUp />} /> {/* Using SignUp instead of Register */}
             <Route path="/car-marketplace" element={<CarMarketplace />} />
             <Route path="/listing/:id" element={<ListingDetail />} />
-            <Route path="/car-marketplace/:id" element={<MarketplaceCarDetail />} />
+            <Route path="/car/:id" element={<MarketplaceCarDetail />} /> {/* Updated route path to match navigation */}
             <Route path="/car-recognizer" element={<ImageUpload />} />
             <Route path="/damage-detect" element={<DamageDetect />} />
             <Route path="/price-prediction" element={<PricePrediction />} />

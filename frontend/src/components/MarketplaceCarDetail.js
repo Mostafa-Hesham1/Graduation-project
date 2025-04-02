@@ -817,7 +817,7 @@ const MarketplaceCarDetail = () => {
 
                 {listing.showPhoneNumber && listing.phoneNumber ? (
                   <Box sx={{ mb: 3 }}>
-                    <Typography variant="subtitle2" gutterBottom>
+                    <Typography variant="subtitle2" gutterBottom fontWeight="bold">
                       Phone Number
                     </Typography>
                     <Box
@@ -829,11 +829,11 @@ const MarketplaceCarDetail = () => {
                         border: '1px solid',
                         borderColor: 'divider',
                         borderRadius: 1,
-                        bgcolor: 'background.paper',
+                        bgcolor: alpha(theme.palette.success.light, 0.1),
                       }}
                     >
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Phone color="primary" sx={{ mr: 1 }} />
+                        <Phone color="success" sx={{ mr: 1 }} />
                         <Typography variant="subtitle1" fontWeight="medium">
                           {listing.phoneNumber}
                         </Typography>
@@ -850,7 +850,7 @@ const MarketplaceCarDetail = () => {
                             });
                           }}
                         >
-                          <ContentCopy fontSize="small" />
+                          <ContentCopy fontSize="small" />    
                         </IconButton>
                       </Tooltip>
                     </Box>

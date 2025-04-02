@@ -424,7 +424,7 @@ const CarMarketplace = () => {
   // Handle view listing details
   const handleViewListing = (listingId) => {
     // Navigate to the correct route that matches our detail component's URL pattern
-    navigate(`/listing/${listingId}`);
+    navigate(`/car/${listingId}`);
   };
   
   // Handle page change
@@ -816,7 +816,7 @@ const CarMarketplace = () => {
           <>
             <Grid item xs={12}>
               <Typography variant="subtitle1" sx={{ mb: 2, mt: 1, fontWeight: 500 }}>
-                Showing {listings.length} cars {filters.make ? `(${filters.make}${filters.model ? ` ${filters.model}` : ''})` : ''}
+                Showing {listings.length} cars {filters.make ? `(${filters.make}${filters.model ? ` ${filters.model}` : ''})` : ''} 
                 {totalPages > 1 && ` - Page ${page} of ${totalPages}`}
               </Typography>
               <Divider sx={{ mb: 3 }} />
@@ -874,14 +874,12 @@ const CarMarketplace = () => {
                             label={listing.transmissionType === 'automatic' ? 'Auto' : 'Manual'} 
                             color={theme.palette.success.main} 
                           />
-                          {listing.showMobileNumber && listing.mobileNumber && (
-                            <ListingInfoChip 
-                              size="small" 
-                              icon={<Phone />} 
-                              label={`+20${listing.mobileNumber}`} 
-                              color={theme.palette.secondary.main} 
-                            />
-                          )}
+                          <ListingInfoChip 
+                            size="small" 
+                            icon={<Phone />} 
+                            label={listing.showPhoneNumber ? "Phone Available" : "Contact via Chat"} 
+                            color={theme.palette.secondary.main} 
+                          />
                         </Box>
                       </CardContent>
                     </CardActionArea>
