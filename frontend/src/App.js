@@ -108,6 +108,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<SignUp />} /> {/* Using SignUp instead of Register */}
+            <Route path="/signup" element={<SignUp />} /> {/* Added route to fix 404 error */}
             <Route path="/car-marketplace" element={<CarMarketplace />} />
             <Route path="/listing/:id" element={<ListingDetail />} />
             <Route path="/car/:id" element={<MarketplaceCarDetail />} /> {/* Updated route path to match navigation */}
