@@ -371,6 +371,216 @@ async def get_listing_details(listing_id: str):
         logger.error(f"Error getting listing details: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error getting listing details: {str(e)}")
 
+# New endpoint to delete a car listing
+@router.delete("/{listing_id}")
+async def delete_car_listing(listing_id: str, current_user: dict = Depends(get_current_user)):
+    try:
+        logger.info(f"Delete request for listing ID: {listing_id}")
+        
+        if not ObjectId.is_valid(listing_id):
+            logger.error(f"Invalid listing ID format: {listing_id}")
+            raise HTTPException(status_code=400, detail=f"Invalid listing ID format")
+        
+        # Get the authenticated user's ID
+        user_id = str(current_user.get("_id"))
+        
+        # Find the listing
+        object_id = ObjectId(listing_id)
+        listing = await db.car_listings.find_one({"_id": object_id})
+        
+        if not listing:
+            logger.error(f"Listing not found: {listing_id}")
+            raise HTTPException(status_code=404, detail=f"Listing not found")
+        
+        # Check if the user is the owner of the listing
+        if listing.get("owner_id") != user_id:
+            logger.error(f"User {user_id} is not the owner of listing {listing_id}")
+            raise HTTPException(status_code=403, detail="You do not have permission to delete this listing")
+        
+        # Delete the listing
+        upload_dir = os.path.join(os.path.dirname(__file__), "../uploads")
+        
+        # Delete associated images from storage
+        if "images" in listing and listing["images"]:
+            for image_path in listing["images"]:
+                try:
+                    full_path = os.path.join(upload_dir, image_path)
+                    if os.path.exists(full_path):
+                        os.remove(full_path)
+                        logger.info(f"Deleted image file: {full_path}")
+                except Exception as img_err:
+                    logger.warning(f"Failed to delete image {image_path}: {str(img_err)}")
+        
+        # Remove from database
+        result = await db.car_listings.delete_one({"_id": object_id})
+        
+        if result.deleted_count == 0:
+            logger.error(f"Failed to delete listing: {listing_id}")
+            raise HTTPException(status_code=500, detail="Failed to delete listing")
+        
+        logger.info(f"Successfully deleted listing: {listing_id}")
+        return {"message": "Listing deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting car listing: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error deleting car listing: {str(e)}")
+
+# New endpoint to update a car listing
+@router.put("/{listing_id}")
+async def update_car_listing(
+    listing_id: str,
+    title: str = Form(...),
+    make: str = Form(...),
+    model: str = Form(...),
+    year: int = Form(...),
+    bodyType: str = Form(...),
+    fuelType: str = Form(...),
+    cc: int = Form(...),
+    location: str = Form(...),
+    kilometers: int = Form(...),
+    transmissionType: str = Form(...),
+    color: str = Form(...),
+    condition: str = Form(...),
+    chatOption: str = Form(...),
+    price: float = Form(...),
+    description: str = Form(None),
+    showPhoneNumber: bool = Form(False),
+    phoneNumber: Optional[str] = Form(None),
+    newImages: Optional[List[UploadFile]] = File(None),
+    existingImages: Optional[str] = Form(None),
+    imagesToDelete: Optional[str] = Form(None),
+    current_user: dict = Depends(get_current_user)
+):
+    try:
+        logger.info(f"Update request for listing ID: {listing_id}")
+        
+        if not ObjectId.is_valid(listing_id):
+            logger.error(f"Invalid listing ID format: {listing_id}")
+            raise HTTPException(status_code=400, detail=f"Invalid listing ID format")
+        
+        # Get the authenticated user's ID
+        user_id = str(current_user.get("_id"))
+        
+        # Find the listing
+        object_id = ObjectId(listing_id)
+        existing_listing = await db.car_listings.find_one({"_id": object_id})
+        
+        if not existing_listing:
+            logger.error(f"Listing not found: {listing_id}")
+            raise HTTPException(status_code=404, detail=f"Listing not found")
+        
+        # Check if the user is the owner of the listing
+        if existing_listing.get("owner_id") != user_id:
+            logger.error(f"User {user_id} is not the owner of listing {listing_id}")
+            raise HTTPException(status_code=403, detail="You do not have permission to update this listing")
+        
+        # Parse existingImages and imagesToDelete JSON strings
+        existing_images_list = []
+        if existingImages:
+            try:
+                import json
+                existing_images_list = json.loads(existingImages)
+                logger.info(f"Parsed existing images: {existing_images_list}")
+            except Exception as e:
+                logger.error(f"Error parsing existingImages JSON: {str(e)}")
+                raise HTTPException(status_code=400, detail="Invalid existingImages format")
+        
+        images_to_delete = []
+        if imagesToDelete:
+            try:
+                import json
+                images_to_delete = json.loads(imagesToDelete)
+                logger.info(f"Images to delete: {images_to_delete}")
+            except Exception as e:
+                logger.error(f"Error parsing imagesToDelete JSON: {str(e)}")
+                raise HTTPException(status_code=400, detail="Invalid imagesToDelete format")
+        
+        # Get user's phone from the database if needed
+        phone_number = phoneNumber
+        if showPhoneNumber and not phone_number:
+            phone_number = current_user.get("phone")
+            logger.info(f"Using phone number from user profile: {phone_number}")
+        
+        # Handle file uploads
+        upload_dir = os.path.join(os.path.dirname(__file__), "../uploads")
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        # Process new images
+        new_image_paths = []
+        if newImages:
+            for image in newImages:
+                contents = await image.read()
+                if contents:  # Check if there's any content in the file
+                    file_ext = os.path.splitext(image.filename)[1]
+                    unique_filename = f"{uuid.uuid4().hex}{file_ext}"
+                    file_path = os.path.join(upload_dir, unique_filename)
+                    with open(file_path, "wb") as f:
+                        f.write(contents)
+                    new_image_paths.append(unique_filename)
+        
+        # Delete images marked for deletion
+        if images_to_delete:
+            for image_path in images_to_delete:
+                try:
+                    full_path = os.path.join(upload_dir, image_path)
+                    if os.path.exists(full_path):
+                        os.remove(full_path)
+                        logger.info(f"Deleted image: {image_path}")
+                except Exception as img_err:
+                    logger.warning(f"Failed to delete image {image_path}: {str(img_err)}")
+        
+        # Combine existing and new images
+        final_images = existing_images_list + new_image_paths
+        
+        # Create updated listing data
+        updated_listing = {
+            "title": title,
+            "make": make,
+            "model": model,
+            "year": year,
+            "bodyType": bodyType,
+            "fuelType": fuelType,
+            "cc": cc,
+            "location": location,
+            "kilometers": kilometers,
+            "transmissionType": transmissionType,
+            "color": color,
+            "condition": condition,
+            "chatOption": chatOption,
+            "price": price,
+            "description": description,
+            "images": final_images,
+            "showPhoneNumber": showPhoneNumber,
+            "phoneNumber": phone_number,
+            "updated_at": datetime.utcnow()
+        }
+        
+        # Update the listing
+        result = await db.car_listings.update_one(
+            {"_id": object_id}, 
+            {"$set": updated_listing}
+        )
+        
+        if result.modified_count == 0:
+            logger.warning(f"No changes were made to listing {listing_id}")
+        
+        logger.info(f"Successfully updated listing: {listing_id}")
+        
+        # Return updated listing with ID included
+        updated_listing["_id"] = listing_id
+        return {
+            "message": "Listing updated successfully",
+            "listing": updated_listing
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating car listing: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error updating car listing: {str(e)}")
+
 @router.get("/")
 async def car_routes_root():
     logging.info("Root car routes endpoint called")

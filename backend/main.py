@@ -28,7 +28,7 @@ app = FastAPI()
 # Add CORS middleware with updated settings
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify your frontend domain
+    allow_origins=["http://localhost:3000"],  # Specify the frontend domain instead of wildcard
     allow_credentials=True,
     allow_methods=["*"],  # Allow all methods including OPTIONS
     allow_headers=["*"],
@@ -686,6 +686,22 @@ async def debug_car_urls(car_id: str):
         f"{base_url}/cars/{car_id}"
     ]
     return {"car_id": car_id, "available_urls": urls}
+
+@app.get("/api/cars/listing/{listing_id}")
+async def get_api_listing_by_id(listing_id: str):
+    """API endpoint to get car listing details"""
+    logger.info(f"API car listing details requested for ID: {listing_id}")
+    try:
+        # Redirect to the car_routes router's endpoint
+        return await car_routes.get_listing_details(listing_id)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in API listing endpoint: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error retrieving car listing details: {str(e)}"
+        )
 
 if __name__ == "__main__":
     import uvicorn
