@@ -158,7 +158,7 @@ async def get_user_listings(current_user: dict = Depends(get_current_user)):
         logger.error(f"Error fetching user listings: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error getting listings: {str(e)}")
 
-# Add a fallback endpoint that doesn't require authentication
+# Fallback endpoint that doesn't require authentication
 @router.get("/my-listings-public")
 async def get_public_listings():
     """A fallback endpoint that returns sample data without requiring authentication"""
@@ -193,7 +193,7 @@ async def get_public_listings():
         logger.error(f"Error fetching sample listings: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error getting sample listings: {str(e)}")
 
-# Add the missing endpoint for marketplace listings with filters
+# Updated endpoint for marketplace listings with filters
 @router.get("/listings")
 async def get_car_listings(
     page: int = Query(1, description="Page number for pagination"),
@@ -258,106 +258,64 @@ async def get_car_listings(
                 {"description": {"$regex": search, "$options": "i"}}
             ]
         
-        # Exclude user's own listings - simplify the logic for robustness
+        # Exclude user's own listings
         if exclude_user_id:
             logger.info(f"Excluding listings from user: {exclude_user_id}")
-            
-            # Create exclusion condition that handles both string and ObjectId formats
-            exclusion_condition = {
-                "owner_id": {"$ne": exclude_user_id}
-            }
-            
-            # If it's a valid ObjectId, also try excluding the ObjectId version
-            if ObjectId.is_valid(exclude_user_id):
-                object_id = ObjectId(exclude_user_id)
-                # Use $and to combine existing filters with the owner_id filter
-                if "$and" not in filter_query:
-                    filter_query["$and"] = []
-                
-                filter_query["$and"].append({
-                    "$or": [
-                        {"owner_id": {"$ne": exclude_user_id}},
-                        {"owner_id": {"$ne": object_id}}
-                    ]
-                })
-                
-                logger.info(f"Applied ObjectId exclusion for user: {exclude_user_id}")
-            else:
-                # Simple string comparison if not a valid ObjectId
-                filter_query["owner_id"] = {"$ne": exclude_user_id}
-            
+            filter_query["owner_id"] = {"$ne": exclude_user_id}
             logger.info(f"Final filter query: {filter_query}")
         
-        # Determine sort order (with improved handling of various formats)
+        # Determine sort order
         sort_order = {}
         if sortBy == "newest":
             sort_order["created_at"] = -1
         elif sortBy == "oldest":
             sort_order["created_at"] = 1
-        elif sortBy in ["priceAsc", "price_low"]:  # Support both naming conventions
+        elif sortBy in ["priceAsc", "price_low"]:
             sort_order["price"] = 1
-        elif sortBy in ["priceDesc", "price_high"]:  # Support both naming conventions
+        elif sortBy in ["priceDesc", "price_high"]:
             sort_order["price"] = -1
         else:
-            # Default to newest first
             sort_order["created_at"] = -1
         
         # Ensure valid pagination parameters
-        page = max(1, page)  # Ensure page is at least 1
-        limit = max(1, min(limit, 100))  # Reasonable upper limit
-        
-        # Calculate skip value for pagination
+        page = max(1, page)
+        limit = max(1, min(limit, 100))
         skip = (page - 1) * limit
         
-        # Get total count for pagination info
+        # Get total count for pagination
         total_count = await db.car_listings.count_documents(filter_query)
-        total_pages = max(1, (total_count + limit - 1) // limit)  # Ceiling division, min 1 page
-        
-        # Log pagination details for debugging
+        total_pages = max(1, (total_count + limit - 1) // limit)
         logger.info(f"Pagination: page={page}, limit={limit}, skip={skip}, total={total_count}, pages={total_pages}")
         
-        # Get the data with pagination
+        # Get data with pagination
         cursor = db.car_listings.find(filter_query).sort(sort_order).skip(skip).limit(limit)
         
-        # Process the results
         listings = []
         async for doc in cursor:
-            # Convert ObjectId to string for JSON serialization
             doc["_id"] = str(doc["_id"])
-            
-            # Convert owner_id to string for consistent comparison on frontend
             if "owner_id" in doc and doc["owner_id"]:
                 if isinstance(doc["owner_id"], ObjectId):
                     doc["owner_id"] = str(doc["owner_id"])
-            
-            # Add user information to the listing
             if "owner_id" in doc:
                 owner_id = doc["owner_id"]
-                # Convert owner_id to ObjectId if it's a string
                 if isinstance(owner_id, str) and ObjectId.is_valid(owner_id):
                     owner_id = ObjectId(owner_id)
-                
-                # Look up the user to get the username
                 if isinstance(owner_id, ObjectId):
-                    user = await db.users.find_one({"_id": owner_id})
-                    if user and "username" in user:
-                        doc["owner_name"] = user["username"]
+                    user_doc = await db.users.find_one({"_id": owner_id})
+                    if user_doc and "username" in user_doc:
+                        doc["owner_name"] = user_doc["username"]
                     else:
                         doc["owner_name"] = "Unknown Seller"
                 else:
                     doc["owner_name"] = "Unknown Seller"
             else:
                 doc["owner_name"] = "Unknown Seller"
-            
-            # Convert datetime objects to ISO format
             if "created_at" in doc and doc["created_at"]:
                 doc["created_at"] = doc["created_at"].isoformat()
-                
             listings.append(doc)
         
         logger.info(f"Returning {len(listings)} listings (page {page} of {total_pages})")
         
-        # Return response with pagination metadata
         return {
             "listings": listings,
             "pagination": {
@@ -366,7 +324,7 @@ async def get_car_listings(
                 "totalPages": total_pages,
                 "limit": limit,
                 "hasMore": page < total_pages,
-                "sortBy": sortBy  # Include sortBy in response for debugging
+                "sortBy": sortBy
             }
         }
         
@@ -374,57 +332,38 @@ async def get_car_listings(
         logger.error(f"Error fetching car listings: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error getting car listings: {str(e)}")
 
-# Add a new endpoint to get listing details by ID
+# New endpoint to get listing details by ID
 @router.get("/listing/{listing_id}")
 async def get_listing_details(listing_id: str):
     try:
         logger.info(f"Fetching listing with ID: {listing_id}")
-        
-        # Validate the ID format
         if not ObjectId.is_valid(listing_id):
             logger.error(f"Invalid listing ID format: {listing_id}")
             raise HTTPException(status_code=400, detail=f"Invalid listing ID format: {listing_id}")
-        
-        # Convert string ID to ObjectId
         object_id = ObjectId(listing_id)
         listing = await db.car_listings.find_one({"_id": object_id})
-        
         if not listing:
             logger.error(f"Listing not found: {listing_id}")
             raise HTTPException(status_code=404, detail=f"Listing {listing_id} not found")
-        
-        logger.info(f"Listing found: {listing_id}")
-        
-        # Convert ObjectId to string for JSON serialization
         listing["_id"] = str(listing["_id"])
-        
-        # Add user information to the listing
         if "owner_id" in listing:
             owner_id = listing["owner_id"]
-            # Convert owner_id to ObjectId if it's a string
             if isinstance(owner_id, str) and ObjectId.is_valid(owner_id):
                 owner_id = ObjectId(owner_id)
-            
-            # Look up the user to get the username
             if isinstance(owner_id, ObjectId):
-                user = await db.users.find_one({"_id": owner_id})
-                if user and "username" in user:
-                    listing["owner_name"] = user["username"]
+                user_doc = await db.users.find_one({"_id": owner_id})
+                if user_doc and "username" in user_doc:
+                    listing["owner_name"] = user_doc["username"]
                 else:
                     listing["owner_name"] = "Unknown Seller"
             else:
                 listing["owner_name"] = "Unknown Seller"
-            
-            # Convert owner_id to string if it's an ObjectId
             if isinstance(listing["owner_id"], ObjectId):
                 listing["owner_id"] = str(listing["owner_id"])
         else:
             listing["owner_name"] = "Unknown Seller"
-        
-        # Convert datetime objects to ISO format
         if "created_at" in listing and listing["created_at"]:
             listing["created_at"] = listing["created_at"].isoformat()
-        
         return listing
     except HTTPException:
         raise
@@ -432,7 +371,6 @@ async def get_listing_details(listing_id: str):
         logger.error(f"Error getting listing details: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error getting listing details: {str(e)}")
 
-# Root endpoint to test if the router is mounted correctly
 @router.get("/")
 async def car_routes_root():
     logging.info("Root car routes endpoint called")
