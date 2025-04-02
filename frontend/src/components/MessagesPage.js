@@ -9,23 +9,45 @@ import {
 import { Send, ArrowBack, Person } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 
-// Helper function to format message timestamp
+// Format date for message bubbles with +2 hours correction
 const formatMessageTime = (timestamp) => {
   if (!timestamp) return '';
   
   try {
-    const date = new Date(timestamp);
+    let date;
+    if (typeof timestamp === 'string') {
+      // Try to handle various ISO formats
+      if (timestamp.includes('T') || timestamp.includes('Z')) {
+        date = new Date(timestamp);
+      } else {
+        // Try to parse non-standard format
+        const parts = timestamp.split(/[- :]/);
+        date = new Date(Date.UTC(parts[0], parts[1]-1, parts[2], parts[3], parts[4], parts[5]));
+      }
+    } else {
+      date = new Date(timestamp);
+    }
+    
+    // Verify date is valid
+    if (isNaN(date.getTime())) {
+      console.error('Invalid date in formatMessageTime:', timestamp);
+      return '';
+    }
+    
+    // Add 2 hours to correct the timestamp
+    date.setHours(date.getHours() + 2);
+    
     const now = new Date();
     const yesterday = new Date(now);
     yesterday.setDate(yesterday.getDate() - 1);
     
     // Check if date is today
     if (date.toDateString() === now.toDateString()) {
-      return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
     } 
     // Check if date is yesterday
     else if (date.toDateString() === yesterday.toDateString()) {
-      return 'Yesterday ' + date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      return 'Yesterday ' + date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
     } 
     // Otherwise return full date and time
     else {
@@ -33,10 +55,51 @@ const formatMessageTime = (timestamp) => {
         month: 'short', 
         day: 'numeric',
         year: '2-digit'
-      }) + ' ' + date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      }) + ' ' + date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
     }
   } catch (err) {
-    console.error('Error formatting date:', err);
+    console.error('Error formatting date:', err, 'Original timestamp:', timestamp);
+    return '';
+  }
+};
+
+// Correctly format timestamps for messages with +2 hours correction
+const getCorrectTime = (timestamp) => {
+  if (!timestamp) return '';
+  
+  try {
+    // Make sure we handle string timestamps properly
+    let date;
+    if (typeof timestamp === 'string') {
+      // Try to handle various ISO formats
+      if (timestamp.includes('T') || timestamp.includes('Z')) {
+        date = new Date(timestamp);
+      } else {
+        // Try to parse non-standard format
+        const parts = timestamp.split(/[- :]/);
+        date = new Date(Date.UTC(parts[0], parts[1]-1, parts[2], parts[3], parts[4], parts[5]));
+      }
+    } else {
+      date = new Date(timestamp);
+    }
+    
+    // Check if the date is valid
+    if (isNaN(date.getTime())) {
+      console.error('Invalid date in getCorrectTime:', timestamp);
+      return '';
+    }
+    
+    // Add 2 hours to correct the timestamp
+    date.setHours(date.getHours() + 2);
+    
+    // Format with AM/PM
+    return date.toLocaleTimeString([], { 
+      hour: 'numeric', 
+      minute: '2-digit',
+      hour12: true 
+    });
+  } catch (err) {
+    console.error('Error formatting time:', err, 'Original timestamp:', timestamp);
     return '';
   }
 };
@@ -210,28 +273,6 @@ const Conversation = ({
     }
   };
   
-  // Correctly format timestamps for messages
-  const getCorrectTime = (timestamp) => {
-    if (!timestamp) return '';
-    
-    try {
-      const date = new Date(timestamp);
-      // Check if the date is valid
-      if (isNaN(date.getTime())) {
-        return '';
-      }
-      
-      return date.toLocaleTimeString([], { 
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: true 
-      });
-    } catch (err) {
-      console.error('Error formatting time:', err);
-      return '';
-    }
-  };
-  
   return (
     <Paper
       elevation={3}
@@ -293,11 +334,21 @@ const Conversation = ({
               
               // Group messages by date
               messages.forEach(message => {
-                const date = new Date(message.created_at).toLocaleDateString();
-                if (!messagesByDate[date]) {
-                  messagesByDate[date] = [];
+                // Ensure message.created_at is valid before using it
+                if (!message.created_at) {
+                  console.error('Message missing created_at timestamp:', message);
+                  message.created_at = new Date().toISOString(); // Use current time as fallback
                 }
-                messagesByDate[date].push(message);
+                
+                try {
+                  const date = new Date(message.created_at).toLocaleDateString();
+                  if (!messagesByDate[date]) {
+                    messagesByDate[date] = [];
+                  }
+                  messagesByDate[date].push(message);
+                } catch (err) {
+                  console.error('Error processing message date:', err, message);
+                }
               });
               
               // Render groups by date
@@ -336,14 +387,15 @@ const Conversation = ({
                     
                     // Check if this is a new sender or significant time gap
                     const prevMessage = index > 0 ? messagesOnDate[index - 1] : null;
-                    const timeDiff = prevMessage 
+                    const timeDiff = prevMessage && message.created_at && prevMessage.created_at
                       ? new Date(message.created_at) - new Date(prevMessage.created_at) 
                       : 0;
+                    
                     const isNewSender = !prevMessage || prevMessage.sender_id !== message.sender_id;
                     const isTimeGap = timeDiff > 5 * 60 * 1000; // 5 minutes gap
                     
                     return (
-                      <React.Fragment key={message.id || `${date}-msg-${index}`}>
+                      <React.Fragment key={message.id || index}>
                         {/* Time gap indicator */}
                         {isTimeGap && !isNewSender && (
                           <Box sx={{ 
@@ -363,7 +415,7 @@ const Conversation = ({
                               }}
                             >
                               {new Date(message.created_at).toLocaleTimeString([], {
-                                hour: '2-digit',
+                                hour: 'numeric',
                                 minute: '2-digit',
                                 hour12: true
                               })}
@@ -371,7 +423,7 @@ const Conversation = ({
                           </Box>
                         )}
                         
-                        {/* WhatsApp-style message with strict left/right alignment */}
+                        {/* Message bubble container - improved layout */}
                         <Box
                           sx={{
                             display: 'flex',
@@ -403,13 +455,12 @@ const Conversation = ({
                             <Box sx={{ width: 38, flexShrink: 0 }} />
                           )}
                           
-                          {/* Message bubble container */}
+                          {/* Message content */}
                           <Box
                             sx={{
                               maxWidth: '70%',
                               minWidth: '120px',
                               position: 'relative',
-                              alignSelf: isSentByMe ? 'flex-end' : 'flex-start',
                             }}
                           >
                             {/* Sender name for first message in a sequence */}
@@ -470,7 +521,7 @@ const Conversation = ({
                                 {message.content}
                               </Typography>
                               
-                              {/* Message time */}
+                              {/* Fixed message time display */}
                               <Typography 
                                 variant="caption" 
                                 sx={{ 
@@ -717,6 +768,7 @@ const MessagesPage = () => {
       if (conversations.length > 0) {
         const conversation = conversations.find(c => c.partner_id === userId);
         if (conversation) {
+          // Store the partner's name when selecting a conversation
           setSelectedUserName(conversation.partner_name);
         }
       }
@@ -761,7 +813,14 @@ const MessagesPage = () => {
       
       const data = await response.json();
       
-      // Update conversations without losing selection
+      // Always preserve the selected user name if we already have a conversation going
+      const currentSelectedPartner = selectedUserId ? 
+        data.conversations.find(c => c.partner_id === selectedUserId)?.partner_name : null;
+      
+      if (currentSelectedPartner && selectedUserName !== currentSelectedPartner) {
+        setSelectedUserName(currentSelectedPartner);
+      }
+      
       setConversations(prevConversations => {
         // Check if there are new messages by comparing unread counts
         const hasNewMessages = data.conversations.some(newConv => {
@@ -793,10 +852,13 @@ const MessagesPage = () => {
   const loadMessages = async (userId, silent = false) => {
     if (!silent) setLoadingMessages(true);
     try {
-      // First, find the conversation to get the user name
-      const conversation = conversations.find(c => c.partner_id === userId);
-      if (conversation) {
-        setSelectedUserName(conversation.partner_name);
+      // Get the conversation partner's name but ONLY if it's not already set
+      // This ensures we don't change the name when new messages arrive
+      if (!selectedUserName || selectedUserName === '') {
+        const conversation = conversations.find(c => c.partner_id === userId);
+        if (conversation) {
+          setSelectedUserName(conversation.partner_name);
+        }
       }
       
       // Fetch messages
@@ -810,7 +872,7 @@ const MessagesPage = () => {
       
       const data = await response.json();
       
-      // Only update if we have new messages or this is the first load
+      // Only update messages, not the user name in the header
       if (!silent || data.messages.length !== messages.length) {
         setMessages(data.messages || []);
       }
@@ -861,23 +923,32 @@ const MessagesPage = () => {
     setMessages([]);
     setSelectedUserId(userId);
     
+    // Store the partner's name immediately when selecting a conversation
+    const conversation = conversations.find(c => c.partner_id === userId);
+    if (conversation) {
+      setSelectedUserName(conversation.partner_name);
+    }
+    
     // Update the URL for both mobile and desktop
     // This ensures the URL is always in sync with the selected conversation
     navigate(`/messages/${userId}`, { replace: true });
   };
   
-  // Handle sending a new message
+  // Handle sending a new message - modified to maintain header name stability
   const handleSendMessage = async (content) => {
     if (!selectedUserId || !content.trim()) return;
     
     try {
+      // Remember the current recipient name before sending
+      const currentRecipientName = selectedUserName;
+      
       // Add optimistic message
       const optimisticMessage = {
         id: 'temp-' + Date.now(),
         sender_id: user._id,
         sender_name: user.username,
         recipient_id: selectedUserId,
-        recipient_name: selectedUserName,
+        recipient_name: currentRecipientName, // Use stored recipient name
         content: content,
         is_read: false,
         created_at: new Date().toISOString()
@@ -902,17 +973,23 @@ const MessagesPage = () => {
       
       const data = await response.json();
       
-      // Replace optimistic message with actual message
+      // Replace optimistic message with actual message but maintain recipient name stability
       setMessages(prev => 
         prev.map(msg => 
           msg.id === optimisticMessage.id 
-            ? data.message_data
+            ? {
+                ...data.message_data,
+                recipient_name: currentRecipientName // Ensure recipient name remains stable
+              }
             : msg
         )
       );
       
-      // Update conversations list
-      fetchConversations();
+      // Ensure header still shows the correct user name
+      setSelectedUserName(currentRecipientName);
+      
+      // Update conversations list (but don't allow it to change the selected user name)
+      fetchConversations(false, true); // silent=false, preserveName=true
     } catch (error) {
       console.error('Error sending message:', error);
       // Remove failed optimistic message

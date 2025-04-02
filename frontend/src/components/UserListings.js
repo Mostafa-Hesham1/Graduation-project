@@ -43,7 +43,7 @@ import {
   ArrowForward,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
-import { fetchUserListings } from '../api'; // Updated import name
+import { fetchUserListings, deleteCarListing } from '../api'; // Updated import name
 
 const CAR_PLACEHOLDER =
   "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNFNUU1RTUiLz48cGF0aCBkPSJNMTUwIDEzMEg1MEM0NS44MTc5IDEzMCA0Mi41IDEyNi42ODMgNDIuNSAxMjIuNVYxMTVDNDIuNSAxMTAuODE3IDQ1LjgxNzkgMTA3LjUgNTAgMTA3LjVIMTUwQzE1NC4xODIgMTA3LjUgMTU3LjUgMTEwLjgxNyAxNTcuNSAxMTVWMTIyLjVDMTU3LjUgMTI2LjY4MyAxNTQuMTgyIDEzMCAxNTAgMTMwWiIgZmlsbD0iIzljOWM5YyIvPjxjaXJjbGUgY3g9IjY1IiBjeT0iMTI1IiByPSIxMCIgZmlsbD0iIzU1NSIvPjxjaXJjbGUgY3g9IjEzNSIgY3k9IjEyNSIgcj0iMTAiIGZpbGw9IiM1NTUiLz48cGF0aCBkPSJNMTUwIDEwNy41SDUwTDYwIDgwSDEzMEwxNTAgMTA3LjVaIiBmaWxsPSIjOUM5QzlDIi8+PHRleHQgeD0iMTAwIiB5PSI2MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM1NTUiPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==";
@@ -161,6 +161,7 @@ const UserListings = () => {
   });
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [listingToDelete, setListingToDelete] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [selectedListing, setSelectedListing] = useState(null);
   const [currentImageIndices, setCurrentImageIndices] = useState({});
@@ -279,12 +280,21 @@ const UserListings = () => {
     }
   };
   
+  // Handle delete listing action
   const handleDeleteListing = async () => {
     if (!listingToDelete) return;
     
     try {
+      // Show loading in delete dialog
+      setDeleteLoading(true);
+      
+      // Call our API function to delete the listing
+      await deleteCarListing(listingToDelete._id);
+      
+      // Remove the listing from the local state
       setListings(listings.filter(listing => listing._id !== listingToDelete._id));
       
+      // Show success message
       setSnackbar({
         open: true,
         message: 'Listing deleted successfully',
@@ -294,10 +304,11 @@ const UserListings = () => {
       console.error('Error deleting listing:', err);
       setSnackbar({
         open: true,
-        message: 'Failed to delete listing',
+        message: 'Failed to delete listing: ' + (err.message || 'Unknown error'),
         severity: 'error'
       });
     } finally {
+      setDeleteLoading(false);
       closeDeleteDialog();
     }
   };
@@ -508,32 +519,71 @@ const UserListings = () => {
                 
                 <Divider />
                 
-                <CardActions sx={{ justifyContent: 'space-between', p: 1.5 }}>
-                  <Button 
-                    startIcon={<ViewIcon />}
-                    onClick={(e) => handleQuickView(e, listing)}
-                    size="small"
-                    onMouseDown={(e) => e.stopPropagation()}
-                  >
-                    Quick View
-                  </Button>
-                  
-                  <Box>
-                    <IconButton 
-                      size="small" 
-                      color="primary"
-                      onClick={(e) => handleEditListing(e, listing._id)}
-                      sx={{ mr: 0.5 }}
+                <CardActions sx={{ p: 0 }}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    width: '100%', 
+                    alignItems: 'center', 
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap'
+                  }}>
+                    <Button 
+                      size="medium" 
+                      variant="text"
+                      startIcon={<ViewIcon />}
+                      onClick={(e) => handleQuickView(e, listing)}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      sx={{ 
+                        flexGrow: 1, 
+                        borderRadius: 0,
+                        py: 1.5,
+                        transition: 'all 0.2s',
+                        '&:hover': {
+                          backgroundColor: alpha(theme.palette.primary.main, 0.05),
+                        }
+                      }}
                     >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton 
-                      size="small" 
-                      color="error"
-                      onClick={(e) => openDeleteDialog(e, listing)}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
+                      View Details
+                    </Button>
+                    <Divider orientation="vertical" flexItem />
+                    <Box sx={{ 
+                      display: 'flex', 
+                      bgcolor: alpha(theme.palette.background.paper, 0.5),
+                    }}>
+                      <IconButton 
+                        onClick={(e) => handleEditListing(e, listing._id)}
+                        size="medium" 
+                        color="primary"
+                        sx={{ 
+                          borderRadius: 0,
+                          py: 1.5,
+                          px: 2,
+                          transition: 'all 0.2s',
+                          '&:hover': {
+                            backgroundColor: alpha(theme.palette.primary.main, 0.05),
+                          }
+                        }}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <Divider orientation="vertical" flexItem />
+                      <IconButton 
+                        onClick={(e) => openDeleteDialog(e, listing)}
+                        size="medium" 
+                        color="error"
+                        sx={{ 
+                          borderRadius: 0,
+                          py: 1.5,
+                          px: 2,
+                          transition: 'all 0.2s',
+                          '&:hover': {
+                            backgroundColor: alpha(theme.palette.error.main, 0.05),
+                          }
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
                   </Box>
                 </CardActions>
               </ListingCard>
@@ -698,6 +748,9 @@ const UserListings = () => {
       <Dialog
         open={deleteDialogOpen}
         onClose={closeDeleteDialog}
+        PaperProps={{
+          sx: { borderRadius: 2 }
+        }}
       >
         <DialogTitle>
           <Box display="flex" alignItems="center">
@@ -717,12 +770,17 @@ const UserListings = () => {
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
             This action cannot be undone.
           </Typography>
+          {deleteLoading && (
+            <Box display="flex" justifyContent="center" sx={{ mt: 2 }}>
+              <CircularProgress size={24} />
+            </Box>
+          )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeDeleteDialog} color="inherit">
+          <Button onClick={closeDeleteDialog} color="inherit" disabled={deleteLoading}>
             Cancel
           </Button>
-          <Button onClick={handleDeleteListing} color="error" variant="contained">
+          <Button onClick={handleDeleteListing} color="error" variant="contained" disabled={deleteLoading}>
             Delete
           </Button>
         </DialogActions>

@@ -20,8 +20,9 @@ import DataVisualization from './components/DataVisualization';
 import ListingDetail from './components/ListingDetail';
 import MarketplaceCarDetail from './components/MarketplaceCarDetail';
 import CarMarketplace from './components/CarMarketplace';
-import MessagesPage from './pages/MessagesPage';
+import ChatMessages from './components/ChatMessages'; // Changed import from MessagesPage to ChatMessages
 import CarDetails from './components/CarDetails'; // Import CarDetails component
+import EditCarListing from './components/EditCarListing'; // Import the new EditCarListing component
 
 // Simple placeholders for missing components
 const NotFound = () => (
@@ -116,15 +117,15 @@ function App() {
             <Route path="/damage-detect" element={<DamageDetect />} />
             <Route path="/price-prediction" element={<PricePrediction />} />
             
-            {/* Messages routes */}
+            {/* Messages routes - Updated to use ChatMessages */}
             <Route path="/messages" element={
               <ProtectedRoute>
-                <MessagesPage />
+                <ChatMessages />
               </ProtectedRoute>
             } />
             <Route path="/messages/:userId" element={
               <ProtectedRoute>
-                <MessagesPage />
+                <ChatMessages />
               </ProtectedRoute>
             } />
             
@@ -137,6 +138,11 @@ function App() {
             <Route path="/my-listing/:id" element={
               <ProtectedRoute>
                 <CarDetails /> {/* Added route for individual car details */}
+              </ProtectedRoute>
+            } />
+            <Route path="/edit-listing/:id" element={
+              <ProtectedRoute>
+                <EditCarListing /> {/* Add new route for editing */}
               </ProtectedRoute>
             } />
             <Route path="/car-listing" element={
