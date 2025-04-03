@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Typography, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, LineChart, Line, Cell } from 'recharts';
 
-const DataVisualization = () => {
+const DataVisualization = ({ isAdmin }) => {
   const [makeData, setMakeData] = useState([]);
   const [modelData, setModelData] = useState([]);
   const [fuelData, setFuelData] = useState([]);
@@ -89,14 +89,27 @@ const DataVisualization = () => {
     Count: entry.Count < 5 ? entry.Count + 15 : entry.Count
   }));
 
+  // Define a max height for visualizations to keep them within bounds
+  const chartHeight = 400;
+
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 4, width: '100%' }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Data Visualization
-      </Typography>
+    <Box sx={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center', 
+      width: '100%',
+      overflow: 'hidden' // Prevent content from spilling outside
+    }}>
+      {!isAdmin && (
+        <Typography variant="h4" component="h1" gutterBottom sx={{ mt: 4 }}>
+          Data Visualization
+        </Typography>
+      )}
+      
+      {/* Statistics Sections */}
       <Grid container spacing={4} sx={{ width: '100%' }}>
         <Grid item xs={12}>
-          <Paper elevation={3} sx={{ p: 4, height: '100%', border: '1px solid #ccc' }}>
+          <Paper elevation={3} sx={{ p: 3, height: '100%', border: '1px solid #ccc', overflow: 'hidden' }}>
             <Typography variant="h6" component="h2" gutterBottom>
               Highest Make of Cars
             </Typography>
@@ -107,16 +120,18 @@ const DataVisualization = () => {
               onChange={(e) => setMakeSearchTerm(e.target.value)}
               sx={{ mb: 2, width: '100%' }}
             />
-            <ResponsiveContainer width="100%" height={500}>
-              <BarChart data={filteredMakeData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="Make" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="Count" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
+            <Box sx={{ width: '100%', height: chartHeight, overflow: 'hidden' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={filteredMakeData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="Make" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="Count" fill="#8884d8" />
+                </BarChart>
+              </ResponsiveContainer>
+            </Box>
             <TableContainer component={Paper} sx={{ mt: 2, border: '1px solid #ccc', maxHeight: 300 }}>
               <Table stickyHeader>
                 <TableHead>
@@ -140,7 +155,7 @@ const DataVisualization = () => {
           </Paper>
         </Grid>
         <Grid item xs={12}>
-          <Paper elevation={3} sx={{ p: 4, height: '100%', border: '1px solid #ccc' }}>
+          <Paper elevation={3} sx={{ p: 3, height: '100%', border: '1px solid #ccc', overflow: 'hidden' }}>
             <Typography variant="h6" component="h2" gutterBottom>
               Highest Model of Cars
             </Typography>
@@ -151,16 +166,18 @@ const DataVisualization = () => {
               onChange={(e) => setModelSearchTerm(e.target.value)}
               sx={{ mb: 2, width: '100%' }}
             />
-            <ResponsiveContainer width="100%" height={500}>
-              <BarChart data={filteredModelData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="Model" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="Count" fill="#82ca9d" />
-              </BarChart>
-            </ResponsiveContainer>
+            <Box sx={{ width: '100%', height: chartHeight, overflow: 'hidden' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={filteredModelData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="Model" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="Count" fill="#82ca9d" />
+                </BarChart>
+              </ResponsiveContainer>
+            </Box>
             <TableContainer component={Paper} sx={{ mt: 2, border: '1px solid #ccc', maxHeight: 300 }}>
               <Table stickyHeader>
                 <TableHead>
@@ -184,47 +201,51 @@ const DataVisualization = () => {
           </Paper>
         </Grid>
         <Grid item xs={12}>
-          <Paper elevation={3} sx={{ p: 4, height: '100%', border: '1px solid #ccc' }}>
+          <Paper elevation={3} sx={{ p: 3, height: '100%', border: '1px solid #ccc', overflow: 'hidden' }}>
             <Typography variant="h6" component="h2" gutterBottom>
               Fuel Type Distribution
             </Typography>
-            <ResponsiveContainer width="100%" height={500}>
-              <PieChart>
-                <Pie
-                  data={adjustedFuelData}
-                  dataKey="Count"
-                  nameKey="FuelType"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={150}
-                  labelLine={false}
-                  label={renderCustomizedLabel}
-                >
-                  {adjustedFuelData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+            <Box sx={{ width: '100%', height: chartHeight, overflow: 'hidden' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={adjustedFuelData}
+                    dataKey="Count"
+                    nameKey="FuelType"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={150}
+                    labelLine={false}
+                    label={renderCustomizedLabel}
+                  >
+                    {adjustedFuelData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </Box>
           </Paper>
         </Grid>
         <Grid item xs={12}>
-          <Paper elevation={3} sx={{ p: 4, height: '100%', border: '1px solid #ccc' }}>
+          <Paper elevation={3} sx={{ p: 3, height: '100%', border: '1px solid #ccc', overflow: 'hidden' }}>
             <Typography variant="h6" component="h2" gutterBottom>
               Yearly Trends
             </Typography>
-            <ResponsiveContainer width="100%" height={500}>
-              <LineChart data={yearlyData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="Year" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="Count" stroke="#8884d8" />
-              </LineChart>
-            </ResponsiveContainer>
+            <Box sx={{ width: '100%', height: chartHeight, overflow: 'hidden' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={yearlyData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="Year" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="Count" stroke="#8884d8" />
+                </LineChart>
+              </ResponsiveContainer>
+            </Box>
           </Paper>
         </Grid>
       </Grid>
