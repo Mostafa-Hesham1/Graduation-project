@@ -1,7 +1,7 @@
 # Vehicle Souq: Car Recognition & Price Prediction System
 
 <p align="center">
-  <img src="frontend/public/logo.png" alt="Vehicle Souq Logo" width="200"/>
+  <img src="frontend/public/mylogo.png" alt="Vehicle Souq Logo" width="200"/>
 </p>
 
 ## 📌 Overview
