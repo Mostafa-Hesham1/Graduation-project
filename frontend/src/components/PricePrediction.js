@@ -266,7 +266,7 @@ const fuelTypes = ["Benzine", "Diesel", "Electric", "Hybrid", "Natural Gas"];
 const transmissionTypes = ["Automatic", "Manual"];
 const locations = ["Cairo", "Alexandria", "Giza", "Luxor", "Aswan", "Sharm El Sheikh", "Hurghada", "Mansoura", "Tanta", "Port Said"];
 const listByOptions = ["Dealership", "Individual"];
-const ccOptions = Array.from({ length: 10 }, (_, i) => ((i + 1) * 500).toString());
+const ccOptions = ["1000", "1200", "1300", "1400", "1500", "1600", "1800", "2000", "2200", "2400", "2500", "3000", "3500", "4000", "4500", "5000", "5500", "6000"];
 const currentYear = new Date().getFullYear();
 const yearOptions = Array.from({ length: 25 }, (_, i) => (currentYear - i).toString());
 

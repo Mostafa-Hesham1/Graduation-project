@@ -23,6 +23,7 @@ import {
   CalendarToday as DateIcon,
   ArrowBack as ArrowBackIcon
 } from '@mui/icons-material';
+import axios from 'axios';
 
 const CarDetails = () => {
   const { id } = useParams();
@@ -30,6 +31,10 @@ const CarDetails = () => {
   const [carDetails, setCarDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
+  const [loginPromptOpen, setLoginPromptOpen] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
 
   useEffect(() => {
     const fetchCarDetails = async () => {
@@ -55,6 +60,27 @@ const CarDetails = () => {
     };
     
     fetchCarDetails();
+  }, [id]);
+
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      if (!id) return;
+      
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        
+        const response = await axios.get(`http://localhost:8000/profile/favorite-cars/${id}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        setIsFavorite(response.data.isFavorite);
+      } catch (err) {
+        console.error('Error checking favorite status:', err);
+      }
+    };
+    
+    checkFavoriteStatus();
   }, [id]);
 
   const getImageUrl = (imageName) => {
@@ -87,6 +113,51 @@ const CarDetails = () => {
 
   const handleGoBack = () => {
     navigate('/my-listings');
+  };
+
+  const handleFavoriteClick = async () => {
+    if (!isAuthenticated) {
+      setLoginPromptOpen(true);
+      return;
+    }
+
+    try {
+      setIsFavoriteLoading(true);
+      const token = localStorage.getItem('token');
+      
+      if (isFavorite) {
+        // Remove from favorites
+        await axios.delete(`http://localhost:8000/profile/favorite-cars/${carId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        setIsFavorite(false);
+        setSnackbar({
+          open: true,
+          message: 'Removed from favorites',
+          severity: 'success'
+        });
+      } else {
+        // Add to favorites - use the new comprehensive endpoint
+        await axios.post(`http://localhost:8000/car/favorite/${carId}`, {}, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        setIsFavorite(true);
+        setSnackbar({
+          open: true,
+          message: 'Added to favorites',
+          severity: 'success'
+        });
+      }
+    } catch (error) {
+      console.error('Error updating favorites:', error);
+      setSnackbar({
+        open: true,
+        message: 'Failed to update favorites',
+        severity: 'error'
+      });
+    } finally {
+      setIsFavoriteLoading(false);
+    }
   };
 
   if (loading) {

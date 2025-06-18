@@ -222,7 +222,7 @@ export default function Login(props) {
           navigate('/');
         }, 800);
       } else {
-        setError(result.error || 'Login failed');
+        setError(result.error || 'Login failed. Please try again.');
       }
     } catch (err) {
       console.error('Login error:', err);

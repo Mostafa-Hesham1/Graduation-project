@@ -23,6 +23,12 @@ import CarMarketplace from './components/CarMarketplace';
 import ChatMessages from './components/ChatMessages'; // Changed import from MessagesPage to ChatMessages
 import CarDetails from './components/CarDetails'; // Import CarDetails component
 import EditCarListing from './components/EditCarListing'; // Import the new EditCarListing component
+import Profile from './components/Profile';
+
+// Import the new page components
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import Contact from './pages/Contact';
 
 // Simple placeholders for missing components
 const NotFound = () => (
@@ -110,7 +116,12 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<SignUp />} /> {/* Using SignUp instead of Register */}
             <Route path="/signup" element={<SignUp />} /> {/* Added route to fix 404 error */}
+            
+            {/* Car marketplace routes */}
             <Route path="/car-marketplace" element={<CarMarketplace />} />
+            <Route path="/marketplace/:id" element={<MarketplaceCarDetail />} />
+            <Route path="/marketplace/car/:id" element={<MarketplaceCarDetail />} />
+            
             <Route path="/listing/:id" element={<ListingDetail />} />
             <Route path="/car/:id" element={<MarketplaceCarDetail />} /> {/* Updated route path to match navigation */}
             <Route path="/car-recognizer" element={<ImageUpload />} />
@@ -152,7 +163,7 @@ function App() {
             } />
             <Route path="/profile" element={
               <ProtectedRoute>
-                <UserProfile />
+                <Profile />
               </ProtectedRoute>
             } />
             
@@ -162,6 +173,11 @@ function App() {
                 <AdminDashboard />
               </AdminRoute>
             } />
+            
+            {/* Footer Pages */}
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/contact" element={<Contact />} />
             
             {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />

@@ -2,12 +2,12 @@ from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form, H
 from pydantic import BaseModel
 from database import db
 from typing import List, Optional
-import os
-import uuid
 from datetime import datetime
+import uuid
+import os
 import logging
 from bson import ObjectId
-from routes.auth import get_current_user  # Import the proper authentication function
+from routes.auth import get_current_user  # Import only the available function
 
 router = APIRouter()
 
@@ -39,7 +39,7 @@ class CarListing(BaseModel):
     price: float
     description: str
 
-# Use the real get_current_user function from auth.py
+# Use the available get_current_user function instead of get_current_user_from_token
 @router.post("/list")
 async def list_car(
     title: str = Form(...),
@@ -581,7 +581,97 @@ async def update_car_listing(
         logger.error(f"Error updating car listing: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error updating car listing: {str(e)}")
 
-@router.get("/")
-async def car_routes_root():
-    logging.info("Root car routes endpoint called")
-    return {"message": "Car routes API is working"}
+# New endpoint to add a car to favorites
+@router.post("/favorite/{car_id}")
+async def add_to_favorites(car_id: str, user = Depends(get_current_user)):
+    """Add a car to favorites with complete car details"""
+    try:
+        # Get user_id from the user object
+        user_id = str(user["_id"])
+        
+        # Check if car exists
+        car = await db.car_listings.find_one({"_id": ObjectId(car_id)})
+        if not car:
+            raise HTTPException(status_code=404, detail="Car not found")
+        
+        # Check if already in favorites
+        existing = await db.favorite_cars.find_one({"user_id": user_id, "car_id": car_id})
+        if existing:
+            return {"status": "success", "message": "Already in favorites"}
+        
+        # Get the first image from the car's images array
+        car_image_url = None
+        if car.get("images") and len(car.get("images")) > 0:
+            # Use the first image from the array
+            car_image_url = car.get("images")[0]
+        elif car.get("image_url"):
+            car_image_url = car.get("image_url")
+        
+        # Create a more comprehensive favorite entry with all car details
+        car_details = {
+            "car_id": car_id,
+            "car_make": car.get("make"),
+            "car_model": car.get("model"),
+            "car_year": car.get("year"),
+            "car_price": car.get("price"),
+            "car_title": car.get("title") or f"{car.get('make')} {car.get('model')} {car.get('year')}",
+            "car_image_url": car_image_url,  # This will be the filename from uploads
+            "car_location": car.get("location"),
+            "car_mileage": car.get("kilometers"),
+            "car_transmission": car.get("transmissionType"),
+            "car_fuel_type": car.get("fuelType"),
+            "car_color": car.get("color"),
+            "car_body_type": car.get("bodyType")
+        }
+        
+        new_favorite = {
+            "favorite_id": str(uuid.uuid4()),
+            "user_id": user_id,
+            "date_added": datetime.now().isoformat(),
+            **car_details
+        }
+        
+        await db.favorite_cars.insert_one(new_favorite)
+        
+        # Update user statistics
+        await db.users.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$inc": {"favorite_count": 1}}
+        )
+        
+        return {"status": "success", "message": "Added to favorites", "car_details": car_details}
+    
+    except Exception as e:
+        logger.error(f"Error adding to favorites: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error adding to favorites: {str(e)}")
+
+@router.delete("/favorite/{car_id}")
+async def remove_from_favorites(car_id: str, user = Depends(get_current_user)):
+    """Remove a car from favorites"""
+    try:
+        # Get user_id from the user object
+        user_id = str(user["_id"])
+        
+        # Remove from favorites
+        result = await db.favorite_cars.delete_one({"user_id": user_id, "car_id": car_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Car not found in favorites")
+        
+        # Update user statistics
+        await db.users.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$inc": {"favorite_count": -1}}
+        )
+        
+        return {"status": "success", "message": "Removed from favorites"}
+    
+    except Exception as e:
+        logger.error(f"Error removing from favorites: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error removing from favorites: {str(e)}")
+
+# Add this test endpoint to verify the router is working
+@router.get("/test")
+async def test_car_routes():
+    """Test endpoint to verify car routes are working"""
+    return {"status": "success", "message": "Car routes are working"}

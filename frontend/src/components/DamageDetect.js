@@ -30,6 +30,8 @@ import {
   Tooltip,
   Collapse,
   Modal,
+  Radio,
+  RadioGroup,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
@@ -42,6 +44,14 @@ import ContrastIcon from '@mui/icons-material/Contrast';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
+import SettingsIcon from '@mui/icons-material/Settings';
+import InfoIcon from '@mui/icons-material/Info';
+import SecurityIcon from '@mui/icons-material/Security';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import axios from 'axios';
 
 // Styled components
@@ -284,6 +294,40 @@ const DamageDetailBox = styled(Box)(({ theme }) => ({
   border: `1px dashed ${theme.palette.error.main}`,
 }));
 
+const AccuracyWarningCard = styled(Card)(({ theme }) => ({
+  borderRadius: theme.spacing(2),
+  boxShadow: '0 4px 20px rgba(255,152,0,0.15)',
+  border: `2px solid ${alpha(theme.palette.warning.main, 0.3)}`,
+  backgroundColor: alpha(theme.palette.warning.main, 0.05),
+  marginBottom: theme.spacing(2),
+}));
+
+const DisclaimerSection = styled(Box)(({ theme }) => ({
+  backgroundColor: alpha(theme.palette.info.main, 0.08),
+  borderRadius: theme.spacing(2),
+  padding: theme.spacing(2),
+  border: `1px solid ${alpha(theme.palette.info.main, 0.2)}`,
+  marginTop: theme.spacing(2),
+}));
+
+const TipCard = styled(Card)(({ theme }) => ({
+  borderRadius: theme.spacing(1.5),
+  backgroundColor: alpha(theme.palette.success.main, 0.08),
+  border: `1px solid ${alpha(theme.palette.success.main, 0.2)}`,
+  padding: theme.spacing(1.5),
+  marginBottom: theme.spacing(1),
+}));
+
+const AccuracyIndicator = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  padding: theme.spacing(1),
+  borderRadius: theme.spacing(1),
+  backgroundColor: alpha(theme.palette.primary.main, 0.1),
+  border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+  marginBottom: theme.spacing(1),
+}));
+
 const DamageDetect = () => {
   const [image, setImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
@@ -304,6 +348,21 @@ const DamageDetect = () => {
   const [focusOnDamage, setFocusOnDamage] = useState(false);
   const [selectedDamage, setSelectedDamage] = useState(null);
   const [zoomModalOpen, setZoomModalOpen] = useState(false);
+  const [modelType, setModelType] = useState("yolo");
+  const [modelUsed, setModelUsed] = useState("");
+  const [modelError, setModelError] = useState(null);
+  const [advancedMode, setAdvancedMode] = useState(false);
+  const [imageQuality, setImageQuality] = useState('high');
+  const [processingStatus, setProcessingStatus] = useState('');
+
+  const getModelDisplayName = (modelType) => {
+    switch(modelType) {
+      case "yolo": return "YOLOv8 Segmentation";
+      case "dcn": return "DCN+ Detection";
+      case "maskrcnn": return "Mask R-CNN Enhanced";
+      default: return modelType.toUpperCase();
+    }
+  };
 
   const handleDetect = async () => {
     if (!image) {
@@ -313,6 +372,8 @@ const DamageDetect = () => {
 
     setIsLoading(true);
     setError(null);
+    setModelError(null);
+    setProcessingStatus(`Initializing ${getModelDisplayName(modelType)} model...`);
 
     try {
       const formData = new FormData();
@@ -322,22 +383,33 @@ const DamageDetect = () => {
       formData.append('confidence_threshold', confidenceThreshold);
       formData.append('remove_background', removeBackground);
       formData.append('focus_on_damage', focusOnDamage);
+      formData.append('model_type', modelType);
+
+      setProcessingStatus(`Analyzing image with ${getModelDisplayName(modelType)}...`);
 
       const response = await axios.post(
         'http://localhost:8000/damage/detect',
         formData,
         {
           headers: { 'Content-Type': 'multipart/form-data' },
-          timeout: 60000
+          timeout: 120000,
+          onUploadProgress: (progressEvent) => {
+            if (progressEvent.lengthComputable) {
+              const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+              setProcessingStatus(`Uploading image... ${percentCompleted}%`);
+            }
+          }
         }
       );
 
       if (response.data && response.data.status === 'success') {
+        setProcessingStatus('Processing complete!');
         setAnnotatedImage(`data:image/jpeg;base64,${response.data.annotated_image}`);
         setProcessedImage(`data:image/jpeg;base64,${response.data.processed_image}`);
         setDetections(response.data.detections || []);
         setDamageCounts(response.data.damage_counts || {});
         setDamageCrops(response.data.damage_crops || []);
+        setModelUsed(response.data.model_used || getModelDisplayName(modelType));
         const total = Object.values(response.data.damage_counts || {}).reduce(
           (sum, count) => sum + count, 0
         );
@@ -347,9 +419,18 @@ const DamageDetect = () => {
       }
     } catch (err) {
       console.error('Error detecting damage:', err);
-      setError(err.response?.data?.detail || err.message || "Failed to detect damage");
+      if (modelType === "dcn" && err.response?.data?.detail?.includes("DCN+ model failed to load")) {
+        setModelError("The DCN+ model is not available. Please select YOLOv8 model instead.");
+        setModelType("yolo");
+      } else if (modelType === "maskrcnn" && err.response?.data?.detail?.includes("Mask R-CNN model failed to load")) {
+        setModelError("The Mask R-CNN model is not available. Please select YOLOv8 model instead.");
+        setModelType("yolo");
+      } else {
+        setError(err.response?.data?.detail || err.message || "Failed to detect damage");
+      }
     } finally {
       setIsLoading(false);
+      setProcessingStatus('');
     }
   };
 
@@ -373,6 +454,25 @@ const DamageDetect = () => {
     };
     
     return descriptions[damageType] || 'Physical damage to the vehicle that may affect its appearance, function, or value.';
+  };
+
+  const getAccuracyLevel = (confidence) => {
+    if (confidence >= 0.8) return { level: 'High', color: 'success', icon: <VerifiedIcon /> };
+    if (confidence >= 0.6) return { level: 'Medium', color: 'warning', icon: <SecurityIcon /> };
+    return { level: 'Low', color: 'error', icon: <ReportProblemIcon /> };
+  };
+
+  const getModelAccuracyDescription = (modelType) => {
+    switch(modelType) {
+      case "maskrcnn": 
+        return "Advanced segmentation AI with enhanced preprocessing for precise damage area detection.";
+      case "yolo": 
+        return "Fast segmentation AI optimized for real-time damage detection with accurate boundaries.";
+      case "dcn": 
+        return "Experimental detection model - identifies damage locations with bounding boxes (no segmentation).";
+      default: 
+        return "AI-powered damage detection system with intelligent analysis capabilities.";
+    }
   };
 
   return (
@@ -405,9 +505,87 @@ const DamageDetect = () => {
 
               <Collapse in={showSettings}>
                 <Paper sx={{ p: 2, mb: 2, bgcolor: 'background.paper', borderRadius: 2 }}>
-                  <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'medium', color: 'primary.main' }}>
-                    Detection Settings
-                  </Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'medium', color: 'primary.main' }}>
+                      Detection Settings
+                    </Typography>
+                    <FormControlLabel
+                      control={
+                        <Switch 
+                          checked={advancedMode} 
+                          onChange={(e) => setAdvancedMode(e.target.checked)} 
+                          color="primary"
+                          size="small"
+                        />
+                      }
+                      label={
+                        <Typography variant="caption">Advanced Mode</Typography>
+                      }
+                    />
+                  </Box>
+                  
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="body2" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                      <SettingsIcon fontSize="small" sx={{ mr: 0.5 }} />
+                      AI Model Selection
+                    </Typography>
+                    {modelError && (
+                      <Alert 
+                        severity="warning" 
+                        sx={{ mb: 1, fontSize: '0.8rem' }}
+                        onClose={() => setModelError(null)}
+                      >
+                        {modelError}
+                      </Alert>
+                    )}
+                    <RadioGroup
+                      value={modelType}
+                      onChange={(e) => setModelType(e.target.value)}
+                      sx={{ mt: 1 }}
+                    >
+                      <FormControlLabel
+                        value="yolo"
+                        control={<Radio color="primary" />}
+                        label={
+                          <Box>
+                            <Typography variant="body2" fontWeight="medium">YOLOv8 Segmentation</Typography>
+                            <Typography variant="caption" sx={{ display: 'block', color: 'text.secondary' }}>
+                              ✓ Precise damage area detection with segmentation masks
+                            </Typography>
+                          </Box>
+                        }
+                      />
+                      <FormControlLabel
+                        value="maskrcnn"
+                        control={<Radio color="primary" />}
+                        label={
+                          <Box>
+                            <Typography variant="body2" fontWeight="medium">Mask R-CNN Enhanced</Typography>
+                            <Typography variant="caption" sx={{ display: 'block', color: 'text.secondary' }}>
+                              ✓ Premium segmentation model with detailed damage masks
+                            </Typography>
+                          </Box>
+                        }
+                      />
+                      {advancedMode && (
+                        <FormControlLabel
+                          value="dcn"
+                          control={<Radio color="primary" />}
+                          label={
+                            <Box>
+                              <Typography variant="body2" fontWeight="medium">DCN+ Detection</Typography>
+                              <Typography variant="caption" sx={{ display: 'block', color: 'text.secondary' }}>
+                                ⚠ Detection model - shows bounding boxes (not segmentation)
+                              </Typography>
+                            </Box>
+                          }
+                        />
+                      )}
+                    </RadioGroup>
+                  </Box>
+
+                  <Divider sx={{ my: 1.5 }} />
+                  
                   <FormGroup>
                     <Box sx={{ mb: 2 }}>
                       <FormControlLabel
@@ -421,12 +599,15 @@ const DamageDetect = () => {
                         label={
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <WbSunnyIcon fontSize="small" sx={{ mr: 0.5 }} />
-                            <Typography variant="body2">Reduce Sun Reflections</Typography>
+                            <Typography variant="body2">Reduce Reflections & Glare</Typography>
                           </Box>
                         }
                       />
                       <Typography variant="caption" sx={{ display: 'block', ml: 7, mt: -0.5, color: 'text.secondary' }}>
-                        Helps with glare and sun reflections on the car surface
+                        {modelType === 'maskrcnn' 
+                          ? 'Advanced multi-scale reflection detection that preserves car details and damage features'
+                          : 'Intelligent reflection removal that targets only bright specular highlights while preserving car texture'
+                        }
                       </Typography>
                     </Box>
                     <Box sx={{ mb: 2 }}>
@@ -441,12 +622,17 @@ const DamageDetect = () => {
                         label={
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <ContrastIcon fontSize="small" sx={{ mr: 0.5 }} />
-                            <Typography variant="body2">Enhance Small Damages</Typography>
+                            <Typography variant="body2">
+                              {modelType === 'maskrcnn' ? 'Enhanced Damage Detection' : 'Enhance Small Damages'}
+                            </Typography>
                           </Box>
                         }
                       />
                       <Typography variant="caption" sx={{ display: 'block', ml: 7, mt: -0.5, color: 'text.secondary' }}>
-                        Improves detection of subtle scratches and small dents
+                        {modelType === 'maskrcnn' 
+                          ? 'Specialized edge enhancement and adaptive contrast for subtle damage detection'
+                          : 'Optimized contrast enhancement that improves visibility of subtle scratches and small dents'
+                        }
                       </Typography>
                     </Box>
                     <Box sx={{ mb: 2 }}>
@@ -457,10 +643,15 @@ const DamageDetect = () => {
                       <Slider
                         value={confidenceThreshold}
                         onChange={(e, value) => setConfidenceThreshold(value)}
-                        min={0.1}
+                        min={modelType === 'maskrcnn' ? 0.15 : 0.1}
                         max={0.5}
                         step={0.05}
-                        marks={[
+                        marks={modelType === 'maskrcnn' ? [
+                          { value: 0.15, label: 'Ultra' },
+                          { value: 0.25, label: 'High' },
+                          { value: 0.35, label: 'Med' },
+                          { value: 0.5, label: 'Low' }
+                        ] : [
                           { value: 0.1, label: 'High' },
                           { value: 0.3, label: 'Med' },
                           { value: 0.5, label: 'Low' }
@@ -468,7 +659,10 @@ const DamageDetect = () => {
                         sx={{ ml: 1 }}
                       />
                       <Typography variant="caption" sx={{ display: 'block', ml: 1, color: 'text.secondary' }}>
-                        Lower values detect more subtle damages but may increase false positives
+                        {modelType === 'maskrcnn' 
+                          ? 'Enhanced model can detect very subtle damages at lower thresholds'
+                          : 'Lower values detect more subtle damages but may increase false positives'
+                        }
                       </Typography>
                     </Box>
                   </FormGroup>
@@ -483,8 +677,9 @@ const DamageDetect = () => {
                 <StyledUploadButton 
                   component="label" 
                   startIcon={<UploadFileIcon />}
+                  size="large"
                 >
-                  Upload Image
+                  Upload Vehicle Image
                   <input 
                     type="file" 
                     hidden 
@@ -500,11 +695,39 @@ const DamageDetect = () => {
                       setDamageCounts({});
                       setTotalDamage(0);
                       setError(null);
+                      setModelUsed("");
                     }}
                     accept="image/*"
                   />
                 </StyledUploadButton>
               </Box>
+
+              <DisclaimerSection>
+                <Typography variant="subtitle2" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <LightbulbIcon sx={{ mr: 1, fontSize: '1.1rem' }} color="info" />
+                  Tips for Best Results
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  <TipCard elevation={0}>
+                    <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
+                      <CameraAltIcon sx={{ mr: 1, fontSize: '0.9rem' }} />
+                      Use bright, even lighting without harsh shadows
+                    </Typography>
+                  </TipCard>
+                  <TipCard elevation={0}>
+                    <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
+                      <ZoomInIcon sx={{ mr: 1, fontSize: '0.9rem' }} />
+                      Capture damage areas clearly and in sharp focus
+                    </Typography>
+                  </TipCard>
+                  <TipCard elevation={0}>
+                    <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
+                      <ContrastIcon sx={{ mr: 1, fontSize: '0.9rem' }} />
+                      Clean surface and take photos from multiple angles
+                    </Typography>
+                  </TipCard>
+                </Box>
+              </DisclaimerSection>
 
               {previewImage && (
                 <Box sx={{ mt: 2, mb: 3 }}>
@@ -568,8 +791,14 @@ const DamageDetect = () => {
                   }}
                 >
                   <CircularProgress size={60} sx={{ mb: 3 }} />
-                  <Typography variant="h6">
-                    Analyzing damage... Please wait.
+                  <Typography variant="h6" sx={{ mb: 1 }}>
+                    {processingStatus || `Analyzing with ${getModelDisplayName(modelType)}...`}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+                    {modelType === 'maskrcnn' 
+                      ? 'Enhanced preprocessing and analysis in progress...'
+                      : 'Please wait while we process your image...'
+                    }
                   </Typography>
                 </Paper>
               ) : error ? (
@@ -588,9 +817,78 @@ const DamageDetect = () => {
                 </Alert>
               ) : annotatedImage ? (
                 <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                  <Typography variant="h6" gutterBottom>
-                    Damage Detection Results
-                  </Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                      <AssessmentIcon sx={{ mr: 1 }} color="primary" />
+                      Detection Results
+                    </Typography>
+                    {modelUsed && (
+                      <Chip 
+                        label={`${modelUsed}`}
+                        color="primary"
+                        size="small"
+                        sx={{ fontWeight: 'medium' }}
+                        icon={<SettingsIcon />}
+                      />
+                    )}
+                  </Box>
+
+                  {/* Accuracy and Disclaimer Section - Only show after detection */}
+                  <AccuracyWarningCard sx={{ mb: 2 }}>
+                    <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                      <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
+                        <InfoIcon color="warning" sx={{ mt: 0.5, fontSize: '1.2rem' }} />
+                        <Box>
+                          <Typography variant="subtitle2" fontWeight="bold" color="warning.dark">
+                            Detection Accuracy Notice
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                            AI detection provides reliable damage assessment. Results may vary based on image quality and lighting conditions.
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </AccuracyWarningCard>
+
+                  <AccuracyIndicator>
+                    <InfoIcon color="primary" sx={{ mr: 1, fontSize: '1.1rem' }} />
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="caption" fontWeight="medium" color="primary">
+                        AI Detection Analysis
+                      </Typography>
+                      <Typography variant="caption" sx={{ display: 'block', color: 'text.secondary' }}>
+                        {getModelAccuracyDescription(modelType)}
+                      </Typography>
+                    </Box>
+                  </AccuracyIndicator>
+
+                  {detections.length > 0 && (
+                    <Alert 
+                      severity="success" 
+                      sx={{ mb: 2, fontSize: '0.85rem' }}
+                      icon={<VerifiedIcon fontSize="small" />}
+                    >
+                      <Typography variant="caption" fontWeight="medium">
+                        Detection Confidence Analysis:
+                      </Typography>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 0.5 }}>
+                        {detections.map((detection, index) => {
+                          const accuracy = getAccuracyLevel(detection.confidence);
+                          return (
+                            <Chip
+                              key={index}
+                              label={`${detection.class_name}: ${(detection.confidence * 100).toFixed(0)}%`}
+                              size="small"
+                              color={accuracy.color}
+                              variant="outlined"
+                              icon={accuracy.icon}
+                              sx={{ fontSize: '0.7rem', height: 24 }}
+                            />
+                          );
+                        })}
+                      </Box>
+                    </Alert>
+                  )}
                   
                   <Box sx={{ mb: 2 }}>
                     <Tabs 
@@ -699,43 +997,100 @@ const DamageDetect = () => {
                         <WarningIcon color="error" sx={{ mr: 1 }} />
                         <Typography variant="h6">
                           {totalDamage > 0 
-                            ? `Detected ${totalDamage} damage point${totalDamage > 1 ? 's' : ''}`
-                            : 'No damage detected'}
+                            ? `Detected ${totalDamage} potential damage point${totalDamage > 1 ? 's' : ''}`
+                            : 'No obvious damage detected'}
                         </Typography>
                       </Box>
+
+                      {/* Simplified Disclaimer */}
+                      <Alert 
+                        severity="info" 
+                        sx={{ mb: 2, fontSize: '0.8rem' }}
+                        icon={<InfoIcon fontSize="small" />}
+                      >
+                        <Typography variant="caption" fontWeight="medium">
+                          Detection Summary
+                        </Typography>
+                        <Typography variant="caption" sx={{ display: 'block', mt: 0.5 }}>
+                          • Analysis based on visible damage patterns in the uploaded image<br/>
+                          • Detection accuracy depends on image quality and lighting conditions<br/>
+                          • Use results as guidance for damage assessment and documentation
+                        </Typography>
+                      </Alert>
                       
                       <Divider sx={{ mb: 2 }} />
                       
                       {totalDamage > 0 ? (
                         <Accordion defaultExpanded>
                           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                            <Typography fontWeight="medium">Damage Summary</Typography>
+                            <Typography fontWeight="medium" sx={{ display: 'flex', alignItems: 'center' }}>
+                              <AssessmentIcon sx={{ mr: 1, fontSize: '1.1rem' }} />
+                              Detected Issues Summary
+                            </Typography>
                           </AccordionSummary>
                           <AccordionDetails>
                             <List disablePadding>
-                              {Object.entries(damageCounts).map(([damageType, count]) => (
-                                <ListItem 
-                                  key={damageType}
-                                  disablePadding
-                                  sx={{ mb: 1 }}
-                                >
-                                  <Badge badgeContent={count} color="error" sx={{ width: '100%' }}>
-                                    <DamageChip 
-                                      label={damageType.replace(/-/g, ' ')}
-                                      variant="outlined"
-                                      damageType={damageType}
-                                      sx={{ width: '100%', justifyContent: 'flex-start' }}
-                                    />
-                                  </Badge>
-                                </ListItem>
-                              ))}
+                              {Object.entries(damageCounts).map(([damageType, count]) => {
+                                const avgConfidence = detections
+                                  .filter(d => d.class_name === damageType)
+                                  .reduce((sum, d) => sum + d.confidence, 0) / count;
+                                const accuracy = getAccuracyLevel(avgConfidence);
+                                
+                                return (
+                                  <ListItem 
+                                    key={damageType}
+                                    disablePadding
+                                    sx={{ mb: 1, flexDirection: 'column', alignItems: 'stretch' }}
+                                  >
+                                    <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', mb: 0.5 }}>
+                                      <Badge badgeContent={count} color="error" sx={{ flex: 1 }}>
+                                        <DamageChip 
+                                          label={damageType.replace(/-/g, ' ')}
+                                          variant="outlined"
+                                          damageType={damageType}
+                                          sx={{ width: '100%', justifyContent: 'flex-start' }}
+                                        />
+                                      </Badge>
+                                      <Chip
+                                        label={accuracy.level}
+                                        size="small"
+                                        color={accuracy.color}
+                                        variant="outlined"
+                                        icon={accuracy.icon}
+                                        sx={{ ml: 1, fontSize: '0.7rem' }}
+                                      />
+                                    </Box>
+                                    <Typography variant="caption" color="text.secondary" sx={{ pl: 1 }}>
+                                      Avg. Confidence: {(avgConfidence * 100).toFixed(0)}% - {accuracy.level} reliability
+                                    </Typography>
+                                  </ListItem>
+                                );
+                              })}
                             </List>
+                            
+                            <Divider sx={{ my: 2 }} />
+                            
+                            <Box sx={{ display: 'flex', alignItems: 'center', p: 2, bgcolor: 'primary.50', borderRadius: 1 }}>
+                              <AssessmentIcon color="primary" sx={{ mr: 1 }} />
+                              <Typography variant="caption" color="primary.main" fontWeight="medium">
+                                Damage assessment complete. Review individual detections above for detailed analysis.
+                              </Typography>
+                            </Box>
                           </AccordionDetails>
                         </Accordion>
                       ) : (
-                        <Box sx={{ display: 'flex', alignItems: 'center', p: 2, bgcolor: '#e8f5e9', borderRadius: 1 }}>
-                          <CheckCircleIcon color="success" sx={{ mr: 1 }} />
-                          <Typography>No damage detected in this image</Typography>
+                        <Box>
+                          <Box sx={{ display: 'flex', alignItems: 'center', p: 2, bgcolor: '#e8f5e9', borderRadius: 1, mb: 2 }}>
+                            <CheckCircleIcon color="success" sx={{ mr: 1 }} />
+                            <Typography>No obvious damage detected in this image</Typography>
+                          </Box>
+                          
+                          <Alert severity="success" sx={{ fontSize: '0.8rem' }}>
+                            <Typography variant="caption">
+                              <strong>Good News:</strong> No visible damage detected in this image. 
+                              For comprehensive assessment, consider capturing additional angles or lighting conditions.
+                            </Typography>
+                          </Alert>
                         </Box>
                       )}
                     </CardContent>
@@ -756,8 +1111,12 @@ const DamageDetect = () => {
                     backgroundColor: '#fafafa'
                   }}
                 >
-                  <Typography variant="body1" color="text.secondary" align="center">
-                    Upload and analyze an image to see damage detection results here
+                  <SearchIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
+                  <Typography variant="h6" color="text.secondary" align="center" gutterBottom>
+                    AI Damage Detection Ready
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" align="center">
+                    Upload and analyze an image to see AI-powered damage detection results
                   </Typography>
                 </Paper>
               )}
@@ -785,6 +1144,22 @@ const DamageDetect = () => {
               <Typography variant="h6" color="error" gutterBottom>
                 {selectedDamage.class_name.toUpperCase()} DETECTED
               </Typography>
+
+              {/* Accuracy indicator for the selected damage */}
+              <Box sx={{ mb: 2 }}>
+                {(() => {
+                  const accuracy = getAccuracyLevel(selectedDamage.confidence);
+                  return (
+                    <Chip
+                      label={`Detection Confidence: ${accuracy.level}`}
+                      color={accuracy.color}
+                      variant="outlined"
+                      icon={accuracy.icon}
+                      sx={{ fontWeight: 'medium' }}
+                    />
+                  );
+                })()}
+              </Box>
               
               <Box sx={{ position: 'relative', mt: 1, mb: 2 }}>
                 <img 
@@ -801,8 +1176,9 @@ const DamageDetect = () => {
               </Box>
               
               <DamageDetailBox>
-                <Typography variant="body1" fontWeight="medium">
-                  Damage Details:
+                <Typography variant="body1" fontWeight="medium" sx={{ display: 'flex', alignItems: 'center' }}>
+                  <InfoIcon sx={{ mr: 1 }} color="primary" />
+                  Detection Details
                 </Typography>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center', mt: 1 }}>
                   <Chip 
@@ -812,17 +1188,29 @@ const DamageDetect = () => {
                   />
                   <Chip 
                     label={`Confidence: ${Math.round(selectedDamage.confidence * 100)}%`} 
-                    color={selectedDamage.confidence > 0.7 ? "success" : "warning"} 
+                    color={selectedDamage.confidence > 0.7 ? "success" : selectedDamage.confidence > 0.5 ? "warning" : "error"} 
                     variant="outlined"
                   />
                 </Box>
+                
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 2, mb: 1 }}>
                   {getDamageDescription(selectedDamage.class_name)}
                 </Typography>
+
+                <Alert severity="warning" sx={{ mt: 2, fontSize: '0.8rem', textAlign: 'left' }}>
+                  <Typography variant="caption" fontWeight="medium">
+                    Verification Required
+                  </Typography>
+                  <Typography variant="caption" sx={{ display: 'block', mt: 0.5 }}>
+                    This AI detection should be verified by a qualified professional. 
+                    Lighting conditions, image quality, and angle can affect accuracy.
+                  </Typography>
+                </Alert>
+                
                 <Button 
                   variant="contained" 
                   color="primary" 
-                  sx={{ mt: 1 }}
+                  sx={{ mt: 2 }}
                   onClick={handleCloseZoomModal}
                 >
                   Close

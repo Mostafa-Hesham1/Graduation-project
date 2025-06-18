@@ -20,10 +20,10 @@ import {
   LocalOffer,
   Dashboard,
   PhotoCamera,
-  Build,
   AttachMoney,
   Person,
-  Email as EmailIcon
+  Email as EmailIcon,
+  ReportProblem as ReportProblemIcon  // Add this import for the damage icon
 } from '@mui/icons-material';
 import { Divider, useMediaQuery, useTheme } from '@mui/material';
 import MessageIcon from './MessageIcon'; // Import the MessageIcon component
@@ -149,12 +149,12 @@ const StyledMenuItem = styled(MenuItem)(({ theme, isHighlighted, isAdmin }) => (
   },
 }));
 
-// Define the pages array with icons - without "My Listings" as requested
+// Define the pages array with icons - make sure damage detect is included
 const pages = [
   { name: 'Home', path: '/', icon: <DirectionsCar /> }, 
-  { name: 'Marketplace', path: '/car-marketplace', icon: <LocalOffer /> }, // Fixed path to match correct route
+  { name: 'Marketplace', path: '/car-marketplace', icon: <LocalOffer /> },
   { name: 'Car Recognizer', path: '/car-recognizer', icon: <PhotoCamera /> },
-  { name: 'Damage Detect', path: '/damage-detect', icon: <Build /> },
+  { name: 'Car Damage Detection', path: '/damage-detect', icon: <ReportProblemIcon /> },  // This is the line for damage detection
   { name: 'Price Prediction', path: '/price-prediction', icon: <AttachMoney /> },
   { name: 'Admin', path: '/admin-dashboard', requireAdmin: true, icon: <Dashboard /> }
 ];

@@ -53,11 +53,13 @@ import { useAuth } from '../context/AuthContext';
 
 // Styled components for better UI
 const StyledFilterPaper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(3),
-  marginBottom: theme.spacing(3),
-  borderRadius: theme.shape.borderRadius,
+  padding: theme?.spacing?.(3) || '24px',
+  marginBottom: theme?.spacing?.(3) || '24px',
+  borderRadius: theme?.shape?.borderRadius || '4px',
   boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
-  background: `linear-gradient(145deg, ${theme.palette.background.paper} 0%, ${alpha(theme.palette.primary.light, 0.05)} 100%)`,
+  background: theme?.palette?.background?.paper 
+    ? `linear-gradient(145deg, ${theme.palette.background.paper} 0%, ${alpha(theme.palette.primary.light, 0.05)} 100%)`
+    : 'linear-gradient(145deg, #ffffff 0%, rgba(25, 118, 210, 0.05) 100%)',
 }));
 
 const ListingCard = styled(Card)(({ theme }) => ({
@@ -65,7 +67,7 @@ const ListingCard = styled(Card)(({ theme }) => ({
   flexDirection: 'column',
   height: '100%',
   transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-  borderRadius: theme.spacing(1),
+  borderRadius: theme?.spacing?.(1) || '8px',
   overflow: 'hidden',
   boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
   '&:hover': {
@@ -75,9 +77,9 @@ const ListingCard = styled(Card)(({ theme }) => ({
 }));
 
 const ListingInfoChip = styled(Chip)(({ theme, color }) => ({
-  margin: theme.spacing(0.5),
-  backgroundColor: color ? alpha(color, 0.1) : alpha(theme.palette.primary.main, 0.1),
-  color: color || theme.palette.primary.main,
+  margin: theme?.spacing?.(0.5) || '4px',
+  backgroundColor: color ? alpha(color, 0.1) : (theme?.palette?.primary?.main ? alpha(theme.palette.primary.main, 0.1) : 'rgba(25, 118, 210, 0.1)'),
+  color: color || (theme?.palette?.primary?.main || '#1976d2'),
   border: 'none',
   fontWeight: 500,
   '& .MuiChip-icon': {
@@ -88,8 +90,8 @@ const ListingInfoChip = styled(Chip)(({ theme, color }) => ({
 const HeaderTypography = styled(Typography)(({ theme }) => ({
   fontWeight: 600,
   position: 'relative',
-  paddingLeft: theme.spacing(2),
-  marginBottom: theme.spacing(3),
+  paddingLeft: theme?.spacing?.(2) || '16px',
+  marginBottom: theme?.spacing?.(3) || '24px',
   '&:before': {
     content: '""',
     position: 'absolute',
@@ -98,7 +100,7 @@ const HeaderTypography = styled(Typography)(({ theme }) => ({
     transform: 'translateY(-50%)',
     width: 4,
     height: '70%',
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme?.palette?.primary?.main || '#1976d2',
     borderRadius: 4,
   },
 }));

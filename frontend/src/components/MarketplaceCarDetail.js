@@ -25,9 +25,20 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Snackbar,
+  LinearProgress,
+  Stepper,
+  Step,
+  StepLabel,
+  StepContent,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Backdrop,
   Alert,
+  AlertTitle,
   Tooltip,
+  Snackbar,
   Stack,
 } from '@mui/material';
 import {
@@ -56,9 +67,16 @@ import {
   AttachMoney,
   ContentCopy,
   Info as InfoIcon,
+  Build as BuildIcon,
+  Report as ReportIcon,
+  CheckCircle as CheckCircleIcon,
+  PhotoLibrary as PhotoLibraryIcon,
+  BugReport as BugReportIcon,
+  CalendarToday as CalendarTodayIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { getListingById } from '../api';
+import axios from 'axios';
 
 const CAR_PLACEHOLDER = 'https://via.placeholder.com/800x500?text=No+Image+Available';
 
@@ -104,6 +122,15 @@ const MarketplaceCarDetail = () => {
     message: '',
     severity: 'success',
   });
+  const [damageDialogOpen, setDamageDialogOpen] = useState(false);
+  const [damageAnalysisInProgress, setDamageAnalysisInProgress] = useState(false);
+  const [damageAnalysisStep, setDamageAnalysisStep] = useState(0);
+  const [damageAnalysisComplete, setDamageAnalysisComplete] = useState(false);
+  const [damageAnalysisResults, setDamageAnalysisResults] = useState(null);
+  const [damageAnalysisError, setDamageAnalysisError] = useState(null);
+  const [totalDamageCount, setTotalDamageCount] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [imageAnalysisProgress, setImageAnalysisProgress] = useState(0);
 
   useEffect(() => {
     document.title = `Vehicle Details | Marketplace`;
@@ -124,6 +151,11 @@ const MarketplaceCarDetail = () => {
           if (user && data.owner_id === user._id) {
             setIsOwnListing(true);
           }
+          
+          // Check if car is in user's favorites
+          if (isAuthenticated && user) {
+            checkIfFavorite(id);
+          }
         } else {
           throw new Error('Failed to fetch listing details');
         }
@@ -136,7 +168,89 @@ const MarketplaceCarDetail = () => {
     };
 
     fetchListing();
-  }, [id, user]);
+  }, [id, user, isAuthenticated]);
+
+  // Add this new function to check if car is in favorites
+  const checkIfFavorite = async (carId) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await fetch(`http://localhost:8000/profile/favorite-cars`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const isFavorite = data.favorite_cars.some(fav => fav.car_id === carId);
+        setFavorite(isFavorite);
+      }
+    } catch (error) {
+      console.error('Error checking favorite status:', error);
+    }
+  };
+
+  // Replace the toggleFavorite function with this enhanced version
+  const toggleFavorite = async () => {
+    if (!isAuthenticated) {
+      setSnackbar({
+        open: true,
+        message: 'Please log in to add favorites',
+        severity: 'warning'
+      });
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (favorite) {
+        // Remove from favorites
+        const response = await axios.delete(`http://localhost:8000/profile/favorite-cars/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.data.status === 'success') {
+          setFavorite(false);
+          setSnackbar({
+            open: true,
+            message: 'Removed from favorites',
+            severity: 'success'
+          });
+        }
+      } else {
+        // Add to favorites using the car_routes endpoint with comprehensive data
+        const response = await axios.post(`http://localhost:8000/car/favorite/${id}`, {}, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.data.status === 'success') {
+          setFavorite(true);
+          setSnackbar({
+            open: true,
+            message: 'Added to favorites',
+            severity: 'success'
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error updating favorites:', error);
+      setSnackbar({
+        open: true,
+        message: error.response?.data?.detail || 'Failed to update favorites',
+        severity: 'error'
+      });
+    }
+  };
 
   const getImageUrl = (imageName) => {
     if (!imageName) return CAR_PLACEHOLDER;
@@ -180,24 +294,6 @@ const MarketplaceCarDetail = () => {
 
   const handleBackToMarketplace = () => {
     navigate('/car-marketplace');
-  };
-
-  const toggleFavorite = () => {
-    if (!isAuthenticated) {
-      setSnackbar({
-        open: true,
-        message: 'Please log in to save favorites',
-        severity: 'info',
-      });
-      return;
-    }
-
-    setFavorite(!favorite);
-    setSnackbar({
-      open: true,
-      message: favorite ? 'Removed from favorites' : 'Added to favorites',
-      severity: 'success',
-    });
   };
 
   const handleOpenMessageDialog = () => {
@@ -290,6 +386,373 @@ const MarketplaceCarDetail = () => {
         severity: 'success',
       });
     }
+  };
+
+  // Handle opening the damage detection dialog
+  const handleOpenDamageDialog = () => {
+    if (!isAuthenticated) {
+      setSnackbar({
+        open: true,
+        message: 'Please log in to access the damage detection feature',
+        severity: 'warning'
+      });
+      return;
+    }
+    setDamageDialogOpen(true);
+    setDamageAnalysisInProgress(false);
+    setDamageAnalysisStep(0);
+    setDamageAnalysisComplete(false);
+    setDamageAnalysisResults(null);
+    setDamageAnalysisError(null);
+    setTotalDamageCount(0);
+    setCurrentImageIndex(0);
+    setImageAnalysisProgress(0);
+  };
+
+  // Handle closing the damage detection dialog
+  const handleCloseDamageDialog = () => {
+    if (damageAnalysisInProgress) {
+      setSnackbar({
+        open: true,
+        message: 'Please wait until analysis is complete',
+        severity: 'warning'
+      });
+      return;
+    }
+    setDamageDialogOpen(false);
+  };
+
+  // Start the damage analysis process
+  const startDamageAnalysis = async () => {
+    if (!listing || !listing.images || listing.images.length === 0) {
+      setDamageAnalysisError("No images available for analysis");
+      return;
+    }
+
+    setDamageAnalysisInProgress(true);
+    setDamageAnalysisStep(1);
+    setDamageAnalysisError(null);
+    setDamageAnalysisResults(null);
+    
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
+      // First create a new damage report entry
+      const reportResponse = await axios.post(
+        'http://localhost:8000/damage/create-report',
+        {
+          car_id: id,
+          car_title: listing.title || `${listing.make} ${listing.model} ${listing.year}`,
+          total_images: listing.images.length
+        },
+        {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }
+      );
+
+      const reportId = reportResponse.data.report_id;
+      const results = [];
+      let totalDamages = 0;
+      
+      // Process each image using YOLO model
+      for (let i = 0; i < listing.images.length; i++) {
+        setCurrentImageIndex(i);
+        setImageAnalysisProgress(0);
+        
+        // Update progress calculation
+        const overallProgress = Math.round(((i) / listing.images.length) * 100);
+        setDamageAnalysisStep(2);
+        setImageAnalysisProgress(overallProgress);
+        
+        // Get image URL
+        const imageUrl = getImageUrl(listing.images[i]);
+        console.log(`Processing image ${i + 1}/${listing.images.length}: ${imageUrl}`);
+        
+        if (!imageUrl || imageUrl.includes('placeholder')) {
+          console.log(`Skipping placeholder image ${i + 1}`);
+          continue;
+        }
+        
+        try {
+          // Use the new detect-from-url endpoint with YOLO model
+          const formData = new FormData();
+          formData.append('image_url', imageUrl);
+          formData.append('reduce_reflection', 'true');
+          formData.append('enhance_contrast', 'true');
+          formData.append('confidence_threshold', '0.25');
+          formData.append('model_type', 'yolo'); // Explicitly use YOLO
+          
+          console.log(`Sending request to damage detection API for image ${i + 1}`);
+          
+          // Call the new YOLO damage detection endpoint
+          const damageResponse = await axios.post(
+            'http://localhost:8000/damage/detect-from-url',
+            formData,
+            {
+              headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data'
+              },
+              onUploadProgress: (progressEvent) => {
+                if (progressEvent.lengthComputable) {
+                  const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                  setImageAnalysisProgress(progress);
+                }
+              }
+            }
+          );
+          
+          console.log(`Damage detection response for image ${i + 1}:`, damageResponse.data);
+          
+          if (damageResponse.data.status === 'success') {
+            const imageDamageCount = Object.values(damageResponse.data.damage_counts || {}).reduce(
+              (sum, count) => sum + count, 0
+            );
+            
+            totalDamages += imageDamageCount;
+            
+            results.push({
+              image_index: i,
+              image_url: imageUrl,
+              annotated_image: damageResponse.data.annotated_image,
+              detections: damageResponse.data.detections || [],
+              damage_counts: damageResponse.data.damage_counts || {},
+              damage_crops: damageResponse.data.damage_crops || [],
+              total_damages: imageDamageCount
+            });
+            
+            // Update report with each image result
+            await axios.post(
+              `http://localhost:8000/damage/update-report/${reportId}/image/${i}`,
+              {
+                annotated_image: damageResponse.data.annotated_image,
+                detections: damageResponse.data.detections || [],
+                damage_counts: damageResponse.data.damage_counts || {},
+                damage_crops: damageResponse.data.damage_crops || [],
+                total_damages: imageDamageCount
+              },
+              {
+                headers: { 'Authorization': `Bearer ${token}` }
+              }
+            );
+          }
+        } catch (imageError) {
+          console.error(`Error processing image ${i + 1}:`, imageError);
+          console.error('Error details:', imageError.response?.data || imageError.message);
+          
+          // Log the specific error for debugging
+          if (imageError.response?.status === 400) {
+            console.error('Bad Request error - likely issue with image URL or format');
+          }
+          
+          // Continue with next image instead of failing completely
+          continue;
+        }
+      }
+      
+      // Complete the report
+      await axios.post(
+        `http://localhost:8000/damage/complete-report/${reportId}`,
+        {
+          total_damages: totalDamages,
+          status: 'completed'
+        },
+        {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }
+      );
+      
+      setTotalDamageCount(totalDamages);
+      setDamageAnalysisResults(results);
+      setDamageAnalysisComplete(true);
+      setDamageAnalysisStep(3);
+      
+      // Notify the user that the report is ready
+      setSnackbar({
+        open: true,
+        message: `Damage analysis complete! Found ${totalDamages} damage instances using YOLO detection. Report saved to your profile.`,
+        severity: 'success'
+      });
+      
+      // Optional: Add a button to view the report immediately
+      setTimeout(() => {
+        setSnackbar({
+          open: true,
+          message: 'You can view the detailed report in your Profile > Damage Reports section.',
+          severity: 'info'
+        });
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Error during damage analysis:', error);
+      console.error('Full error details:', error.response?.data || error.message);
+      setDamageAnalysisError(error.response?.data?.detail || error.message || 'Failed to analyze damage');
+      setDamageAnalysisStep(4); // Error step
+    } finally {
+      setDamageAnalysisInProgress(false);
+    }
+  };
+
+  // Render damage detection dialog content
+  const renderDamageDialogContent = () => {
+    return (
+      <Box sx={{ width: '100%' }}>
+        <Stepper activeStep={damageAnalysisStep} orientation="vertical">
+          <Step>
+            <StepLabel>Start Damage Analysis</StepLabel>
+            <StepContent>
+              <Typography variant="body2" paragraph>
+                The system will analyze all {listing?.images?.length || 0} images of this vehicle to detect potential damage.
+              </Typography>
+              <Typography variant="body2" paragraph>
+                Results will be saved to your profile dashboard for future reference.
+              </Typography>
+              <Box sx={{ mb: 2 }}>
+                <Button
+                  variant="contained"
+                  onClick={startDamageAnalysis}
+                  sx={{ mt: 1, mr: 1 }}
+                  disabled={damageAnalysisInProgress}
+                  startIcon={<BugReportIcon />}
+                >
+                  Start Analysis
+                </Button>
+                <Button
+                  onClick={handleCloseDamageDialog}
+                  sx={{ mt: 1, mr: 1 }}
+                  disabled={damageAnalysisInProgress}
+                >
+                  Cancel
+                </Button>
+              </Box>
+            </StepContent>
+          </Step>
+          
+          <Step>
+            <StepLabel>Preparing Analysis</StepLabel>
+            <StepContent>
+              <Typography variant="body2" paragraph>
+                Setting up damage detection for this vehicle...
+              </Typography>
+              <LinearProgress sx={{ mb: 2 }} />
+            </StepContent>
+          </Step>
+          
+          <Step>
+            <StepLabel>Analyzing Images</StepLabel>
+            <StepContent>
+              <Typography variant="body2" paragraph>
+                Analyzing image {currentImageIndex + 1} of {listing?.images?.length || 0}
+              </Typography>
+              <LinearProgress 
+                variant="determinate" 
+                value={imageAnalysisProgress} 
+                sx={{ mb: 2 }} 
+              />
+              <Typography variant="caption" color="text.secondary">
+                Please wait, this may take a few minutes...
+              </Typography>
+            </StepContent>
+          </Step>
+          
+          <Step>
+            <StepLabel>Analysis Complete</StepLabel>
+            <StepContent>
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body1" fontWeight="bold" color="primary" paragraph>
+                  <CheckCircleIcon sx={{ verticalAlign: 'middle', mr: 1 }} />
+                  Analysis completed successfully!
+                </Typography>
+                
+                <Alert severity="info" sx={{ mb: 2 }}>
+                  <AlertTitle>Report Created</AlertTitle>
+                  A detailed damage report has been saved to your profile dashboard.
+                </Alert>
+                
+                <Paper sx={{ p: 2, bgcolor: 'background.paper', mb: 2 }}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    Summary:
+                  </Typography>
+                  <List dense>
+                    <ListItem>
+                      <ListItemIcon>
+                        <PhotoLibraryIcon color="primary" />
+                      </ListItemIcon>
+                      <ListItemText 
+                        primary={`${listing?.images?.length || 0} images analyzed`} 
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon>
+                        <ReportIcon color="error" />
+                      </ListItemIcon>
+                      <ListItemText 
+                        primary={`${totalDamageCount} total damage instances detected`}
+                        secondary={totalDamageCount > 0 ? "See your profile for detailed report" : "No significant damage detected"}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon>
+                        <CalendarTodayIcon color="primary" />
+                      </ListItemIcon>
+                      <ListItemText 
+                        primary="Report created on"
+                        secondary={new Date().toLocaleString()}
+                      />
+                    </ListItem>
+                  </List>
+                </Paper>
+                
+                <Button
+                  variant="contained"
+                  onClick={handleCloseDamageDialog}
+                  sx={{ mt: 1, mr: 1 }}
+                >
+                  Close
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => navigate('/profile')}
+                  sx={{ mt: 1 }}
+                >
+                  View Report in Profile
+                </Button>
+              </Box>
+            </StepContent>
+          </Step>
+          
+          <Step>
+            <StepLabel>Error</StepLabel>
+            <StepContent>
+              <Typography variant="body2" color="error" paragraph>
+                {damageAnalysisError}
+              </Typography>
+              <Box sx={{ mb: 2 }}>
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    setDamageAnalysisStep(0);
+                    setDamageAnalysisError(null);
+                  }}
+                  sx={{ mt: 1, mr: 1 }}
+                >
+                  Try Again
+                </Button>
+                <Button
+                  onClick={handleCloseDamageDialog}
+                  sx={{ mt: 1, mr: 1 }}
+                >
+                  Close
+                </Button>
+              </Box>
+            </StepContent>
+          </Step>
+        </Stepper>
+      </Box>
+    );
   };
 
   if (loading) {
@@ -928,42 +1391,92 @@ const MarketplaceCarDetail = () => {
         </Grid>
       </Grid>
 
-      <Dialog open={openMessageDialog} onClose={handleCloseMessageDialog} fullWidth maxWidth="sm">
-        <DialogTitle>
-          <Typography variant="h6" fontWeight="bold">
-            Send Message to Seller
-          </Typography>
+      {/* Add Damage Detection Button at the end of the content section */}
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={8}>
+          {/* ...existing code... */}
+          
+          {/* Add Damage Detection Button */}
+          <DetailSection sx={{ mt: 3 }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{
+                fontWeight: 'bold',
+                mb: 2,
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <BuildIcon sx={{ mr: 1 }} />
+              Vehicle Damage Detection
+            </Typography>
+
+            <Box sx={{ p: 2, backgroundColor: alpha(theme.palette.warning.main, 0.05), borderRadius: 2, mb: 2 }}>
+              <Typography variant="body2" paragraph>
+                Use our AI-powered damage detection to analyze all images of this vehicle and generate a comprehensive damage report.
+              </Typography>
+              
+              <Button
+                variant="contained"
+                color="error"
+                startIcon={<BugReportIcon />}
+                onClick={handleOpenDamageDialog}
+                sx={{ mt: 1 }}
+              >
+                Check Vehicle Damage
+              </Button>
+            </Box>
+          </DetailSection>
+        </Grid>
+
+        <Grid item xs={12} md={4}>
+          {/* ...existing code for the right column... */}
+        </Grid>
+      </Grid>
+      
+      {/* Damage Detection Dialog */}
+      <Dialog
+        open={damageDialogOpen}
+        onClose={handleCloseDamageDialog}
+        maxWidth="md"
+        fullWidth
+        disableEscapeKeyDown={damageAnalysisInProgress}
+      >
+        <DialogTitle sx={{ pb: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <BugReportIcon sx={{ mr: 1 }} color="error" />
+            <Typography variant="h6">Vehicle Damage Analysis</Typography>
+          </Box>
         </DialogTitle>
-
+        
         <DialogContent dividers>
-          <TextField
-            autoFocus
-            margin="normal"
-            fullWidth
-            multiline
-            rows={4}
-            variant="outlined"
-            placeholder="Type your message here..."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
+          {renderDamageDialogContent()}
         </DialogContent>
-
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={handleCloseMessageDialog} color="inherit">
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSendMessage}
-            variant="contained"
-            startIcon={sendingMessage ? <CircularProgress size={20} color="inherit" /> : <Send />}
-            disabled={!message.trim() || sendingMessage}
-          >
-            {sendingMessage ? 'Sending...' : 'Send Message'}
-          </Button>
-        </DialogActions>
+        
+        {!damageAnalysisInProgress && !damageAnalysisComplete && (
+          <DialogActions>
+            <Button onClick={handleCloseDamageDialog}>Cancel</Button>
+          </DialogActions>
+        )}
       </Dialog>
-
+      
+      {/* Backdrop for processing */}
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={damageAnalysisInProgress}
+      >
+        <Box sx={{ textAlign: 'center' }}>
+          <CircularProgress color="inherit" />
+          <Typography variant="h6" sx={{ mt: 2 }}>
+            Analyzing vehicle images...
+          </Typography>
+          <Typography variant="body2">
+            Please wait, this may take a few minutes
+          </Typography>
+        </Box>
+      </Backdrop>
+      
       <Snackbar
         open={snackbar.open}
         autoHideDuration={5000}
@@ -974,6 +1487,37 @@ const MarketplaceCarDetail = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      {/* Message Dialog */}
+      <Dialog open={openMessageDialog} onClose={handleCloseMessageDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>Send Message to Seller</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            fullWidth
+            multiline
+            rows={4}
+            variant="outlined"
+            label="Your message"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Type your message here..."
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseMessageDialog}>Cancel</Button>
+          <Button
+            onClick={handleSendMessage}
+            variant="contained"
+            disabled={sendingMessage}
+            startIcon={sendingMessage ? <CircularProgress size={20} /> : <Send />}
+            size="medium"
+          >
+            {sendingMessage ? 'Sending...' : 'Send Message'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

@@ -25,12 +25,12 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Create FastAPI app
 app = FastAPI()
 
-# Add CORS middleware with updated settings
+# Update CORS configuration to allow requests from the frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Specify the frontend domain instead of wildcard
+    allow_origins=["http://localhost:3000"],  # Add your frontend URL
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all methods including OPTIONS
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
@@ -109,7 +109,9 @@ async def root():
     return {"message": "Server is running properly"}
 
 # Import routers after app definition to avoid circular imports
-from routes import auth, car_routes, car_specs, data, damage_detect, predict, price_predict, scrape, train, admin, yolo, messages, debug
+from routes import auth, car_routes, car_specs, data, damage_detect, predict, price_predict, scrape, train, admin, yolo, messages, debug, profile, damage_reports
+from routes.damage_detect import router as damage_detect_router
+from routes.damage_reports import router as damage_reports_router
 
 # Mount all routers using the original prefixes to match frontend expectations
 app.include_router(scrape.router, prefix="/scrape", tags=["scrape"])
@@ -123,6 +125,7 @@ app.include_router(car_routes.router, prefix="/cars", tags=["cars"])
 # Add the car_routes router under /api prefix for frontend requests
 app.include_router(car_routes.router, prefix="/api/cars", tags=["api-cars"])
 app.include_router(damage_detect.router, prefix="/damage", tags=["damage"])
+app.include_router(profile.router, prefix="/profile", tags=["profile"])
 
 # Mount auth router twice - once directly and once under /api prefix to support both paths
 app.include_router(auth.router)  # For backward compatibility
@@ -702,6 +705,13 @@ async def get_api_listing_by_id(listing_id: str):
             status_code=500,
             detail=f"Error retrieving car listing details: {str(e)}"
         )
+
+# Include routers - Make sure car_routes is included with the correct prefix
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
+app.include_router(car_routes.router, prefix="/car", tags=["cars"])
+app.include_router(profile.router, prefix="/profile", tags=["profile"])
+app.include_router(damage_detect_router, prefix="/damage", tags=["damage_detection"])
+app.include_router(damage_reports_router, prefix="/damage", tags=["damage_reports"])
 
 if __name__ == "__main__":
     import uvicorn
