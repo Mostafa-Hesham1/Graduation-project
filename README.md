@@ -1,5 +1,24 @@
 # Vehicle Souq: Car Recognition & Price Prediction System
 
+<!-- Demo Preview -->
+<p align="center">
+  <a href="https://drive.google.com/file/d/102w9s_smjmn74-Jam3dtPNFl5tok_9UA/view?usp=sharing" target="_blank">
+    <img src="frontend/public/picturefordemo.png" alt="Project Demo Video Preview" width="640" />
+  </a>
+  <br />
+  <sub>Click the image to watch the full demo video</sub>
+</p>
+
+<!-- Project Demo -->
+<p align="center">
+  <a href="https://drive.google.com/file/d/102w9s_smjmn74-Jam3dtPNFl5tok_9UA/view?usp=sharing" target="_blank">
+    <img src="https://img.shields.io/badge/▶%20Watch%20Project%20Demo-Google%20Drive-4285F4?style=for-the-badge&logo=google-drive&logoColor=white" alt="Project Demo Video">
+  </a>
+</p>
+<p align="center">
+  <sub>If the badge does not open, use this link: https://drive.google.com/file/d/102w9s_smjmn74-Jam3dtPNFl5tok_9UA/view</sub>
+</p>
+
 <p align="center">
   <img src="frontend/public/mylogo.png" alt="Vehicle Souq Logo" width="200"/>
 </p>

@@ -997,6 +997,12 @@ def custom_visualize_yolo(image, results, score_threshold=0.25, mask_threshold=0
                 
                 # Stronger alpha for better visibility
                 img = cv2.addWeighted(img, 1.0 - alpha, overlay, alpha, 0)
+                class_name = CLASS_NAMES[cls]
+                confidence = scores[i]
+                
+                # Skip highlighting "dent" detections with confidence < 30%
+                if class_name == "dent" and confidence < 0.3:
+                    continue
                 
                 # Add clear border outline
                 contours, _ = cv2.findContours(binary_mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)

@@ -178,6 +178,7 @@ const Profile = () => {
   const [editPreferencesOpen, setEditPreferencesOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState(null);
   const [reportImageIndex, setReportImageIndex] = useState(0);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
   
   // Form states
   const [editFormData, setEditFormData] = useState({});
@@ -554,14 +555,7 @@ const Profile = () => {
                     </Typography>
                   </Box>
                 </Box>
-                <Button
-                  variant="outlined"
-                  startIcon={<EditIcon />}
-                  onClick={() => setEditProfileOpen(true)}
-                  size="medium"
-                >
-                  Edit Profile
-                </Button>
+                {/* Removed Edit Profile Button */}
               </Box>
             </CardContent>
           </ContentCard>

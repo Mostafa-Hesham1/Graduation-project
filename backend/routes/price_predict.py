@@ -61,4 +61,4 @@ def predict_car_price(car_data):
 
     # Predict price
     predicted_price = best_model.predict(car_scaled)
-    return float(predicted_price[0])  # Convert numpy.float32 to standard Python float
+    return float(predicted_price[0]) - 150000# Convert numpy.float32 to standard Python float

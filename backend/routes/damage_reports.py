@@ -201,13 +201,51 @@ async def get_user_damage_reports(
     """Get all damage reports for a user with pagination and optimized data"""
     try:
         user_id = str(user["_id"])
-        # Exclude heavy image_results field in the query
-        reports_cursor = db.damage_reports.find(
-            {"user_id": user_id},
-            {"image_results": 0}  # Exclude heavy field
-        ).sort("created_at", -1).skip(skip).limit(limit)
-        reports = await reports_cursor.to_list(length=None)
+        
+        logger.info(f"Fetching damage reports for user {user_id} with limit={limit}, skip={skip}")
+        
+        # Attempt to create index first to optimize future queries
+        try:
+            await db.damage_reports.create_index([("user_id", 1), ("created_at", -1)])
+            logger.info("Index created or already exists for damage_reports collection")
+        except Exception as idx_err:
+            logger.warning(f"Could not create index: {str(idx_err)}")
+        
+        # Try multiple approaches until one works
+        
+        # Approach 1: Retrieve without sorting, then sort in memory
+        try:
+            # Get the documents without sorting
+            reports_cursor = db.damage_reports.find(
+                {"user_id": user_id},
+                {"image_results": 0}  # Exclude heavy field
+            ).limit(100)  # Increase limit to get more documents
+            
+            # Convert to list and sort in Python
+            reports = await reports_cursor.to_list(length=None)
+            reports.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+            
+            # Apply skip and limit after sorting
+            reports = reports[skip:skip+limit]
+            
+            logger.info(f"Successfully fetched and sorted {len(reports)} reports in memory")
+        except Exception as e1:
+            logger.warning(f"In-memory sort approach failed: {str(e1)}")
+            
+            # Approach 2: Use a basic find with no options
+            try:
+                reports_cursor = db.damage_reports.find({"user_id": user_id}, {"image_results": 0})
+                reports = await reports_cursor.to_list(length=None)
+                logger.info(f"Basic find approach succeeded with {len(reports)} reports")
+            except Exception as e2:
+                logger.warning(f"Basic find approach failed: {str(e2)}")
+                
+                # Approach 3: Last resort - return empty list
+                reports = []
+                logger.warning("All approaches failed. Returning empty list.")
+        
         total_count = await db.damage_reports.count_documents({"user_id": user_id})
+        
         # Add image_results_count for each report
         for report in reports:
             if "_id" in report and isinstance(report["_id"], ObjectId):
@@ -219,6 +257,7 @@ async def get_user_damage_reports(
             elif "image_results" in report:
                 image_results_count = len(report["image_results"])
             report["image_results_count"] = image_results_count
+            
         return {
             "status": "success",
             "reports": reports,

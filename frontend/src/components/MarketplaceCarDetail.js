@@ -482,7 +482,7 @@ const MarketplaceCarDetail = () => {
           formData.append('image_url', imageUrl);
           formData.append('reduce_reflection', 'true');
           formData.append('enhance_contrast', 'true');
-          formData.append('confidence_threshold', '0.25');
+          formData.append('confidence_threshold', '0.4');
           formData.append('model_type', 'yolo'); // Explicitly use YOLO
           
           console.log(`Sending request to damage detection API for image ${i + 1}`);

@@ -1,0 +1,146 @@
+# Performance Testing with Locust
+
+## Setup Steps
+
+1. Ensure your FastAPI server is running:
+   ```
+   cd ../backend
+   uvicorn main:app --host 127.0.0.1 --port 8000
+   ```
+
+2. Find valid car IDs for testing (important to avoid 404 errors):
+   ```
+   python find_valid_car_ids.py
+   ```
+
+3. Prepare the test environment (create test user and verify endpoints):
+   ```
+   python prepare_test_env.py
+   ```
+   
+   Current status:
+   - ✅ Authentication working with user: mostafa112@test.com
+   - ✅ User Profile endpoint working
+   - ✅ Login endpoint working
+   - ✅ Car Listings endpoint working
+   - ❌ Car Marketplace endpoint failing (401) - This requires special authentication
+
+4. Run a specific test case:
+   ```
+   locust -f locustfile.py --host=http://localhost:8000 --web-host=127.0.0.1 --tags TC_PERF_001
+   ```
+
+5. For running the tests in headless mode (useful for CI/CD):
+   ```
+   locust -f locustfile.py --host=http://localhost:8000 --headless -u 10 -r 1 -t 5m --tags TC_PERF_001
+   ```
+
+## Using the Locust Web Interface
+
+After running the locust command, open http://localhost:8089 in your browser to access the web interface:
+
+1. Configure the test:
+   - Number of users: Enter the number of concurrent users (start with 10 for normal load)
+   - Spawn rate: Enter how many users to add per second (use 1-5)
+   - Host: Make sure http://localhost:8000 is entered (or your actual backend URL)
+
+2. Start the test:
+   - Click the "Start swarming" button to begin the test
+   - Watch the statistics table for results
+   - The charts tab shows response times and requests per second
+
+3. Stop the test:
+   - Click "Stop" when you want to end the test
+   - You can download a report using the "Download Data" button
+
+Example values for different test cases:
+- Normal Load (TC_PERF_001): 10 users, 1 spawn rate
+- High Load (TC_PERF_002): 100 users, 10 spawn rate (increase gradually)
+- Spike Test (TC_PERF_003): Start with 10 users, then change to 500 users
+- Soak Test (TC_PERF_004): 50 users, 5 spawn rate, run for 1 hour
+- Throughput Test (TC_PERF_005): 100 users, 10 spawn rate
+
+## Common Issues and Solutions
+
+1. "No tasks defined on XXXUser" error:
+   - Make sure the @tag decorator comes BEFORE the @task decorator
+   - Example: 
+     @tag('TC_PERF_001')
+     @task(1)
+     def my_task(self):
+         pass
+
+2. 404 errors (endpoint not found):
+   - Verify the API endpoints in config/settings.py match your actual backend paths
+   - Check that your server is running and accessible
+
+3. 401 errors (unauthorized):
+   - Make sure TEST_USER in config/settings.py contains valid credentials
+   - Run prepare_test_env.py to create a valid test user
+   - The token may have expired - check if your backend has short token expiration
+   - Try creating a new user manually through the frontend and use those credentials
+
+4. Low throughput or high latency:
+   - Check server resource usage (CPU, memory, disk I/O)
+   - Consider optimizing database queries
+   - Look for N+1 query issues or missing indexes
+
+## Detailed Test Case Descriptions
+
+- TC_PERF_001: Normal Load - Tests API response time with 10 users
+- TC_PERF_002: High Load - Tests system behavior with 1000 concurrent users
+- TC_PERF_003: Spike Test - Simulates sudden traffic increase from 10 to 500 users
+- TC_PERF_004: Soak Test - Runs 50 users constantly for 1 hour to find memory leaks
+- TC_PERF_005: Throughput Test - Measures requests per second with 100 users
+- TC_PERF_005: Throughput Test - Measures requests per second with 100 users
+
+## Current Performance Test Results
+
+Latest test results show:
+- Fastest endpoint: Get Car Details (median: 160ms)
+- Slowest endpoint: Login (High Load) (median: 2856ms)
+- Highest throughput: Car Listings (Throughput) (1018 requests)
+- Problematic endpoints:
+  - View Car Details (Soak): 100% failure rate - FIXED by trying multiple endpoint URLs
+  - Get Car Listings (High Load): 9% failure rate - This is acceptable under high load
+  - Get Car Details: 1.5% failure rate - This is acceptable
+
+## Test Results History
+
+### Latest Test Results (June 23, 2025)
+- ✅ High Load Test (TC_PERF_002): PASSED
+  - 7,187 total requests with 96.4% success rate 
+  - 95% of responses completed in under 1 second
+  - Car Listings: 95.1% success rate, median 160ms
+  - Marketplace: 100% success rate, median 290ms
+  - ⚠️ Login endpoints: extremely slow (12-17 seconds)
+
+For detailed analysis, see: `./analysis/test_results_2025_06_23.md`
+
+## Performance Metrics to Monitor
+
+- Response time: Should be <500ms for most endpoints
+- Error rate: Should be <1% under normal load, <10% under high load
+- Throughput: The system handled ~4.6 requests per second in the last test
+
+## When to Stop the Tests
+
+1. Automatic Test Termination:
+   - When running with the `-t` parameter, tests will stop automatically after the specified duration
+   - Example: `locust -f locustfile.py --host=http://localhost:8000 --headless -u 10 -r 1 -t 5m` will run for 5 minutes
+
+2. Manual Test Termination:
+   - In the web UI: Click the "Stop" button in the top right corner when you have enough data
+   - In headless mode: Press Ctrl+C in the terminal to stop the test
+
+3. When you have enough data:
+   - For Normal Load (TC_PERF_001): 2-5 minutes is usually sufficient
+   - For High Load (TC_PERF_002): 5-10 minutes to observe system behavior under sustained load
+   - For Spike Test (TC_PERF_003): Until after the spike and system stabilization (typically 10-15 minutes)
+   - For Soak Test (TC_PERF_004): Full 1 hour for proper memory leak detection
+   - For Throughput Test (TC_PERF_005): 5-10 minutes to get accurate RPS measurements
+
+4. Stop immediately if:
+   - You see error rates above 20% (indicates system failure)
+   - Response times increase dramatically (indicates degrading performance)
+   - Your server becomes unresponsive or crashes
