@@ -148,7 +148,7 @@ Our system is built on three primary datasets:
 ### Backend Setup
 ```bash
 # Clone the repository
-git clone https://github.com/Mostafa-Hesham1/Graduation-project.git
+git clone https://github.com/Mostafa-Hesham1/Vehicle-Souq.git
 cd vehicle-souq
 
 # Create a virtual environment
